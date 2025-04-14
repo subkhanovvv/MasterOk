@@ -56,10 +56,10 @@
                             <tbody>
                                 @foreach ($brands as $b)
                                     <tr>
-                                        <td>{{ $b->id }}</td>
+                                        <td>{{ $loop->iteration }}</td>
                                         <td class="pname">
                                             <div class="image">
-                                                <img src="{{ Storage::url($b->image) }}" alt="{{ $b->name }}"
+                                                <img src="{{ Storage::url($b->photo) }}" alt="{{ $b->name }}"
                                                     width="150">
                                             </div>
                                             <div class="name">
@@ -75,7 +75,8 @@
                                                         <i class="icon-edit-3"></i>
                                                     </div>
                                                 </a>
-                                                <form action="" class="delete-form">
+                                                <form action="{{ route('destroy-brand', $b->id) }}" method="POST"
+                                                     class="delete-form">
                                                     @csrf
                                                     @method('DELETE')
                                                     <div class="item text-danger delete">
@@ -105,16 +106,17 @@
                     let form = this.closest("form");
 
                     Swal.fire({
-                        title: "Are you sure?",
-                        text: "This action cannot be undone!",
+                        title: "Вы уверены?",
+                        text: "Это действие невозможно отменить!",
                         icon: "warning",
                         showCancelButton: true,
                         confirmButtonColor: "#dc3545",
                         cancelButtonColor: "#6c757d",
-                        confirmButtonText: "Yes, delete it!"
+                        confirmButtonText: "Да, удалить!"
+
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            form.submit(); 
+                            form.submit();
                         }
                     });
                 });

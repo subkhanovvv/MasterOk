@@ -23,3 +23,5 @@ Route::view('index','pages.index')->name('index');
 Route::get('brand', [BrandController::class,'brand'])->name('brand');
 Route::get('new-brand', [BrandController::class,'new_brand'])->name('new-brand');
 
+Route::post('store-brand',[BrandController::class,'store_brand'])->name('store-brand');
+Route::delete('destroy-brand/{id}', [BrandController::class, 'destroy_brand'])->name('destroy-brand');

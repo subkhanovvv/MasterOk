@@ -13,9 +13,9 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('font/fonts.css') }}">
     <link rel="stylesheet" href="{{ asset('icon/style.css') }}">
-    <link rel="shortcut icon" href="{{ asset('images/favicon.ico') }}">
-    <link rel="apple-touch-icon-precomposed" href="{{ asset('images/favicon.ico') }}">
-    <link rel="shortcut icon" href="{{ asset('images/favicon.ico') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ asset('images/favi.ico') }}">
+    <link rel="apple-touch-icon-precomposed" href="{{ asset('images/favi.ico') }}">
+    <link rel="shortcut icon" href="{{ asset('images/favi.ico') }}" type="image/x-icon">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/sweetalert.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/custom.css') }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -27,8 +27,7 @@
     <div id="wrapper">
         <div id="page" class="">
             <div class="layout-wrap">
-                
-                
+                     
                 @include('layouts.sidebar.admin-sidebar')
                 <div class="section-content-right">
                     
@@ -41,7 +40,7 @@
                         @include('layouts.footer.admin-footer')
                         
                     </div>
-                    
+                
                 </div>
             </div>
         </div>
