@@ -7,7 +7,7 @@
                 <h3>Бренды</h3>
                 <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
                     <li>
-                        <a href="{{ route('admin.index') }}">
+                        <a href="{{ route('index') }}">
                             <div class="text-tiny">Панель</div>
                         </a>
                     </li>
@@ -21,7 +21,7 @@
             </div>
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
-                   <b>{{ session('success') }}</b>
+                    <b>{{ session('success') }}</b>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
@@ -30,52 +30,52 @@
                     <div class="wg-filter flex-grow">
                         <form class="form-search">
                             <fieldset class="name">
-                                <input type="text" placeholder="Поиск..." class="" name="name"
-                                    tabindex="2" value="" aria-required="true" required="">
+                                <input type="text" placeholder="Поиск..." class="" name="name" tabindex="2"
+                                    value="" aria-required="true" required="">
                             </fieldset>
                             <div class="button-submit">
                                 <button class="" type="submit"><i class="icon-search"></i></button>
                             </div>
                         </form>
                     </div>
-                    <a class="tf-button style-1 w208" href="{{ route('admin.add-brand') }}"><i class="icon-plus"></i>Добавить новый</a>
+                    <a class="tf-button style-1 w208" href="{{ route('new-brand') }}"><i class="icon-plus"></i>Новый
+                        Бренд</a>
                 </div>
                 <div class="wg-table table-all-user">
                     <div class="table-responsive">
-
                         <table class="table table-striped table-bordered">
                             <thead>
                                 <tr>
                                     <th>#</th>
                                     <th>Имя</th>
                                     <th>Телефон</th>
-                                    <th>Products</th>
-                                    <th>Action</th>
+                                    <th>Товары</th>
+                                    <th>Действия</th>
                                 </tr>
                             </thead>
                             <tbody>
+                                @foreach ($brands as $b)
                                     <tr>
-                                        <td></td>
+                                        <td>{{ $b->id }}</td>
                                         <td class="pname">
                                             <div class="image">
-                                                <img src="" alt=""
+                                                <img src="{{ Storage::url($b->image) }}" alt="{{ $b->name }}"
                                                     width="150">
                                             </div>
                                             <div class="name">
-                                                <a href="#" class="body-title-2"></a>
+                                                <a href="#" class="body-title-2">{{ $b->name }}</a>
                                             </div>
                                         </td>
-                                        <td> </td>
+                                        <td>{{ $b->phone }}</td>
                                         <td><a href="#" target="_blank">0</a></td>
                                         <td>
                                             <div class="list-icon-function">
-                                                <a href="{{ route('admin.edit-brand', ['id' => $brand->id]) }}">
+                                                <a href="">
                                                     <div class="item edit">
                                                         <i class="icon-edit-3"></i>
                                                     </div>
                                                 </a>
-                                                <form action="{{ route('admin.destroy-brand', $brand->id) }}" method="POST"
-                                                    class="delete-form">
+                                                <form action="" class="delete-form">
                                                     @csrf
                                                     @method('DELETE')
                                                     <div class="item text-danger delete">
@@ -91,10 +91,8 @@
                     </div>
                     <div class="divider"></div>
                     <div class="flex items-center justify-between flex-wrap gap10 wgp-pagination">
-                        {{-- {{ $brands->links() }} --}}
-
+                        {{ $brands->links() }}
                     </div>
-
                 </div>
             </div>
         </div>
@@ -116,11 +114,11 @@
                         confirmButtonText: "Yes, delete it!"
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            form.submit(); // Submit the form
+                            form.submit(); 
                         }
                     });
                 });
             });
         });
-    </script>   
+    </script>
 @endsection

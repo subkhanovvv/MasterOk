@@ -9,16 +9,12 @@ class BrandController extends Controller
 {
    public function brand()
    {
-      $brands = Brand::orderBy('id', 'desc')->paginate(5);
-      return view('pages.brand.brand', compact('brand'));
+      $brands = Brand::orderBy('id', 'desc')->paginate(10);
+      return view('pages.brands.brand', compact('brands'));
    }
    public function new_brand()
    {
       return view('pages.brands.new-brand');
    }
-   public function edit_brand($id)
-   {
-      $brand = Brand::find($id);
-      return view('admin.brand.edit-brand', compact('brand'));
-   }
+ 
 }

@@ -9,5 +9,6 @@
 <body>
     login
     register
+    <a href="{{route('index')}}">dashboard</a>
 </body>
 </html>

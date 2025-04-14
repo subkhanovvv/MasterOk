@@ -1,8 +1,8 @@
 <div class="section-menu-left">
     <div class="box-logo">
         <a href="/" id="site-logo-inner">
-            <img class="" id="logo_header_1" alt="" src="{{asset('images/logo/logo.png')}}"
-                data-light="{{ asset('images/logo/logo.png') }}" data-dark="{{ asset('images/logo/logo.png') }}">
+            <img class="" id="logo_header_1" alt="" src="{{asset('images/logo/logo2.png')}}"
+                data-light="{{ asset('images/logo/logo2.png') }}" data-dark="{{ asset('images/logo/logo2.png') }}">
         </a>
         <div class="button-show-hide">
             <i class="icon-menu-left"></i>
@@ -10,12 +10,12 @@
     </div>
     <div class="center">
         <div class="center-item">
-            <div class="center-heading">Main Home</div>
+            <div class="center-heading">Главная страница</div>
             <ul class="menu-list">
                 <li class="menu-item">
-                    <a href="#" class="">
+                    <a href="{{route('index')}}" class="">
                         <div class="icon"><i class="icon-grid"></i></div>
-                        <div class="text">Dashboard</div>
+                        <div class="text">Панель</div>
                     </a>
                 </li>
             </ul>
@@ -25,17 +25,17 @@
                 <li class="menu-item has-children">
                     <a href="javascript:void(0);" class="menu-item-button">
                         <div class="icon"><i class="icon-shopping-cart"></i></div>
-                        <div class="text">Products</div>
+                        <div class="text">Товар</div>
                     </a>
                     <ul class="sub-menu">
                         <li class="sub-menu-item">
                             <a href="#" class="">
-                                <div class="text">Add Product</div>
+                                <div class="text">Новый товар</div>
                             </a>
                         </li>
                         <li class="sub-menu-item">
                             <a href="#" class="">
-                                <div class="text">Products</div>
+                                <div class="text">Товары</div>
                             </a>
                         </li>
                     </ul>
@@ -43,22 +43,22 @@
                 <li class="menu-item has-children">
                     <a href="javascript:void(0);" class="menu-item-button">
                         <div class="icon"><i class="icon-layers"></i></div>
-                        <div class="text">Company</div>
+                        <div class="text">Бренд</div>
                     </a>
                     <ul class="sub-menu">
                         <li class="sub-menu-item">
-                            <a href="#" class="">
-                                <div class="text">New Company</div>
+                            <a href="{{route('new-brand')}}" class="">
+                                <div class="text">Новый Бренд</div>
                             </a>
                         </li>
                         <li class="sub-menu-item">
-                            <a href="#" class="">
-                                <div class="text">Companies</div>
+                            <a href="{{route('brand')}}" class="">
+                                <div class="text">Бренды</div>
                             </a>
                         </li>
                     </ul>
                 </li>
-                <li class="menu-item has-children">
+                {{-- <li class="menu-item has-children">
                     <a href="javascript:void(0);" class="menu-item-button">
                         <div class="icon"><i class="icon-layers"></i></div>
                         <div class="text">Category</div>
@@ -120,7 +120,7 @@
                         <div class="icon"><i class="icon-settings"></i></div>
                         <div class="text">Settings</div>
                     </a>
-                </li>
+                </li> --}}
             </ul>
         </div>
     </div>

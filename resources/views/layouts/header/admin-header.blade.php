@@ -2,9 +2,9 @@
     <div class="wrap">
         <div class="header-left">
             <a href="index-2.html">
-                <img class="" id="logo_header_mobile" alt="" src="{{ asset('images/logo/logo.png') }}"
-                    data-light="{{ asset('images/logo/logo.png') }}" data-dark="{{ asset('images/logo/logo.png') }}"
-                    data-width="154px" data-height="52px" data-retina="{{ asset('images/logo/logo.png') }}">
+                <img class="" id="logo_header_mobile" alt="" src="{{ asset('images/logo/logo2.png') }}"
+                    data-light="{{ asset('images/logo/logo.png') }}" data-dark="{{ asset('images/logo/logo2.png') }}"
+                    data-width="154px" data-height="52px" data-retina="{{ asset('images/logo/logo2.png') }}">
             </a>
             <div class="button-show-hide">
                 <i class="icon-menu-left"></i>
@@ -218,10 +218,10 @@
                         data-bs-toggle="dropdown" aria-expanded="false">
                         <span class="header-user wg-user">
                             <span class="image">
-                                <img src="{{ asset('images/avatar/user-1.png') }}" alt="">
+                                <img src="{{ asset('images/avatar/user.png') }}" alt="">
                             </span>
                             <span class="flex flex-column">
-                                <span class="body-title mb-2">Kristin Watson</span>
+                                <span class="body-title mb-2">MasterOk</span>
                                 <span class="text-tiny">Admin</span>
                             </span>
                         </span>
