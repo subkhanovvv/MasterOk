@@ -1,3 +1,52 @@
+<style>
+    .currency-container {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .currency-card {
+        background-color: #f9f9f9;
+        color: #333333;
+        border-radius: 10px;
+        padding: 12px 16px;
+        width: 180px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: transform 0.2s ease;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .currency-card:hover {
+        transform: translateY(-2px);
+    }
+
+    .price-row {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .flag {
+        width: 24px;
+        height: 16px;
+        border-radius: 2px;
+        object-fit: cover;
+        box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+    }
+
+    .price {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #1a2c2a;
+    }
+
+    .change {
+        font-size: 0.85rem;
+        margin-top: 6px;
+        color: #4a5568;
+    }
+</style>
 <div class="header-dashboard">
     <div class="wrap">
         <div class="header-left">
@@ -9,8 +58,6 @@
             <div class="button-show-hide">
                 <i class="icon-menu-left"></i>
             </div>
-
-
             <form class="form-search flex-grow">
                 <fieldset class="name">
                     <input type="text" placeholder="Search here..." class="show-search" name="name" tabindex="2"
@@ -138,10 +185,26 @@
                     </ul>
                 </div>
             </form>
-
+            <div class="popup-wrap user type-header">
+                <div class="currency-container">
+                    <div class="currency-card" title="Доллар США">
+                        <div class="price-row">
+                            <img src="{{ asset('images/usd.png') }}" alt="UZ Flag" class="flag">
+                            <div class="price" id="usd-uzs">Loading...</div>
+                        </div>
+                        <div class="change" id="uzs-change"></div>
+                    </div>
+                    <div class="currency-card" title="Российский рубль">
+                        <div class="price-row">
+                            <img src="{{ asset('images/rub.png') }}" alt="RU Flag" class="flag">
+                            <div class="price" id="rub-uzs">Loading...</div>
+                        </div>
+                        <div class="change" id="rub-uzs-change"></div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="header-grid">
-
             <div class="popup-wrap message type-header">
                 <div class="dropdown">
                     <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton2"
@@ -208,10 +271,6 @@
                     </ul>
                 </div>
             </div>
-
-
-
-
             <div class="popup-wrap user type-header">
                 <div class="dropdown">
                     <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton3"
@@ -275,3 +334,47 @@
         </div>
     </div>
 </div>
+<script>
+    let previousPrices = {
+        UZS: null,
+        RUB: null,
+        RUBUZS: null
+    };
+
+    async function fetchExchangeRates() {
+        try {
+            const response = await fetch('https://open.er-api.com/v6/latest/USD');
+            const data = await response.json();
+
+            updatePrice('UZS', data.rates.UZS, 'usd-uzs', 'uzs-change');
+
+            const rubUzsRate = data.rates.UZS / data.rates.RUB;
+            updatePrice('RUBUZS', rubUzsRate, 'rub-uzs', 'rub-uzs-change');
+
+            previousPrices.UZS = data.rates.UZS;
+            previousPrices.RUB = data.rates.RUB;
+            previousPrices.RUBUZS = rubUzsRate;
+        } catch (error) {
+            console.error('Error fetching exchange rates:', error);
+        }
+    }
+
+    function updatePrice(currency, newPrice, priceId, changeId) {
+        const priceElement = document.getElementById(priceId);
+        const changeElement = document.getElementById(changeId);
+
+        priceElement.textContent = newPrice.toFixed(2);
+
+        if (previousPrices[currency] !== null) {
+            const change = ((newPrice - previousPrices[currency]) / previousPrices[currency]) * 100;
+            const changeText = change.toFixed(2);
+            const arrow = change >= 0 ? '↑' : '↓';
+
+            changeElement.textContent = `${arrow} ${Math.abs(changeText)}%`;
+            changeElement.className = `change ${change >= 0 ? 'up' : 'down'}`;
+        }
+    }
+
+    fetchExchangeRates();
+    setInterval(fetchExchangeRates, 10000);
+</script>

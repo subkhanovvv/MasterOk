@@ -1,7 +1,7 @@
 <div class="section-menu-left">
     <div class="box-logo">
         <a href="/" id="site-logo-inner">
-            <img class="" id="logo_header_1" alt="" src="{{asset('images/logo/logo3.png')}}"
+            <img class="" id="logo_header_1" alt="" src="{{ asset('images/logo/logo3.png') }}"
                 data-light="{{ asset('images/logo/logo3.png') }}" data-dark="{{ asset('images/logo/logo3.png') }}">
         </a>
         <div class="button-show-hide">
@@ -13,7 +13,7 @@
             <div class="center-heading">Главная страница</div>
             <ul class="menu-list">
                 <li class="menu-item">
-                    <a href="{{route('index')}}" class="">
+                    <a href="{{ route('index') }}" class="">
                         <div class="icon"><i class="icon-grid"></i></div>
                         <div class="text">Панель</div>
                     </a>
@@ -30,12 +30,12 @@
                     <ul class="sub-menu">
                         <li class="sub-menu-item">
                             <a href="#" class="">
-                                <div class="text">Новый товар</div>
+                                <div class="text">Товары</div>
                             </a>
                         </li>
                         <li class="sub-menu-item">
                             <a href="#" class="">
-                                <div class="text">Товары</div>
+                                <div class="text">Категории</div>
                             </a>
                         </li>
                     </ul>
@@ -47,12 +47,12 @@
                     </a>
                     <ul class="sub-menu">
                         <li class="sub-menu-item">
-                            <a href="{{route('new-brand')}}" class="">
+                            <a href="{{ route('new-brand') }}" class="">
                                 <div class="text">Новый Бренд</div>
                             </a>
                         </li>
                         <li class="sub-menu-item">
-                            <a href="{{route('brand')}}" class="">
+                            <a href="{{ route('brand') }}" class="">
                                 <div class="text">Бренды</div>
                             </a>
                         </li>
@@ -75,9 +75,9 @@
                             </a>
                         </li>
                     </ul>
-                </li>
+                </li> --}}
 
-                <li class="menu-item has-children">
+                {{-- <li class="menu-item has-children">
                     <a href="javascript:void(0);" class="menu-item-button">
                         <div class="icon"><i class="icon-file-plus"></i></div>
                         <div class="text">Order</div>

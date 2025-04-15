@@ -19,33 +19,34 @@ class BrandController extends Controller
       return view('pages.brands.new-brand');
    }
 
+   public function edit_brand($id)
+   {
+      $brands = Brand::find($id);
+      return view('pages.brands.edit-brand', compact('brands'));
+   }
+
    public function store_brand(Request $request)
    {
       $validated = $request->validate([
          'name'  => 'required|string|max:255',
          'phone' => 'required|string|max:255',
-         // 'photo' => 'required|photo|mimes:jpeg,png,jpg,gif,svg|max:2048',
       ]);
 
-      // Check for soft-deleted brand with same phone
       $existing = Brand::withTrashed()->where('phone', $validated['phone'])->first();
 
       $photoPath = $request->file('photo')->store('brands', 'public');
 
       if ($existing) {
-         // Restore if deleted
          if ($existing->trashed()) {
             $existing->restore();
          }
 
-         // Update brand data
          $existing->update([
             'name'  => $validated['name'],
             'phone' => $validated['phone'],
             'photo' => $photoPath,
          ]);
       } else {
-         // Create new
          Brand::create([
             'name'  => $validated['name'],
             'phone' => $validated['phone'],
@@ -55,12 +56,42 @@ class BrandController extends Controller
 
       return redirect()->route('brand')->with('success', 'Бренд успешно сохранён!');
    }
+   public function update_brand(Request $request)
+   {
+      $validated = $request->validate([
+         'name'  => 'required|string|max:255',
+         'phone'  => 'required|string|max:20|unique:brands,phone,' . $request->id,
+      ]);
+
+      $brand = Brand::findOrFail($request->id);
+
+      if ($request->hasFile('photo')) {
+         if ($brand->photo) {
+            Storage::delete('public/' . $brand->photo);
+         }
+
+         $photoPath = $request->file('photo')->store('brands', 'public');
+
+         $validated['photo'] = $photoPath;
+      } else {
+         $validated['photo'] = $brand->photo;
+      }
+
+      $brand->update([
+         'name'       => $validated['name'],
+         'phone'       => $validated['phone'],
+         'photo'      => $validated['photo'],
+      ]);
+
+      return redirect()->route('brand')->with('success', 'Бренд успешно обновлён!');
+   }
+
    public function destroy_brand($id)
    {
       $brand = Brand::findOrFail($id);
 
-      if ($brand->image) {
-         Storage::delete($brand->image);
+      if ($brand->photo) {
+         Storage::delete($brand->photo);
       }
 
       $brand->delete();
