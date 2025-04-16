@@ -54,6 +54,17 @@
                             </span>
                         @enderror
                     </fieldset>
+                    <fieldset class="name">
+                        <div class="body-title">Описание бренда<span class="tf-color-1">*</span></div>
+                        <input class="flex-grow @error('description') is-invalid @enderror" type="text"
+                            placeholder="необязательно" name="description" tabindex="0" value="{{ $brands->description }}"
+                            aria-required="true" required>
+                        @error('description')
+                            <span class="invalid-feedback" role="alert">
+                                <strong class="text-danger">{{ $message }}</strong>
+                            </span>
+                        @enderror
+                    </fieldset>
                     <fieldset>
                         <div class="body-title">Загрузить изображения <span class="tf-color-1">*</span>
                         </div>

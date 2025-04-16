@@ -29,38 +29,28 @@ class BrandController extends Controller
    {
       $validated = $request->validate([
          'name'  => 'required|string|max:255',
-         'phone' => 'required|string|max:255',
+         'phone' => 'required|string|max:20',
+         'description' => 'required|string|max:255',
       ]);
-
-      $existing = Brand::withTrashed()->where('phone', $validated['phone'])->first();
 
       $photoPath = $request->file('photo')->store('brands', 'public');
 
-      if ($existing) {
-         if ($existing->trashed()) {
-            $existing->restore();
-         }
-
-         $existing->update([
-            'name'  => $validated['name'],
-            'phone' => $validated['phone'],
-            'photo' => $photoPath,
-         ]);
-      } else {
-         Brand::create([
-            'name'  => $validated['name'],
-            'phone' => $validated['phone'],
-            'photo' => $photoPath,
-         ]);
-      }
+      Brand::create([
+         'name'  => $validated['name'],
+         'phone' => $validated['phone'],
+         'description' => $validated['description'],
+         'photo' => $photoPath,
+      ]);
 
       return redirect()->route('brand')->with('success', 'Бренд успешно сохранён!');
    }
+
    public function update_brand(Request $request)
    {
       $validated = $request->validate([
          'name'  => 'required|string|max:255',
          'phone'  => 'required|string|max:20|unique:brands,phone,' . $request->id,
+         'description'  => 'required|string|max:255,',
       ]);
 
       $brand = Brand::findOrFail($request->id);
@@ -78,9 +68,10 @@ class BrandController extends Controller
       }
 
       $brand->update([
-         'name'       => $validated['name'],
-         'phone'       => $validated['phone'],
-         'photo'      => $validated['photo'],
+         'name' => $validated['name'],
+         'phone' => $validated['phone'],
+         'photo'  => $validated['photo'],
+         'description'  => $validated['description'],
       ]);
 
       return redirect()->route('brand')->with('success', 'Бренд успешно обновлён!');

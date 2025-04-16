@@ -4,7 +4,7 @@
     <div class="main-content-inner">
         <div class="main-content-wrap">
             <div class="flex items-center flex-wrap justify-between gap20 mb-27">
-                <h3>Бренды</h3>
+                <h3>Категории</h3>
                 <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
                     <li>
                         <a href="{{ route('index') }}">
@@ -15,7 +15,7 @@
                         <i class="icon-chevron-right"></i>
                     </li>
                     <li>
-                        <div class="text-tiny">Бренды</div>
+                        <div class="text-tiny">Категории</div>
                     </li>
                 </ul>
             </div>
@@ -38,8 +38,8 @@
                             </div>
                         </form>
                     </div>
-                    <a class="tf-button style-1 w208" href="{{ route('new-brand') }}"><i class="icon-plus"></i>Новый
-                        Бренд</a>
+                    <a class="tf-button style-1 w208" href="{{ route('new-category') }}"><i class="icon-plus"></i>Новый
+                        Категория</a>
                 </div>
                 <div class="wg-table table-all-user">
                     <div class="table-responsive">
@@ -48,35 +48,31 @@
                                 <tr>
                                     <th>#</th>
                                     <th>Имя</th>
-                                    <th>Телефон</th>
-                                    <th>Товары</th>
                                     <th>Действия</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($brands as $b)
+                                @foreach ($categories as $c)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td class="pname">
                                             <div class="image">
-                                                <img src="{{ Storage::url($b->photo) }}" alt="{{ $b->name }}"
-                                                    width="150">
+                                                <img src="{{ Storage::url($c->photo) }}" alt="{{ $c->name }}"
+                                                width="150">
                                             </div>
                                             <div class="name">
-                                                <a href="#" class="body-title-2">{{ $b->name }}</a>
+                                                <a href="#" class="body-title-2">{{ $c->name }}</a>
                                             </div>
                                         </td>
-                                        <td>{{ $b->phone }}</td>
-                                        <td><a href="#" target="_blank">0</a></td>
                                         <td>
                                             <div class="list-icon-function">
-                                                <a href="">
+                                                <a href="{{ route('edit-category', ['id' => $c->id]) }}">
                                                     <div class="item edit">
                                                         <i class="icon-edit-3"></i>
                                                     </div>
                                                 </a>
-                                                <form action="{{ route('destroy-brand', $b->id) }}" method="POST"
-                                                     class="delete-form">
+                                                <form action="{{ route('destroy-category', $c->id) }}" method="POST"
+                                                    class="delete-form">
                                                     @csrf
                                                     @method('DELETE')
                                                     <div class="item text-danger delete">
@@ -92,7 +88,7 @@
                     </div>
                     <div class="divider"></div>
                     <div class="flex items-center justify-between flex-wrap gap10 wgp-pagination">
-                        {{ $brands->links() }}
+                        {{ $categories->links() }}
                     </div>
                 </div>
             </div>

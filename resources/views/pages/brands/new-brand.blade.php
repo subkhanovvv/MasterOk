@@ -45,8 +45,20 @@
                     </fieldset>
                     <fieldset class="name">
                         <div class="body-title">Телефон бренда<span class="tf-color-1">*</span></div>
-                        <input class="flex-grow  @error('phone') is-invalid @enderror" type="text" name="phone" tabindex="0" value="+998" aria-required="true" required>
+                        <input class="flex-grow  @error('phone') is-invalid @enderror" type="text" name="phone"
+                            tabindex="0" value="+998" aria-required="true" required>
                         @error('phone')
+                            <span class="invalid-feedback" role="alert">
+                                <strong class="text-danger">{{ $message }}</strong>
+                            </span>
+                        @enderror
+                    </fieldset>
+                    <fieldset class="name">
+                        <div class="body-title">Описание бренда<span class="tf-color-1">*</span></div>
+                        <input class="flex-grow @error('description') is-invalid @enderror" type="text"
+                            placeholder="Описание бренда (необязательно)" name="description" tabindex="0" value="{{ old('description') }}"
+                            aria-required="true" required>
+                        @error('description')
                             <span class="invalid-feedback" role="alert">
                                 <strong class="text-danger">{{ $message }}</strong>
                             </span>

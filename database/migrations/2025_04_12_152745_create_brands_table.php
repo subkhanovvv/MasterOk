@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('brands', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();;
-            $table->string('photo')->nullable();
-            $table->string('phone');
-            $table->softDeletes();
+            $table->string('photo')->nullable();;
+            $table->string('phone')->nullable();;
+            $table->string('description')->nullable();
             $table->timestamps();
         });
     }

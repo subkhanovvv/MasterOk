@@ -34,7 +34,7 @@
                             </a>
                         </li>
                         <li class="sub-menu-item">
-                            <a href="#" class="">
+                            <a href="{{route('category')}}" class="">
                                 <div class="text">Категории</div>
                             </a>
                         </li>

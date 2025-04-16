@@ -62,7 +62,7 @@
                                                 <img src="{{ Storage::url($b->photo) }}" alt="{{ $b->name }}"
                                                     width="150">
                                             </div>
-                                            <div class="name">
+                                            <div class="name" title="{{$b->description}}">
                                                 <a href="#" class="body-title-2">{{ $b->name }}</a>
                                             </div>
                                         </td>
