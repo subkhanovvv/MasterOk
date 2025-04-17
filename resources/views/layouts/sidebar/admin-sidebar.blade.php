@@ -14,7 +14,7 @@
             <ul class="menu-list">
                 <li class="menu-item">
                     <a href="{{ route('index') }}" class="">
-                        <div class="icon"><i class="icon-grid"></i></div>
+                        <div class="icon"><i class="fa-solid fa-table-columns"></i></div>
                         <div class="text">Панель</div>
                     </a>
                 </li>
@@ -24,12 +24,12 @@
             <ul class="menu-list">
                 <li class="menu-item has-children">
                     <a href="javascript:void(0);" class="menu-item-button">
-                        <div class="icon"><i class="icon-shopping-cart"></i></div>
+                        <div class="icon"><i class="fa-solid fa-layer-group"></i></div>
                         <div class="text">Товар</div>
                     </a>
                     <ul class="sub-menu">
                         <li class="sub-menu-item">
-                            <a href="#" class="">
+                            <a href="{{route('product')}}" class="">
                                 <div class="text">Товары</div>
                             </a>
                         </li>
@@ -40,23 +40,11 @@
                         </li>
                     </ul>
                 </li>
-                <li class="menu-item has-children">
-                    <a href="javascript:void(0);" class="menu-item-button">
-                        <div class="icon"><i class="icon-layers"></i></div>
+                <li class="menu-item">
+                    <a href="{{route('brand')}}" class="">
+                        <div class="icon"><i class="fa-solid fa-tags"></i></div>
                         <div class="text">Бренд</div>
                     </a>
-                    <ul class="sub-menu">
-                        <li class="sub-menu-item">
-                            <a href="{{ route('new-brand') }}" class="">
-                                <div class="text">Новый Бренд</div>
-                            </a>
-                        </li>
-                        <li class="sub-menu-item">
-                            <a href="{{ route('brand') }}" class="">
-                                <div class="text">Бренды</div>
-                            </a>
-                        </li>
-                    </ul>
                 </li>
                 {{-- <li class="menu-item has-children">
                     <a href="javascript:void(0);" class="menu-item-button">
@@ -114,13 +102,32 @@
                         <div class="text">User</div>
                     </a>
                 </li>
-
+                
+                --}}
                 <li class="menu-item">
                     <a href="settings.html" class="">
-                        <div class="icon"><i class="icon-settings"></i></div>
+                        <div class="icon"><i class="fa-solid fa-gear"></i></div>
                         <div class="text">Settings</div>
                     </a>
-                </li> --}}
+                </li> 
+                <li class="menu-item">
+                    <a href="settings.html" class="">
+                        <div class="icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                        <div class="text">History</div>
+                    </a>
+                </li> 
+                <li class="menu-item">
+                    <a href="settings.html" class="">
+                        <div class="icon"><i class="fa-solid fa-barcode"></i></div>
+                        <div class="text">Barcodes</div>
+                    </a>
+                </li> 
+                <li class="menu-item">
+                    <a href="settings.html" class="">
+                        <div class="icon"><i class="fa-solid fa-warehouse"></i></div>
+                        <div class="text">Storage</div>
+                    </a>
+                </li> 
             </ul>
         </div>
     </div>
