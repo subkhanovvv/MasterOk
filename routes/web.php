@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
@@ -42,15 +43,5 @@ Route::get('product', [ProductController::class, 'product'])->name('product');
 Route::get('new-product', [ProductController::class, 'new_product'])->name('new-product');
 Route::post('store-product', [ProductController::class, 'store_product'])->name('store-product');
 
-Route::get('/barcode/preview/{code}', function ($code) {
-    // Optional: Validate barcode (e.g., only digits, correct length)
-    if (!preg_match('/^\d{8,13}$/', $code)) {
-        abort(400, 'Invalid barcode format');
-    }
-
-    return response(
-        BarcodeDNS1D::getBarcodePNG($code, 'EAN13', 2, 60),
-        200,
-        ['Content-Type' => 'image/png']
-    );
-});
+Route::get('login', [AuthController::class , 'login'])->name('login');
+Route::get('register', [AuthController::class , 'register'])->name('register');

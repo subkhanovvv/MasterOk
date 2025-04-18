@@ -8,8 +8,18 @@ use Illuminate\Support\Facades\Storage;
 
 class BrandController extends Controller
 {
-   public function brand()
+   public function brand(Request $request)
    {
+      if ($request->ajax() && $request->has('id')) {
+         $brand = Brand::findOrFail($request->id);
+         return response()->json([
+            'name' => $brand->name,
+            'description' => $brand->description,
+            'phone' => $brand->phone,
+            'photo_url' => asset('storage/' . $brand->photo),
+         ]);
+      }
+
       $brands = Brand::orderBy('id', 'desc')->paginate(10);
       return view('pages.brands.brand', compact('brands'));
    }

@@ -19,12 +19,6 @@
                     </li>
                 </ul>
             </div>
-            @if (session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <b>{{ session('success') }}</b>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
             <div class="wg-box">
                 <div class="flex items-center justify-between gap10 flex-wrap">
                     <div class="wg-filter flex-grow">
@@ -62,8 +56,10 @@
                                                 <img src="{{ Storage::url($b->photo) }}" alt="{{ $b->name }}"
                                                     width="150">
                                             </div>
-                                            <div class="name" title="{{$b->description}}">
-                                                <a href="#" class="body-title-2">{{ $b->name }}</a>
+                                            <div class="name" title="{{ $b->description }}">
+                                                <button type="button" data-bs-toggle="modal"
+                                                    data-bs-target="#staticBackdrop" class="body-title-2"
+                                                    data-id="{{ $b->id }}">{{ $b->name }}</button>
                                             </div>
                                         </td>
                                         <td>{{ $b->phone }}</td>
@@ -76,7 +72,7 @@
                                                     </div>
                                                 </a>
                                                 <form action="{{ route('destroy-brand', $b->id) }}" method="POST"
-                                                     class="delete-form">
+                                                    class="delete-form">
                                                     @csrf
                                                     @method('DELETE')
                                                     <div class="item text-danger delete">
@@ -94,6 +90,28 @@
                     <div class="flex items-center justify-between flex-wrap gap10 wgp-pagination">
                         {{ $brands->links() }}
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div>1</div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Understood</button>
                 </div>
             </div>
         </div>
