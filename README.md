@@ -1,4 +1,4 @@
-# 🛒 Shop Management System
+# Management System
 
 A powerful and simple product and inventory management system built with Laravel. Supports barcode generation, stock tracking, payments, and multi-currency pricing (UZS, USD).
 
@@ -15,7 +15,9 @@ A powerful and simple product and inventory management system built with Laravel
 
 ## 🖼️ Screenshots
 
-*(Include 2-3 screenshots of your dashboard or key features)*
+![Dashboard Screenshot](../../../Users/ACER-com/Pictures/Screenshots/Снимок%20экрана%20(307).png)
+![Dashboard Screenshot](../../../Users/ACER-com/Pictures/Screenshots/Снимок%20экрана%20(308).png)
+
 
 ## 🚀 Getting Started
 
