@@ -28,16 +28,5 @@ A powerful and simple product and inventory management system built with Laravel
 - Composer  
 - Laravel  
 - MySQL or PostgreSQL  
-- Node.js & npm (for assets)
+- bootsrao -v 5. & font awesome (for assets)
 
-### Installation
-
-```bash
-git clone https://github.com/your-username/shop-management-system.git
-cd shop-management-system
-composer install
-cp .env.example .env
-php artisan key:generate
-php artisan migrate --seed
-npm install && npm run dev
-php artisan serve
