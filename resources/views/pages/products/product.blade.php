@@ -33,7 +33,8 @@
                             </div>
                         </form>
                     </div>
-                    <a class="tf-button style-1 w208" href="{{route('new-product')}}"><i class="icon-plus"></i>Добавить товар</a>
+                    <a class="tf-button style-1 w208" href="{{ route('new-product') }}"><i class="icon-plus"></i>Новый
+                        товар</a>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-striped table-bordered">
@@ -43,10 +44,9 @@
                                 <th>Название</th>
                                 <th>Цена (UZS)</th>
                                 <th>Цена (USD)</th>
-                                <th>Штрихкод</th>
-                                <th>Категория</th>
                                 <th>Бренд</th>
                                 <th>Статус</th>
+                                <th>Цена распродажи</th>
                                 <th>Склад</th>
                                 <th>Действие</th>
                             </tr>
@@ -66,24 +66,45 @@
                                     </td>
                                     <td>{{ number_format($p->price_uzs) }} UZS</td>
                                     <td>${{ number_format($p->price_usd, 2) }}</td>
-                                    <td>{{ $p->barcode }}</td>
-                                    <td>{{ $p->get_category->name }}</td>
                                     <td>{{ $p->get_brand->name }}</td>
                                     <td>
-                                        <span
-                                            class="
-                                            px-2 py-1 rounded font-semibold
-                                            @if ($p->qty <= 0) bg-red-100 text-red-700
-                                            @elseif($p->qty < 5)
-                                                bg-red-200 text-red-800
-                                            @elseif($p->qty < 20)
-                                                bg-yellow-100 text-yellow-800
-                                            @else
-                                                bg-green-100 text-green-700 @endif
+                                        @php
+                                            $bg = $p->status === 'normal'
+                                                ? '#d1fae5'   // green
+                                                : ($p->status === 'low'
+                                                    ? '#fef3c7' // yellow
+                                                    : '#fee2e2' // red
+                                                );
+                                    
+                                            $color = $p->status === 'normal'
+                                                ? '#065f46'
+                                                : ($p->status === 'low'
+                                                    ? '#92400e'
+                                                    : '#991b1b'
+                                                );
+                                    
+                                            // Russian translation
+                                            $statusRu = match($p->status) {
+                                                'normal' => 'В наличии',
+                                                'low' => 'Мало',
+                                                'out_of_stock' => 'Нет в наличии',
+                                                default => $p->status
+                                            };
+                                        @endphp
+                                    
+                                        <span style="
+                                            display: inline-block;
+                                            padding: 0.25rem 0.5rem;
+                                            border-radius: 0.375rem;
+                                            font-weight: 600;
+                                            background-color: {{ $bg }};
+                                            color: {{ $color }};
                                         ">
-                                            {{ $p->qty }} {{ $p->unit }}
+                                            {{ $statusRu }}
                                         </span>
                                     </td>
+                                    <td>{{$p->sale_price}}</td>
+                                    <td>{{ $p->qty }} {{ $p->unit }}</td>
 
                                     <td>
                                         <div class="list-icon-function">

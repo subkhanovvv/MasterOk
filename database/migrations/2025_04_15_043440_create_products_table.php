@@ -14,16 +14,14 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->unsignedInteger('qty');
+            $table->unsignedInteger('qty')->default(0);
             $table->string('photo')->nullable();
-            $table->string('unit')->default('box');
+            $table->string('unit');
             $table->decimal('price_uzs', 15, 2);
             $table->decimal('price_usd', 15, 2);
-            $table->decimal('sale_price', 15, 2);
-            $table->decimal('total_amount', 15, 2)->default(0);
-            $table->decimal('paid_amount', 15, 2)->default(0);
-            $table->enum('payment_status', ['paid', 'partly_paid', 'loan'])->default('paid');
-            $table->enum('status', ['normal', 'low', 'out_of_stock'])->default('normal');
+            $table->string('short_description')->nullable();
+            $table->decimal('sale_price', 15, 2)->nullable();
+            $table->enum('status', ['normal', 'low', 'out_of_stock'])->default('out_of_stock');
             $table->foreignId('category_id')->constrained()->onDelete('restrict');
             $table->foreignId('brand_id')->constrained()->onDelete('restrict');
             $table->timestamps();

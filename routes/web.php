@@ -20,7 +20,7 @@ use Milon\Barcode\Facades\DNS1D;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('pages.index');
 });
 
 Route::view('index', 'pages.index')->name('index');

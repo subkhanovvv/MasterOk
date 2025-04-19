@@ -18,8 +18,43 @@ class ProductController extends Controller
     {
         $brands = Brand::orderBy('id', 'desc')->get();
         $categories = Category::orderBy('id', 'desc')->get();
-        return view('pages.products.new-product',compact('brands' , 'categories'));
+        return view('pages.products.new-product', compact('brands', 'categories'));
     }
-    
-    
+
+    public function store_product(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'qty' => 'required|integer|min:0',
+            'photo' => 'nullable',
+            'unit' => 'required|string|max:50',
+            'price_uzs' => 'required|numeric|min:0',
+            'price_usd' => 'required|numeric|min:0',
+            'short_description' => 'nullable|string|max:1000',
+            'sale_price' => 'nullable|numeric|min:0',
+            'category_id' => 'required|exists:categories,id',
+            'brand_id' => 'required|exists:brands,id',
+        ]);
+
+        if ($validated['qty'] == 0) {
+            $validated['status'] = 'out_of_stock';
+        } elseif ($validated['qty'] <= 10) {
+            $validated['status'] = 'low';
+        } else {
+            $validated['status'] = 'normal';
+        }
+
+        if ($request->hasFile('photo')) {
+            $fileName = time() . '_' . $request->file('photo')->getClientOriginalName();
+            $path = $request->file('photo')->storeAs('products', $fileName, 'public');
+            $validated['photo'] = $path;
+        }
+
+        $validated['short_description'] = $validated['short_description'] ?? null;
+        $validated['sale_price'] = $validated['sale_price'] ?? null;
+
+        Product::create($validated);
+
+        return redirect()->route('product')->with('success', 'Product created successfully.');
+    }
 }

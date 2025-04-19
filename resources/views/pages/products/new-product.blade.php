@@ -1,87 +1,180 @@
 @extends('layouts.admin')
 
 @section('content')
+    <style>
+        #brandImagePreview img {
+            max-height: 60px;
+            border-radius: 8px;
+            margin-top: 5px;
+        }
+    </style>
+      @if($errors->any())
+      <div class="alert alert-danger">
+        <ul class="mb-0">
+          @foreach($errors->all() as $error)
+            <li>{{ $error }}</li>
+          @endforeach
+        </ul>
+      </div>
+    @endif
+
     <div class="main-content-inner">
+        <!-- main-content-wrap -->
         <div class="main-content-wrap">
             <div class="flex items-center flex-wrap justify-between gap20 mb-27">
-                <h3> Информация о бренде</h3>
+                <h3>Add Product</h3>
                 <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
                     <li>
                         <a href="{{ route('index') }}">
-                            <div class="text-tiny">Панель</div>
+                            <div class="text-tiny">Dashboard</div>
                         </a>
                     </li>
                     <li>
                         <i class="icon-chevron-right"></i>
                     </li>
                     <li>
-                        <a href="{{ route('brand') }}">
-                            <div class="text-tiny">Бренды</div>
+                        <a href="{{ route('product') }}">
+                            <div class="text-tiny">Products</div>
                         </a>
                     </li>
                     <li>
                         <i class="icon-chevron-right"></i>
                     </li>
                     <li>
-                        <div class="text-tiny">Новый Бренд</div>
+                        <div class="text-tiny">Add product</div>
                     </li>
                 </ul>
             </div>
-            <!-- new-category -->
-            <div class="wg-box">
-                <form class="form-new-product form-style-1" action="{{ route('store-brand') }}" method="POST"
-                    enctype="multipart/form-data">
-                    @csrf
+            <!-- form-add-product -->
+            <form class="tf-section-2 form-add-product" method="POST" enctype="multipart/form-data"
+                action="{{ route('store-product') }}">
+                @csrf
+                <div class="wg-box">
                     <fieldset class="name">
-                        <div class="body-title">Название бренда<span class="tf-color-1">*</span></div>
-                        <input class="flex-grow @error('name') is-invalid @enderror" type="text"
-                            placeholder="Название бренда" name="name" tabindex="0" value="{{ old('name') }}"
-                            aria-required="true" required>
-                        @error('name')
-                            <span class="invalid-feedback" role="alert">
-                                <strong class="text-danger">{{ $message }}</strong>
-                            </span>
-                        @enderror
+                        <div class="body-title mb-10">Product name <span class="tf-color-1">*</span>
+                        </div>
+                        <input class="mb-10" type="text" placeholder="Enter product name" name="name" tabindex="0"
+                            value="{{ old('name') }}" aria-required="true" required="">
+                        <div class="text-tiny">Do not exceed 100 characters when entering the
+                            product name.</div>
                     </fieldset>
-                    <fieldset class="name">
-                        <div class="body-title">Описание бренда<span class="tf-color-1">*</span></div>
-                        <input class="flex-grow @error('description') is-invalid @enderror" type="text"
-                            placeholder="Описание бренда (необязательно)" name="description" tabindex="0"
-                            value="{{ old('description') }}" aria-required="true" required>
-                        @error('description')
-                            <span class="invalid-feedback" role="alert">
-                                <strong class="text-danger">{{ $message }}</strong>
-                            </span>
-                        @enderror
+
+
+                    <fieldset class="shortdescription">
+                        <div class="body-title mb-10">Short Description <span class="tf-color-1">*</span></div>
+                        <textarea class="mb-10 ht-150" name="short_description" placeholder="Short Description" tabindex="0"
+                            aria-required="true" required></textarea>
+                        <div class="text-tiny">Do not exceed 100 characters when entering the
+                            product name.</div>
                     </fieldset>
                     <fieldset>
-                        <div class="body-title">Загрузить изображения <span class="tf-color-1">*</span>
+                        <div class="body-title mb-10">Upload images <span class="tf-color-1">*</span>
                         </div>
                         <div class="upload-image flex-grow">
                             <div class="item" id="imgpreview" style="display:none">
-                                <img src="" alt="Photo Preview" style="max-width: 200px; margin-top: 10px;">
+                                <img src="" class="effect8" alt="">
                             </div>
                             <div id="upload-file" class="item up-load">
                                 <label class="uploadfile" for="myFile">
                                     <span class="icon">
                                         <i class="icon-upload-cloud"></i>
                                     </span>
-                                    <span class="body-text">Перетащите изображения сюда или выберите
-                                        <span class="tf-color"> Нажмите для выбора
-                                        </span></span>
+                                    <span class="body-text">Drop your images here or select <span class="tf-color">click
+                                            to browse</span></span>
                                     <input type="file" id="myFile" name="photo" accept="photo/*">
                                 </label>
                             </div>
                         </div>
                     </fieldset>
-
-                    <div class="bot">
-                        <div></div>
-                        <button class="tf-button w208" type="submit">Сохранить</button>
+                </div>
+                <div class="wg-box">
+                    <div class="gap22 cols">
+                        <fieldset class="category">
+                            <div class="body-title mb-10">Category <span class="tf-color-1">*</span>
+                            </div>
+                            <div class="select">
+                                <select name="category_id">
+                                    <option>Choose category</option>
+                                    @foreach ($categories as $c)
+                                        <option value="{{ $c->id }}">{{ $c->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </fieldset>
+                        <fieldset class="brand">
+                            <div class="body-title mb-10">Brand <span class="tf-color-1">*</span>
+                            </div>
+                            <div class="select">
+                                <select name="brand_id">
+                                    <option>Choose Brand</option>
+                                    @foreach ($brands as $b)
+                                        <option value="{{ $b->id }}">{{ $b->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </fieldset>
                     </div>
-                </form>
-            </div>
+                    <div class="cols gap22">
+                        <fieldset class="name">
+                            <div class="body-title mb-10">Usd Price <span class="tf-color-1">*</span></div>
+                            <input class="mb-10" type="text" placeholder="Enter regular price" name="price_usd"
+                                tabindex="0" value="" aria-required="true" required="">
+                        </fieldset>
+                        <fieldset class="name">
+                            <div class="body-title mb-10">Uzs Price <span class="tf-color-1">*</span></div>
+                            <input class="mb-10" type="text" placeholder="Enter sale price" name="price_uzs"
+                                tabindex="0" value="" aria-required="true" required="">
+                        </fieldset>
+                    </div>
+
+
+                    <div class="cols gap22">
+                        <fieldset class="name">
+                            <div class="body-title mb-10">Sale price <span class="tf-color-1">*</span>
+                            </div>
+                            <input class="mb-10" type="text" placeholder="Enter SKU" name="sale_price"
+                                tabindex="0" value="" aria-required="true" required="">
+                        </fieldset>
+
+                    </div>
+
+                    <div class="cols gap22">
+                        <fieldset class="name">
+                            <div class="body-title mb-10">Quantity <span class="tf-color-1">*</span>
+                            </div>
+                            <input class="mb-10" type="text" placeholder="Enter quantity" name="qty"
+                                tabindex="0" aria-required="true">
+                        </fieldset>
+                        <fieldset class="name">
+                            <div class="body-title mb-10">Unit</div>
+                            <div class="select mb-10">
+                                <select name="unit">
+                                    <option>Выберите единицу</option>
+                                    <option value="кг">кг</option>
+                                    <option value="г">г</option>
+                                    <option value="л">л</option>
+                                    <option value="мл">мл</option>
+                                    <option value="м">м</option>
+                                    <option value="см">см</option>
+                                    <option value="шт">шт</option>
+                                    <option value="коробка">коробка</option>
+                                    <option value="упаковка">упаковка</option>
+                                    <option value="рулон">рулон</option>
+                                    <option value="пара">пара</option>
+                                    <option value="дюжина">дюжина</option>
+                                    <option value="набор">набор</option>
+                                </select>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="cols gap10">
+                        <button class="tf-button w-full" type="submit">Add product</button>
+                    </div>
+                </div>
+            </form>
+            <!-- /form-add-product -->
         </div>
+        <!-- /main-content-wrap -->
     </div>
     <script>
         $(function() {

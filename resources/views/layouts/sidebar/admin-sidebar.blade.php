@@ -106,26 +106,20 @@
                 --}}
                 <li class="menu-item">
                     <a href="settings.html" class="">
-                        <div class="icon"><i class="fa-solid fa-gear"></i></div>
-                        <div class="text">Settings</div>
-                    </a>
-                </li> 
-                <li class="menu-item">
-                    <a href="settings.html" class="">
-                        <div class="icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
-                        <div class="text">History</div>
-                    </a>
-                </li> 
-                <li class="menu-item">
-                    <a href="settings.html" class="">
                         <div class="icon"><i class="fa-solid fa-barcode"></i></div>
-                        <div class="text">Barcodes</div>
+                        <div class="text">Штрихкоды</div>
                     </a>
                 </li> 
                 <li class="menu-item">
                     <a href="settings.html" class="">
                         <div class="icon"><i class="fa-solid fa-warehouse"></i></div>
-                        <div class="text">Storage</div>
+                        <div class="text">Склад</div>
+                    </a>
+                </li> 
+                <li class="menu-item">
+                    <a href="settings.html" class="">
+                        <div class="icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                        <div class="text">История операций</div>
                     </a>
                 </li> 
             </ul>
