@@ -15,8 +15,9 @@ A powerful and simple product and inventory management system built with Laravel
 
 ## 🖼️ Screenshots
 
-![Dashboard Screenshot](../../../Users/ACER-com/Pictures/Screenshots/Снимок%20экрана%20(307).png)
-![Dashboard Screenshot](../../../Users/ACER-com/Pictures/Screenshots/Снимок%20экрана%20(308).png)
+<img src="public/screenshots/1.png" alt="Dashboard Screenshot" width="600"/>
+<img src="public/screenshots/2.png" alt="Dashboard Screenshot" width="600"/>
+
 
 
 ## 🚀 Getting Started
