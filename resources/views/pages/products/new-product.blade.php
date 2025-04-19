@@ -1,32 +1,14 @@
 @extends('layouts.admin')
 
 @section('content')
-    <style>
-        #brandImagePreview img {
-            max-height: 60px;
-            border-radius: 8px;
-            margin-top: 5px;
-        }
-    </style>
-      @if($errors->any())
-      <div class="alert alert-danger">
-        <ul class="mb-0">
-          @foreach($errors->all() as $error)
-            <li>{{ $error }}</li>
-          @endforeach
-        </ul>
-      </div>
-    @endif
-
     <div class="main-content-inner">
-        <!-- main-content-wrap -->
         <div class="main-content-wrap">
             <div class="flex items-center flex-wrap justify-between gap20 mb-27">
-                <h3>Add Product</h3>
+                <h3>Новый товар</h3>
                 <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
                     <li>
                         <a href="{{ route('index') }}">
-                            <div class="text-tiny">Dashboard</div>
+                            <div class="text-tiny">Панель</div>
                         </a>
                     </li>
                     <li>
@@ -34,42 +16,37 @@
                     </li>
                     <li>
                         <a href="{{ route('product') }}">
-                            <div class="text-tiny">Products</div>
+                            <div class="text-tiny">Товары</div>
                         </a>
                     </li>
                     <li>
                         <i class="icon-chevron-right"></i>
                     </li>
                     <li>
-                        <div class="text-tiny">Add product</div>
+                        <div class="text-tiny">Новый товар</div>
                     </li>
                 </ul>
             </div>
-            <!-- form-add-product -->
             <form class="tf-section-2 form-add-product" method="POST" enctype="multipart/form-data"
                 action="{{ route('store-product') }}">
                 @csrf
                 <div class="wg-box">
                     <fieldset class="name">
-                        <div class="body-title mb-10">Product name <span class="tf-color-1">*</span>
-                        </div>
-                        <input class="mb-10" type="text" placeholder="Enter product name" name="name" tabindex="0"
-                            value="{{ old('name') }}" aria-required="true" required="">
-                        <div class="text-tiny">Do not exceed 100 characters when entering the
-                            product name.</div>
+                        <div class="body-title mb-10">Название товара <span class="tf-color-1">*</span></div>
+                        <input class="mb-10" type="text" placeholder="Введите название товара" name="name"
+                            tabindex="0" value="{{ old('name') }}" aria-required="true" required="">
+                        <div class="text-tiny">Не превышайте 100 символов при вводе названия товара.</div>
                     </fieldset>
-
 
                     <fieldset class="shortdescription">
-                        <div class="body-title mb-10">Short Description <span class="tf-color-1">*</span></div>
-                        <textarea class="mb-10 ht-150" name="short_description" placeholder="Short Description" tabindex="0"
+                        <div class="body-title mb-10">Краткое описание <span class="tf-color-1">*</span></div>
+                        <textarea class="mb-10 ht-150" name="short_description" placeholder="Краткое описание" tabindex="0"
                             aria-required="true" required></textarea>
-                        <div class="text-tiny">Do not exceed 100 characters when entering the
-                            product name.</div>
+                        <div class="text-tiny">Не превышайте 100 символов при вводе краткого описания.</div>
                     </fieldset>
+
                     <fieldset>
-                        <div class="body-title mb-10">Upload images <span class="tf-color-1">*</span>
-                        </div>
+                        <div class="body-title mb-10">Загрузить изображения <span class="tf-color-1">*</span></div>
                         <div class="upload-image flex-grow">
                             <div class="item" id="imgpreview" style="display:none">
                                 <img src="" class="effect8" alt="">
@@ -79,8 +56,9 @@
                                     <span class="icon">
                                         <i class="icon-upload-cloud"></i>
                                     </span>
-                                    <span class="body-text">Drop your images here or select <span class="tf-color">click
-                                            to browse</span></span>
+                                    <span class="body-text">Перетащите изображения сюда или выберите <span
+                                            class="tf-color">кликните
+                                            для выбора</span></span>
                                     <input type="file" id="myFile" name="photo" accept="photo/*">
                                 </label>
                             </div>
@@ -90,11 +68,10 @@
                 <div class="wg-box">
                     <div class="gap22 cols">
                         <fieldset class="category">
-                            <div class="body-title mb-10">Category <span class="tf-color-1">*</span>
-                            </div>
+                            <div class="body-title mb-10">Категория <span class="tf-color-1">*</span></div>
                             <div class="select">
                                 <select name="category_id">
-                                    <option>Choose category</option>
+                                    <option>Выберите категорию</option>
                                     @foreach ($categories as $c)
                                         <option value="{{ $c->id }}">{{ $c->name }}</option>
                                     @endforeach
@@ -102,11 +79,10 @@
                             </div>
                         </fieldset>
                         <fieldset class="brand">
-                            <div class="body-title mb-10">Brand <span class="tf-color-1">*</span>
-                            </div>
+                            <div class="body-title mb-10">Бренд <span class="tf-color-1">*</span></div>
                             <div class="select">
                                 <select name="brand_id">
-                                    <option>Choose Brand</option>
+                                    <option>Выберите бренд</option>
                                     @foreach ($brands as $b)
                                         <option value="{{ $b->id }}">{{ $b->name }}</option>
                                     @endforeach
@@ -116,40 +92,38 @@
                     </div>
                     <div class="cols gap22">
                         <fieldset class="name">
-                            <div class="body-title mb-10">Usd Price <span class="tf-color-1">*</span></div>
-                            <input class="mb-10" type="text" placeholder="Enter regular price" name="price_usd"
+                            <div class="body-title mb-10">Цена в USD <span class="tf-color-1">*</span></div>
+                            <input class="mb-10" type="text" placeholder="Цена в долларах США" name="price_usd"
                                 tabindex="0" value="" aria-required="true" required="">
                         </fieldset>
                         <fieldset class="name">
-                            <div class="body-title mb-10">Uzs Price <span class="tf-color-1">*</span></div>
-                            <input class="mb-10" type="text" placeholder="Enter sale price" name="price_uzs"
+                            <div class="body-title mb-10">Цена в UZS <span class="tf-color-1">*</span></div>
+                            <input class="mb-10" type="text" placeholder="Цена в узбекских сумах" name="price_uzs"
                                 tabindex="0" value="" aria-required="true" required="">
-                        </fieldset>
-                    </div>
-
-
-                    <div class="cols gap22">
-                        <fieldset class="name">
-                            <div class="body-title mb-10">Sale price <span class="tf-color-1">*</span>
+                            <div class="text-tiny text-success">1 USD = <strong id="usd-uzs-rate">Загрузка...</strong> UZS
                             </div>
-                            <input class="mb-10" type="text" placeholder="Enter SKU" name="sale_price"
-                                tabindex="0" value="" aria-required="true" required="">
                         </fieldset>
-
                     </div>
 
                     <div class="cols gap22">
                         <fieldset class="name">
-                            <div class="body-title mb-10">Quantity <span class="tf-color-1">*</span>
-                            </div>
-                            <input class="mb-10" type="text" placeholder="Enter quantity" name="qty"
+                            <div class="body-title mb-10">Цена продажи <span class="tf-color-1">*</span></div>
+                            <input class="mb-10" type="text" placeholder="Цена продажи в узбекских сумах" name="sale_price"
+                                tabindex="0" value="" aria-required="true" required="">
+                        </fieldset>
+                    </div>
+
+                    <div class="cols gap22">
+                        <fieldset class="name">
+                            <div class="body-title mb-10">Количество <span class="tf-color-1">*</span></div>
+                            <input class="mb-10" type="text" placeholder="Введите количество" name="qty"
                                 tabindex="0" aria-required="true">
                         </fieldset>
                         <fieldset class="name">
-                            <div class="body-title mb-10">Unit</div>
+                            <div class="body-title mb-10">Единица</div>
                             <div class="select mb-10">
                                 <select name="unit">
-                                    <option>Выберите единицу</option>
+                                    <option disabled selected>Выберите единицу</option>
                                     <option value="кг">кг</option>
                                     <option value="г">г</option>
                                     <option value="л">л</option>
@@ -168,13 +142,11 @@
                         </fieldset>
                     </div>
                     <div class="cols gap10">
-                        <button class="tf-button w-full" type="submit">Add product</button>
+                        <button class="tf-button w-full" type="submit">Добавить товар</button>
                     </div>
                 </div>
             </form>
-            <!-- /form-add-product -->
         </div>
-        <!-- /main-content-wrap -->
     </div>
     <script>
         $(function() {
@@ -185,6 +157,65 @@
                     $("#imgpreview").show();
                 }
             });
+        });
+
+        let usdToUzsRate = null;
+
+        async function fetchExchangeRates() {
+            try {
+                const response = await fetch('https://open.er-api.com/v6/latest/USD');
+                const data = await response.json();
+
+                usdToUzsRate = data.rates.UZS;
+
+                document.getElementById('usd-uzs-rate').textContent = usdToUzsRate.toFixed(2);
+            } catch (error) {
+                console.error('Ошибка при получении курса обмена:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const usdInput = document.querySelector('input[name="price_usd"]');
+            const uzsInput = document.querySelector('input[name="price_uzs"]');
+
+            usdInput.addEventListener('input', () => {
+                if (usdToUzsRate) {
+                    const usdValue = parseFloat(usdInput.value);
+                    if (!isNaN(usdValue)) {
+                        const uzsValue = usdValue * usdToUzsRate;
+                        uzsInput.value = uzsValue.toFixed(2);
+                    } else {
+                        uzsInput.value = '';
+                    }
+                }
+            });
+
+            fetchExchangeRates();
+            setInterval(fetchExchangeRates, 10000); // Опционально: обновление курса
+        });
+        document.addEventListener('DOMContentLoaded', () => {
+            const usdInput = document.querySelector('input[name="price_usd"]');
+            const uzsInput = document.querySelector('input[name="price_uzs"]');
+
+            // Function to format numbers with commas or periods
+            function formatNumber(number) {
+                return new Intl.NumberFormat('ru-RU').format(number); // Use 'ru-RU' for comma as thousand separator
+            }
+
+            usdInput.addEventListener('input', () => {
+                if (usdToUzsRate) {
+                    const usdValue = parseFloat(usdInput.value);
+                    if (!isNaN(usdValue)) {
+                        const uzsValue = usdValue * usdToUzsRate;
+                        uzsInput.value = formatNumber(uzsValue.toFixed(2));
+                    } else {
+                        uzsInput.value = '';
+                    }
+                }
+            });
+
+            fetchExchangeRates();
+            setInterval(fetchExchangeRates, 10000); // Optional: refresh rate
         });
     </script>
 @endsection

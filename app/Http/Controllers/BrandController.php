@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Brand;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class BrandController extends Controller
@@ -89,14 +91,18 @@ class BrandController extends Controller
 
    public function destroy_brand($id)
    {
-      $brand = Brand::findOrFail($id);
+      try {
+         $brand = Brand::findOrFail($id);
+         if ($brand->photo) {
+            Storage::delete($brand->photo);
+         }
+         $brand->delete();
 
-      if ($brand->photo) {
-         Storage::delete($brand->photo);
+         return redirect()->route('brand')->with('success', 'Бренд успешно удален.');
+      } catch (QueryException $e) {
+         Log::error($e);
+
+         return redirect()->route('brand')->with('error', 'Невозможно удалить бренд, так как он используется в продуктах.');
       }
-
-      $brand->delete();
-
-      return redirect()->route('brand')->with('success', ' Бренд успешно удалён!');
    }
 }

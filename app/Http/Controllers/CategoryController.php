@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -71,14 +72,20 @@ class CategoryController extends Controller
 
     public function destroy_category($id)
     {
-        $category = Category::findOrFail($id);
+        try {
+            $category = Category::findOrFail($id);
 
-        if ($category->photo) {
-            Storage::delete($category->photo);
+            if ($category->photo) {
+                Storage::delete($category->photo);
+            }
+
+            $category->delete();
+
+            return redirect()->route('category')->with('success', ' Категория успешно удалён!');
+        } catch (QueryException $e) {
+            Log::error($e);
+
+            return redirect()->route('brand')->with('error', 'Невозможно удалить бренд, так как он используется в продуктах.');
         }
-
-        $category->delete();
-
-        return redirect()->route('category')->with('success', ' Категория успешно удалён!');
     }
 }

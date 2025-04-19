@@ -54,7 +54,7 @@
                         <tbody>
                             @foreach ($products as $p)
                                 <tr>
-                                    <td>{{ $p->id }}</td>
+                                    <td>{{ $loop->iteration }}</td>
                                     <td class="pname">
                                         <div class="image">
                                             <img src="{{ Storage::url($p->photo) }}" alt="" class="image">
@@ -133,7 +133,7 @@
 
                 <div class="divider"></div>
                 <div class="flex items-center justify-between flex-wrap gap10 wgp-pagination">
-                    {{-- Здесь может быть пагинация --}}
+                    {{ $products->links() }}
                 </div>
             </div>
         </div>

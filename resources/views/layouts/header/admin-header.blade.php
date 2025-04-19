@@ -291,10 +291,10 @@
                                 <div class="icon">
                                     <i class="icon-user"></i>
                                 </div>
-                                <div class="body-title-2">Account</div>
+                                <div class="body-title-2">Аккаунт</div>
                             </a>
                         </li>
-                        <li>
+                        {{-- <li>
                             <a href="#" class="user-item">
                                 <div class="icon">
                                     <i class="icon-mail"></i>
@@ -319,12 +319,12 @@
                                 <div class="body-title-2">Support</div>
                             </a>
                         </li>
-                        <li>
-                            <a href="#" class="user-item">
+                        <li> --}}
+                            <a href="{{route('logout')}}" class="user-item">
                                 <div class="icon">
                                     <i class="icon-log-out"></i>
                                 </div>
-                                <div class="body-title-2">Log out</div>
+                                <div class="body-title-2">Выйти</div>
                             </a>
                         </li>
                     </ul>
