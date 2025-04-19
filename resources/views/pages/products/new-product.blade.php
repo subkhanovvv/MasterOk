@@ -57,8 +57,7 @@
                                         <i class="icon-upload-cloud"></i>
                                     </span>
                                     <span class="body-text">Перетащите изображения сюда или выберите <span
-                                            class="tf-color">кликните
-                                            для выбора</span></span>
+                                            class="tf-color">Нажмите для выбора</span></span>
                                     <input type="file" id="myFile" name="photo" accept="photo/*">
                                 </label>
                             </div>
@@ -142,7 +141,7 @@
                         </fieldset>
                     </div>
                     <div class="cols gap10">
-                        <button class="tf-button w-full" type="submit">Добавить товар</button>
+                        <button class="tf-button w-full" type="submit">Сохранить</button>
                     </div>
                 </div>
             </form>
