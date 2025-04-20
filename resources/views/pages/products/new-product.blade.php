@@ -107,8 +107,8 @@
                     <div class="cols gap22">
                         <fieldset class="name">
                             <div class="body-title mb-10">Цена продажи <span class="tf-color-1">*</span></div>
-                            <input class="mb-10" type="text" placeholder="Цена продажи в узбекских сумах" name="sale_price"
-                                tabindex="0" value="" aria-required="true" required="">
+                            <input class="mb-10" type="text" placeholder="Цена продажи в узбекских сумах"
+                                name="sale_price" tabindex="0" value="" aria-required="true" required="">
                         </fieldset>
                     </div>
 
@@ -191,30 +191,6 @@
 
             fetchExchangeRates();
             setInterval(fetchExchangeRates, 10000); // Опционально: обновление курса
-        });
-        document.addEventListener('DOMContentLoaded', () => {
-            const usdInput = document.querySelector('input[name="price_usd"]');
-            const uzsInput = document.querySelector('input[name="price_uzs"]');
-
-            // Function to format numbers with commas or periods
-            function formatNumber(number) {
-                return new Intl.NumberFormat('ru-RU').format(number); // Use 'ru-RU' for comma as thousand separator
-            }
-
-            usdInput.addEventListener('input', () => {
-                if (usdToUzsRate) {
-                    const usdValue = parseFloat(usdInput.value);
-                    if (!isNaN(usdValue)) {
-                        const uzsValue = usdValue * usdToUzsRate;
-                        uzsInput.value = formatNumber(uzsValue.toFixed(2));
-                    } else {
-                        uzsInput.value = '';
-                    }
-                }
-            });
-
-            fetchExchangeRates();
-            setInterval(fetchExchangeRates, 10000); // Optional: refresh rate
         });
     </script>
 @endsection

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Brand;
+use App\Models\Product;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -10,20 +11,13 @@ use Illuminate\Support\Facades\Storage;
 
 class BrandController extends Controller
 {
-   public function brand(Request $request)
+   public function brand()
    {
-      if ($request->ajax() && $request->has('id')) {
-         $brand = Brand::findOrFail($request->id);
-         return response()->json([
-            'name' => $brand->name,
-            'description' => $brand->description,
-            'phone' => $brand->phone,
-            'photo_url' => asset('storage/' . $brand->photo),
-         ]);
-      }
-
-      $brands = Brand::orderBy('id', 'desc')->paginate(10);
-      return view('pages.brands.brand', compact('brands'));
+       $brands = Brand::withCount('products') // add this line
+                      ->orderBy('id', 'desc')
+                      ->paginate(10);
+   
+       return view('pages.brands.brand', compact('brands'));
    }
 
    public function new_brand()

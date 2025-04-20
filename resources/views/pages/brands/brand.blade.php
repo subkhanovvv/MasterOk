@@ -52,17 +52,22 @@
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td class="pname">
+                                            <a href="#" target="blank">
                                             <div class="image">
                                                 <img src="{{ Storage::url($b->photo) }}" alt="{{ $b->name }}"
                                                     width="150">
                                             </div>
                                             <div class="name" title="{{ $b->description }}">
-                                                <a class="body-title-2"
-                                                    data-id="{{ $b->id }}">{{ $b->name }}</a>
+                                                <a class="body-title-2">{{ $b->name }}</a>
                                             </div>
+                                        </a>
                                         </td>
                                         <td>{{ $b->phone }}</td>
-                                        <td><a href="#" target="_blank">0</a></td>
+                                        <td>
+                                            <a href="#">
+                                                {{ $b->products_count }}
+                                            </a>
+                                        </td>
                                         <td>
                                             <div class="list-icon-function">
                                                 <a href="{{ route('edit-brand', ['id' => $b->id]) }}">
