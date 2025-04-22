@@ -1,128 +1,108 @@
-<div class="section-menu-left">
-    <div class="box-logo">
-        <a href="/" id="site-logo-inner">
-            <img class="" id="logo_header_1" alt="" src="{{ asset('images/logo/logo3.png') }}"
-                data-light="{{ asset('images/logo/logo3.png') }}" data-dark="{{ asset('images/logo/logo3.png') }}">
-        </a>
-        <div class="button-show-hide">
-            <i class="icon-menu-left"></i>
-        </div>
-    </div>
-    <div class="center">
-        <div class="center-item">
-            <div class="center-heading">Главная страница</div>
-            <ul class="menu-list">
-                <li class="menu-item">
-                    <a href="{{ route('index') }}" class="">
-                        <div class="icon"><i class="fa-solid fa-table-columns"></i></div>
-                        <div class="text">Панель</div>
-                    </a>
-                </li>
-            </ul>
-        </div>
-        <div class="center-item">
-            <ul class="menu-list">
-                <li class="menu-item has-children">
-                    <a href="javascript:void(0);" class="menu-item-button">
-                        <div class="icon"><i class="fa-solid fa-layer-group"></i></div>
-                        <div class="text">Товар</div>
-                    </a>
-                    <ul class="sub-menu">
-                        <li class="sub-menu-item">
-                            <a href="{{route('product')}}" class="">
-                                <div class="text">Товары</div>
-                            </a>
-                        </li>
-                        <li class="sub-menu-item">
-                            <a href="{{route('category')}}" class="">
-                                <div class="text">Категории</div>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="menu-item">
-                    <a href="{{route('brand')}}" class="">
-                        <div class="icon"><i class="fa-solid fa-tags text-2xl"></i></div>
-                        <div class="text">Бренд</div>
-                    </a>
-                </li>
-                {{-- <li class="menu-item has-children">
-                    <a href="javascript:void(0);" class="menu-item-button">
-                        <div class="icon"><i class="icon-layers"></i></div>
-                        <div class="text">Category</div>
-                    </a>
-                    <ul class="sub-menu">
-                        <li class="sub-menu-item">
-                            <a href="#" class="">
-                                <div class="text">New Category</div>
-                            </a>
-                        </li>
-                        <li class="sub-menu-item">
-                            <a href="#" class="">
-                                <div class="text">Categories</div>
-                            </a>
-                        </li>
-                    </ul>
-                </li> --}}
-
-                {{-- <li class="menu-item has-children">
-                    <a href="javascript:void(0);" class="menu-item-button">
-                        <div class="icon"><i class="icon-file-plus"></i></div>
-                        <div class="text">Order</div>
-                    </a>
-                    <ul class="sub-menu">
-                        <li class="sub-menu-item">
-                            <a href="orders.html" class="">
-                                <div class="text">Orders</div>
-                            </a>
-                        </li>
-                        <li class="sub-menu-item">
-                            <a href="order-tracking.html" class="">
-                                <div class="text">Order tracking</div>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="menu-item">
-                    <a href="slider.html" class="">
-                        <div class="icon"><i class="icon-image"></i></div>
-                        <div class="text">Slider</div>
-                    </a>
-                </li>
-                <li class="menu-item">
-                    <a href="coupons.html" class="">
-                        <div class="icon"><i class="icon-grid"></i></div>
-                        <div class="text">Coupons</div>
-                    </a>
-                </li>
-
-                <li class="menu-item">
-                    <a href="users.html" class="">
-                        <div class="icon"><i class="icon-user"></i></div>
-                        <div class="text">User</div>
-                    </a>
-                </li>
-                
-                --}}
-                <li class="menu-item">
-                    <a href="settings.html" class="">
-                        <div class="icon"><i class="fa-solid fa-barcode"></i></div>
-                        <div class="text">Штрихкоды</div>
-                    </a>
-                </li> 
-                <li class="menu-item">
-                    <a href="settings.html" class="">
-                        <div class="icon"><i class="fa-solid fa-warehouse"></i></div>
-                        <div class="text">Склад</div>
-                    </a>
-                </li> 
-                <li class="menu-item">
-                    <a href="settings.html" class="">
-                        <div class="icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
-                        <div class="text">История операций</div>
-                    </a>
-                </li> 
-            </ul>
-        </div>
-    </div>
-</div>
+<nav class="sidebar sidebar-offcanvas" id="sidebar">
+    <ul class="nav">
+        <li class="nav-item">
+            <a class="nav-link" href="../index.html">
+                <i class="mdi mdi-grid-large menu-icon"></i>
+                <span class="menu-title">Dashboard</span>
+            </a>
+        </li>
+        <li class="nav-item nav-category">Products</li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false"
+                aria-controls="ui-basic">
+                <i class="menu-icon mdi mdi-floor-plan"></i>
+                <span class="menu-title">Categories</span>
+                <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="ui-basic">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href="../pages/ui-features/buttons.html">Buttons</a></li>
+                    <li class="nav-item"> <a class="nav-link" href="../pages/ui-features/dropdowns.html">Dropdowns</a>
+                    </li>
+                    <li class="nav-item"> <a class="nav-link" href="../pages/ui-features/typography.html">Typography</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false"
+                aria-controls="ui-basic">
+                <i class="menu-icon mdi mdi-arrange-send-backward"></i>
+                <span class="menu-title">Products</span>
+                <i class="menu-arrow"></i>
+            </a>
+        </li>
+        {{-- <li class="nav-item nav-category">Forms and Datas</li> --}}
+        {{-- <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="collapse" href="#form-elements" aria-expanded="false"
+                aria-controls="form-elements">
+                <i class="menu-icon mdi mdi-alphabetical"></i>
+                <span class="menu-title">Form elements</span>
+                <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="form-elements">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"><a class="nav-link" href="../pages/forms/basic_elements.html">Basic
+                            Elements</a></li>
+                </ul>
+            </div> --}}
+        {{-- </li> --}}
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="collapse" href="#charts" aria-expanded="false" aria-controls="charts">
+                <i class="menu-icon mdi mdi-barcode"></i>
+                <span class="menu-title">Barcodes</span>
+                <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="charts">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href="../pages/charts/chartjs.html">ChartJs</a></li>
+                </ul>
+            </div>
+        </li>
+        {{-- <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="collapse" href="#tables" aria-expanded="false" aria-controls="tables">
+                <i class="menu-icon mdi mdi-table"></i>
+                <span class="menu-title">Tables</span>
+                <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="tables">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href="../pages/tables/basic-table.html">Basic table</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="collapse" href="#icons" aria-expanded="false" aria-controls="icons">
+                <i class="menu-icon mdi mdi-layers-outline"></i>
+                <span class="menu-title">Icons</span>
+                <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="icons">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href="../pages/icons/mdi.html">Mdi icons</a></li>
+                </ul>
+            </div>
+        </li>
+        <li class="nav-item nav-category">pages</li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
+                <i class="menu-icon mdi mdi-account-circle-outline"></i>
+                <span class="menu-title">User Pages</span>
+                <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="auth">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href="../pages/samples/login.html"> Login </a></li>
+                </ul>
+            </div>
+        </li>
+        <li class="nav-item nav-category">help</li>
+        <li class="nav-item">
+            <a class="nav-link" href="http://bootstrapdash.com/demo/star-admin2-free/docs/documentation.html">
+                <i class="menu-icon mdi mdi-file-document"></i>
+                <span class="menu-title">Documentation</span>
+            </a>
+        </li> --}}
+    </ul>
+</nav>

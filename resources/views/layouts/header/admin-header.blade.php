@@ -1,17 +1,16 @@
 <style>
     .currency-container {
         display: flex;
-        gap: 12px;
+        gap: 5px;
         align-items: center;
     }
 
     .currency-card {
-        background-color: #f9f9f9;
+        background-color: #ffffff;
         color: #333333;
         border-radius: 10px;
-        padding: 12px 16px;
-        width: 180px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        padding: 6px 8px;
+        width: 143px;
         transition: transform 0.2s ease;
         display: flex;
         flex-direction: column;
@@ -24,316 +23,187 @@
     .price-row {
         display: flex;
         align-items: center;
-        gap: 15px;
+        gap: 10px;
     }
 
     .flag {
-        width: 24px;
-        height: 16px;
+        width: 22px;
+        height: 14px;
         border-radius: 2px;
         object-fit: cover;
         box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
     }
 
     .price {
-        font-size: 1.5rem;
+        font-size: 0.9rem;
         font-weight: bold;
         color: #1a2c2a;
     }
 
     .change {
-        font-size: 0.85rem;
-        margin-top: 6px;
-        color: #4a5568;
+        font-size: 0.5rem;
+        /* margin-top: 10px; */
+        color: #554a68;
     }
 </style>
-<div class="header-dashboard">
-    <div class="wrap">
-        <div class="header-left">
-            <a href="index-2.html">
-                <img class="" id="logo_header_mobile" alt="" src="{{ asset('images/logo/logo3.png') }}"
-                    data-light="{{ asset('images/logo/logo.png') }}" data-dark="{{ asset('images/logo/logo3.png') }}"
-                    data-width="154px" data-height="52px" data-retina="{{ asset('images/logo/logo3.png') }}">
+
+<nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
+    <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
+        <div class="me-3">
+            <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-bs-toggle="minimize">
+                <span class="icon-menu"></span>
+            </button>
+        </div>
+        <div>
+            <a class="navbar-brand brand-logo" href="../index.html">
+                <img src="{{asset('../admin/assets/images/logo.png')}}" alt="logo" />
             </a>
-            <div class="button-show-hide">
-                <i class="icon-menu-left"></i>
-            </div>
-            <form class="form-search flex-grow">
-                <fieldset class="name">
-                    <input type="text" placeholder="Search here..." class="show-search" name="name" tabindex="2"
-                        value="" aria-required="true" required="">
-                </fieldset>
-                <div class="button-submit">
-                    <button class="" type="submit"><i class="icon-search"></i></button>
-                </div>
-                <div class="box-content-search" id="box-content-search">
-                    <ul class="mb-24">
-                        <li class="mb-14">
-                            <div class="body-title">Top selling product</div>
-                        </li>
-                        <li class="mb-14">
-                            <div class="divider"></div>
-                        </li>
-                        <li>
-                            <ul>
-                                <li class="product-item gap14 mb-10">
-                                    <div class="image no-bg">
-                                        <img src="{{ asset('images/products/17.png') }}" alt="">
-                                    </div>
-                                    <div class="flex items-center justify-between gap20 flex-grow">
-                                        <div class="name">
-                                            <a href="product-list.html" class="body-text">Dog Food
-                                                Rachael Ray Nutrish®</a>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="mb-10">
-                                    <div class="divider"></div>
-                                </li>
-                                <li class="product-item gap14 mb-10">
-                                    <div class="image no-bg">
-                                        <img src="images/products/18.png" alt="">
-                                    </div>
-                                    <div class="flex items-center justify-between gap20 flex-grow">
-                                        <div class="name">
-                                            <a href="product-list.html" class="body-text">Natural
-                                                Dog Food Healthy Dog Food</a>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="mb-10">
-                                    <div class="divider"></div>
-                                </li>
-                                <li class="product-item gap14">
-                                    <div class="image no-bg">
-                                        <img src="images/products/19.png" alt="">
-                                    </div>
-                                    <div class="flex items-center justify-between gap20 flex-grow">
-                                        <div class="name">
-                                            <a href="product-list.html" class="body-text">Freshpet
-                                                Healthy Dog Food and Cat</a>
-                                        </div>
-                                    </div>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <ul class="">
-                        <li class="mb-14">
-                            <div class="body-title">Order product</div>
-                        </li>
-                        <li class="mb-14">
-                            <div class="divider"></div>
-                        </li>
-                        <li>
-                            <ul>
-                                <li class="product-item gap14 mb-10">
-                                    <div class="image no-bg">
-                                        <img src="images/products/20.png" alt="">
-                                    </div>
-                                    <div class="flex items-center justify-between gap20 flex-grow">
-                                        <div class="name">
-                                            <a href="product-list.html" class="body-text">Sojos
-                                                Crunchy Natural Grain Free...</a>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="mb-10">
-                                    <div class="divider"></div>
-                                </li>
-                                <li class="product-item gap14 mb-10">
-                                    <div class="image no-bg">
-                                        <img src="images/products/21.png" alt="">
-                                    </div>
-                                    <div class="flex items-center justify-between gap20 flex-grow">
-                                        <div class="name">
-                                            <a href="product-list.html" class="body-text">Kristin
-                                                Watson</a>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="mb-10">
-                                    <div class="divider"></div>
-                                </li>
-                                <li class="product-item gap14 mb-10">
-                                    <div class="image no-bg">
-                                        <img src="images/products/22.png" alt="">
-                                    </div>
-                                    <div class="flex items-center justify-between gap20 flex-grow">
-                                        <div class="name">
-                                            <a href="product-list.html" class="body-text">Mega
-                                                Pumpkin Bone</a>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="mb-10">
-                                    <div class="divider"></div>
-                                </li>
-                                <li class="product-item gap14">
-                                    <div class="image no-bg">
-                                        <img src="images/products/23.png" alt="">
-                                    </div>
-                                    <div class="flex items-center justify-between gap20 flex-grow">
-                                        <div class="name">
-                                            <a href="product-list.html" class="body-text">Mega
-                                                Pumpkin Bone</a>
-                                        </div>
-                                    </div>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-            </form>
-            <div class="popup-wrap user type-header">
-                <div class="currency-container">
+            <a class="navbar-brand brand-logo-mini" href="../index.html">
+                <img src="{{asset('../admin../assets/images/logo-mini.svg')}}" alt="logo" />
+            </a>
+        </div>
+    </div>
+    <div class="navbar-menu-wrapper d-flex align-items-top">
+        
+        <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+                <form class="search-form" action="#">
+                    <i class="icon-search"></i>
+                    <input type="search" class="form-control" placeholder="Search Here" title="Search here">
+                </form>
+            </li>
+            <li class="nav-item">
+                <div class="currency-container ">
                     <div class="currency-card" title="Доллар США">
                         <div class="price-row">
-                            <img src="{{ asset('images/usd.png') }}" alt="UZ Flag" class="flag">
+                            <img src="https://nbu.uz/assets/flags/usd.png" alt="UZ Flag" class="flag">
                             <div class="price" id="usd-uzs">Loading...</div>
+                            <div class="change" id="uzs-change"></div>
                         </div>
-                        <div class="change" id="uzs-change"></div>
                     </div>
                     <div class="currency-card" title="Российский рубль">
                         <div class="price-row">
-                            <img src="{{ asset('images/rub.png') }}" alt="RU Flag" class="flag">
+                            <img src="https://nbu.uz/assets/flags/rub.png" alt="RU Flag" class="flag">
                             <div class="price" id="rub-uzs">Loading...</div>
+                            <div class="change" id="rub-uzs-change"></div>
                         </div>
-                        <div class="change" id="rub-uzs-change"></div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="header-grid">
-            <div class="popup-wrap message type-header">
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton2"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        <span class="header-item">
-                            <span class="text-tiny">1</span>
-                            <i class="icon-bell"></i>
-                        </span>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end has-content" aria-labelledby="dropdownMenuButton2">
-                        <li>
-                            <h6>Notifications</h6>
-                        </li>
-                        <li>
-                            <div class="message-item item-1">
-                                <div class="image">
-                                    <i class="icon-noti-1"></i>
-                                </div>
-                                <div>
-                                    <div class="body-title-2">Discount available</div>
-                                    <div class="text-tiny">Morbi sapien massa, ultricies at rhoncus
-                                        at, ullamcorper nec diam</div>
-                                </div>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="message-item item-2">
-                                <div class="image">
-                                    <i class="icon-noti-2"></i>
-                                </div>
-                                <div>
-                                    <div class="body-title-2">Account has been verified</div>
-                                    <div class="text-tiny">Mauris libero ex, iaculis vitae rhoncus
-                                        et</div>
-                                </div>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="message-item item-3">
-                                <div class="image">
-                                    <i class="icon-noti-3"></i>
-                                </div>
-                                <div>
-                                    <div class="body-title-2">Order shipped successfully</div>
-                                    <div class="text-tiny">Integer aliquam eros nec sollicitudin
-                                        sollicitudin</div>
-                                </div>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="message-item item-4">
-                                <div class="image">
-                                    <i class="icon-noti-4"></i>
-                                </div>
-                                <div>
-                                    <div class="body-title-2">Order pending: <span>ID 305830</span>
-                                    </div>
-                                    <div class="text-tiny">Ultricies at rhoncus at ullamcorper
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        <li><a href="#" class="tf-button w-full">View all</a></li>
-                    </ul>
+            </li>
+            {{-- <li class="nav-item dropdown d-none d-lg-block">
+                <a class="nav-link dropdown-bordered dropdown-toggle dropdown-toggle-split" id="messageDropdown"
+                    href="#" data-bs-toggle="dropdown" aria-expanded="false"> Select Category </a>
+                <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0"
+                    aria-labelledby="messageDropdown">
+                    <a class="dropdown-item py-3">
+                        <p class="mb-0 font-weight-medium float-left">Select category</p>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item preview-item">
+                        <div class="preview-item-content flex-grow py-2">
+                            <p class="preview-subject ellipsis font-weight-medium text-dark">Bootstrap Bundle </p>
+                            <p class="fw-light small-text mb-0">This is a Bundle featuring 16 unique dashboards</p>
+                        </div>
+                    </a>
+                    <a class="dropdown-item preview-item">
+                        <div class="preview-item-content flex-grow py-2">
+                            <p class="preview-subject ellipsis font-weight-medium text-dark">Angular Bundle</p>
+                            <p class="fw-light small-text mb-0">Everything you’ll ever need for your Angular projects
+                            </p>
+                        </div>
+                    </a>
+                    <a class="dropdown-item preview-item">
+                        <div class="preview-item-content flex-grow py-2">
+                            <p class="preview-subject ellipsis font-weight-medium text-dark">VUE Bundle</p>
+                            <p class="fw-light small-text mb-0">Bundle of 6 Premium Vue Admin Dashboard</p>
+                        </div>
+                    </a>
+                    <a class="dropdown-item preview-item">
+                        <div class="preview-item-content flex-grow py-2">
+                            <p class="preview-subject ellipsis font-weight-medium text-dark">React Bundle</p>
+                            <p class="fw-light small-text mb-0">Bundle of 8 Premium React Admin Dashboard</p>
+                        </div>
+                    </a>
                 </div>
-            </div>
-            <div class="popup-wrap user type-header">
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton3"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        <span class="header-user wg-user">
-                            <span class="image">
-                                <img src="{{ asset('images/avatar/user.png') }}" alt="">
-                            </span>
-                            <span class="flex flex-column">
-                                <span class="body-title mb-2">MasterOk</span>
-                                <span class="text-tiny">Admin</span>
-                            </span>
-                        </span>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end has-content" aria-labelledby="dropdownMenuButton3">
-                        <li>
-                            <a href="{{route('profile')}}" class="user-item">
-                                <div class="icon">
-                                    <i class="icon-user"></i>
-                                </div>
-                                <div class="body-title-2">Аккаунт</div>
-                            </a>
-                        </li>
-                        {{-- <li>
-                            <a href="#" class="user-item">
-                                <div class="icon">
-                                    <i class="icon-mail"></i>
-                                </div>
-                                <div class="body-title-2">Inbox</div>
-                                <div class="number">27</div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="user-item">
-                                <div class="icon">
-                                    <i class="icon-file-text"></i>
-                                </div>
-                                <div class="body-title-2">Taskboard</div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="user-item">
-                                <div class="icon">
-                                    <i class="icon-headphones"></i>
-                                </div>
-                                <div class="body-title-2">Support</div>
-                            </a>
-                        </li>
-                        <li> --}}
-                            <a href="{{route('logout')}}" class="user-item">
-                                <div class="icon">
-                                    <i class="icon-log-out"></i>
-                                </div>
-                                <div class="body-title-2">Выйти</div>
-                            </a>
-                        </li>
-                    </ul>
+            </li>
+            <li class="nav-item d-none d-lg-block">
+                <div id="datepicker-popup" class="input-group date datepicker navbar-date-picker">
+                    <span class="input-group-addon input-group-prepend border-right">
+                        <span class="icon-calendar input-group-text calendar-icon"></span>
+                    </span>
+                    <input type="text" class="form-control">
                 </div>
-            </div>
-
-        </div>
+            </li> --}}
+           
+            <li class="nav-item dropdown">
+                <a class="nav-link count-indicator" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
+                    <i class="icon-bell"></i>
+                    <span class="count"></span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0"
+                    aria-labelledby="notificationDropdown">
+                    <a class="dropdown-item py-3 border-bottom">
+                        <p class="mb-0 font-weight-medium float-left">You have 4 new notifications </p>
+                        <span class="badge badge-pill badge-primary float-right">View all</span>
+                    </a>
+                    <a class="dropdown-item preview-item py-3">
+                        <div class="preview-thumbnail">
+                            <i class="mdi mdi-alert m-auto text-primary"></i>
+                        </div>
+                        <div class="preview-item-content">
+                            <h6 class="preview-subject fw-normal text-dark mb-1">Application Error</h6>
+                            <p class="fw-light small-text mb-0"> Just now </p>
+                        </div>
+                    </a>
+                    <a class="dropdown-item preview-item py-3">
+                        <div class="preview-thumbnail">
+                            <i class="mdi mdi-settings m-auto text-primary"></i>
+                        </div>
+                        <div class="preview-item-content">
+                            <h6 class="preview-subject fw-normal text-dark mb-1">Settings</h6>
+                            <p class="fw-light small-text mb-0"> Private message </p>
+                        </div>
+                    </a>
+                    <a class="dropdown-item preview-item py-3">
+                        <div class="preview-thumbnail">
+                            <i class="mdi mdi-airballoon m-auto text-primary"></i>
+                        </div>
+                        <div class="preview-item-content">
+                            <h6 class="preview-subject fw-normal text-dark mb-1">New user registration</h6>
+                            <p class="fw-light small-text mb-0"> 2 days ago </p>
+                        </div>
+                    </a>
+                </div>
+            </li>
+            <li class="nav-item dropdown d-none d-lg-block user-dropdown">
+                <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    <img class="img-xs rounded-circle"
+                        src="https://yt3.googleusercontent.com/ytc/AIdro_npbXKiyqfpTdsCz8ODcBzVrkK0keEAI6D54mnYAIvZzw=s900-c-k-c0x00ffffff-no-rj"
+                        alt="Profile image">
+                </a>
+                <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
+                    <div class="dropdown-header text-center">
+                        <strong class="mb-1 mt-3 font-weight-semibold">{{ Auth::user()->name }}</strong>
+                    </div>
+                    <a class="dropdown-item" href="{{ route('profile') }}"><i
+                            class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My
+                        Profile <span class="badge badge-pill badge-danger">1</span></a>
+                    <a class="dropdown-item"><i
+                            class="dropdown-item-icon mdi mdi-help-circle-outline text-primary me-2"></i>
+                        FAQ</a>
+                    <a class="dropdown-item" href="{{ route('logout') }}"><i
+                            class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign
+                        Out</a>
+                </div>
+            </li>
+        </ul>
+        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
+            data-bs-toggle="offcanvas">
+            <span class="mdi mdi-menu"></span>
+        </button>
     </div>
-</div>
+</nav>
 <script>
     let previousPrices = {
         UZS: null,
