@@ -42,6 +42,7 @@
                                 <tr>
                                     <th>#</th>
                                     <th>Имя</th>
+                                    <th>photo</th>
                                     <th>Телефон</th>
                                     <th>Товары</th>
                                     <th>Действия</th>
@@ -53,15 +54,16 @@
                                         <td>{{ $loop->iteration }}</td>
                                         <td class="pname">
                                             <a href="#" target="blank">
-                                            <div class="image">
-                                                <img src="{{ Storage::url($b->photo) }}" alt="{{ $b->name }}"
-                                                    width="150">
-                                            </div>
+                                           
                                             <div class="name" title="{{ $b->description }}">
                                                 <a class="body-title-2">{{ $b->name }}</a>
                                             </div>
                                         </a>
                                         </td>
+                                        <td> <div class="image">
+                                                <img src="{{ Storage::url($b->photo) }}" alt="{{ $b->name }}"
+                                                    width="150">
+                                            </div></td>
                                         <td>{{ $b->phone }}</td>
                                         <td>
                                             <a href="#">

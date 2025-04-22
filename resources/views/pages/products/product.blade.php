@@ -12,6 +12,7 @@
                             <tr>
                                 <th>#</th>
                                 <th>Название</th>
+                                <th>photo</th>
                                 <th>Цена (UZS)</th>
                                 <th>Цена (USD)</th>
                                 <th>Бренд</th>
@@ -25,15 +26,12 @@
                             @foreach ($products as $p)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td class="pname">
-                                        <div class="image">
-                                            <img src="{{ Storage::url($p->photo) }}" alt="" class="image">
-                                        </div>
-                                        <div class="name">
-                                            <a href="#" class="body-title-2">{{ $p->name }}</a>
+                                    <td>
+                                           {{ $p->name }}
                                             <div class="text-tiny mt-3">{{ $p->get_category->name }}</div>
                                         </div>
                                     </td>
+                                    <td><img src="{{ Storage::url($p->photo) }}" alt="" class="image"></td>
                                     <td>{{ number_format($p->price_uzs) }} UZS</td>
                                     <td>${{ number_format($p->price_usd, 2) }}</td>
                                     <td>{{ $p->get_brand->name }}</td>
