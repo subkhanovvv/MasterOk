@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\Controller;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -54,6 +55,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('profile', [AuthController::class, 'profile'])->name('profile');
     Route::get('edit-profile.{id}', [AuthController::class, 'edit_profile'])->name('edit-profile');
     Route::post('update-profile', [AuthController::class, 'update_profile'])->name('update-profile');
+
+    Route::get('barcode',[Controller::class, 'barcode'])->name('barcode');
+    Route::get('report',[Controller::class, 'report'])->name('report');
+    Route::get('history',[Controller::class, 'history'])->name('history');
+    Route::get('warehouse',[Controller::class, 'warehouse'])->name('warehouse');
 });
 
 Route::middleware(['guest'])->group(function () {

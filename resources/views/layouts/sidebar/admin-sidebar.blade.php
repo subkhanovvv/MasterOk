@@ -3,51 +3,58 @@
         <li class="nav-item">
             <a class="nav-link" href="{{ route('index') }}">
                 <i class="mdi mdi-grid-large menu-icon"></i>
-                <span class="menu-title">Dashboard</span>
+                <span class="menu-title">Панель</span>
             </a>
         </li>
-        <li class="nav-item nav-category">Product</li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ route('category') }}">
-                <i class="menu-icon mdi mdi-floor-plan"></i>
-                <span class="menu-title">Categories</span>
-                <i class="menu-arrow"></i>
-            </a>
-        </li>
+        <li class="nav-item nav-category">Товар</li>
         <li class="nav-item">
             <a class="nav-link" href="{{ route('product') }}">
                 <i class="menu-icon mdi mdi-arrange-send-backward"></i>
-                <span class="menu-title">Products</span>
+                <span class="menu-title">Товары</span>
                 <i class="menu-arrow"></i>
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="{{ route('category') }}">
+                <i class="menu-icon mdi mdi-shape-outline"></i>
+                <span class="menu-title">Категории</span>
+                <i class="menu-arrow"></i>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('barcode') }}">
                 <i class="menu-icon mdi mdi-barcode"></i>
-                <span class="menu-title">Barcodes</span>
+                <span class="menu-title">Штрихкоды</span>
                 <i class="menu-arrow"></i>
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="{{ route('warehouse') }}">
                 <i class="menu-icon mdi mdi-warehouse"></i>
-                <span class="menu-title">SKlad</span>
+                <span class="menu-title">Склад</span>
                 <i class="menu-arrow"></i>
             </a>
         </li>
-        <li class="nav-item nav-category">Brand</li>
+        <li class="nav-item nav-category">Бренд</li>
         <li class="nav-item">
             <a class="nav-link" href="{{ route('brand') }}">
                 <i class="menu-icon mdi mdi-tag"></i>
-                <span class="menu-title">Brands</span>
+                <span class="menu-title">Бренды</span>
                 <i class="menu-arrow"></i>
             </a>
         </li>
-        <li class="nav-item nav-category">History</li>
+        <li class="nav-item nav-category">Прочее</li>
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('brand') }}">
+            <a class="nav-link" href="{{ route('history') }}">
                 <i class="menu-icon mdi mdi-history"></i>
-                <span class="menu-title">Brands</span>
+                <span class="menu-title">История</span>
+                <i class="menu-arrow"></i>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('report') }}">
+                <i class="menu-icon mdi mdi-file-chart"></i>
+                <span class="menu-title">Отчёт</span>
                 <i class="menu-arrow"></i>
             </a>
         </li>
