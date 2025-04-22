@@ -1,43 +1,13 @@
 @extends('layouts.admin')
 
 @section('content')
-    <div class="main-content-inner">
-        <div class="main-content-wrap">
-            <div class="flex items-center flex-wrap justify-between gap20 mb-27">
-                <h3>Товары</h3>
-                <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
-                    <li>
-                        <a href="{{ route('index') }}">
-                            <div class="text-tiny">Панель</div>
-                        </a>
-                    </li>
-                    <li>
-                        <i class="icon-chevron-right"></i>
-                    </li>
-                    <li>
-                        <div class="text-tiny">Товары</div>
-                    </li>
-                </ul>
-            </div>
+    <div class="row">
 
-            <div class="wg-box">
-                <div class="flex items-center justify-between gap10 flex-wrap">
-                    <div class="wg-filter flex-grow">
-                        <form class="form-search">
-                            <fieldset class="name">
-                                <input type="text" placeholder="Поиск..." class="" name="name" tabindex="2"
-                                    value="" aria-required="true" required="">
-                            </fieldset>
-                            <div class="button-submit">
-                                <button class="" type="submit"><i class="icon-search"></i></button>
-                            </div>
-                        </form>
-                    </div>
-                    <a class="tf-button style-1 w208" href="{{ route('new-product') }}"><i class="icon-plus"></i>Новый
-                        товар</a>
-                </div>
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Товары</h4>
                 <div class="table-responsive">
-                    <table class="table table-striped table-bordered">
+                    <table class="table table-hover">
                         <thead>
                             <tr>
                                 <th>#</th>
@@ -69,41 +39,27 @@
                                     <td>{{ $p->get_brand->name }}</td>
                                     <td>
                                         @php
-                                            $bg = $p->status === 'normal'
-                                                ? '#d1fae5'   // green
-                                                : ($p->status === 'low'
-                                                    ? '#fef3c7' // yellow
-                                                    : '#fee2e2' // red
-                                                );
-                                    
-                                            $color = $p->status === 'normal'
-                                                ? '#065f46'
-                                                : ($p->status === 'low'
-                                                    ? '#92400e'
-                                                    : '#991b1b'
-                                                );
-                                    
+                                            $color =
+                                                $p->status === 'normal'
+                                                    ? 'success'
+                                                    : ($p->status === 'low'
+                                                        ? 'danger'
+                                                        : 'warning');
+
                                             // Russian translation
-                                            $statusRu = match($p->status) {
+                                            $statusRu = match ($p->status) {
                                                 'normal' => 'В наличии',
                                                 'low' => 'Мало',
                                                 'out_of_stock' => 'Нет в наличии',
-                                                default => $p->status
+                                                default => $p->status,
                                             };
                                         @endphp
-                                    
-                                        <span style="
-                                            display: inline-block;
-                                            padding: 0.25rem 0.5rem;
-                                            border-radius: 0.375rem;
-                                            font-weight: 600;
-                                            background-color: {{ $bg }};
-                                            color: {{ $color }};
-                                        ">
+
+                                        <span class="badge badge-{{ $color }}">
                                             {{ $statusRu }}
                                         </span>
                                     </td>
-                                    <td>{{$p->sale_price}}</td>
+                                    <td>{{ $p->sale_price }}</td>
                                     <td>{{ $p->qty }} {{ $p->unit }}</td>
 
                                     <td>
@@ -115,12 +71,12 @@
                                             </a>
                                             <a href="#">
                                                 <div class="item edit">
-                                                    <i class="icon-edit-3"></i>
+                                                    <i class="mdi mdi-pencil"></i>
                                                 </div>
                                             </a>
                                             <form action="#" method="POST">
                                                 <div class="item text-danger delete">
-                                                    <i class="icon-trash-2"></i>
+                                                    <i class="mdi mdi-delete"></i>
                                                 </div>
                                             </form>
                                         </div>
@@ -130,13 +86,14 @@
                         </tbody>
                     </table>
                 </div>
-
-                <div class="divider"></div>
-                <div class="flex items-center justify-between flex-wrap gap10 wgp-pagination">
-                    {{ $products->links() }}
-                </div>
             </div>
         </div>
+        <div class="divider"></div>
+        <div class="flex items-center justify-between flex-wrap gap10 wgp-pagination">
+            {{ $products->links() }}
+        </div>
+    </div>
+    </div>
     </div>
 
     <script>

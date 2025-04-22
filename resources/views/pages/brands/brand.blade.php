@@ -37,7 +37,7 @@
                 </div>
                 <div class="wg-table table-all-user">
                     <div class="table-responsive">
-                        <table class="table table-striped table-bordered">
+                        <table class="table">
                             <thead>
                                 <tr>
                                     <th>#</th>
@@ -80,7 +80,7 @@
                                                     @csrf
                                                     @method('DELETE')
                                                     <div class="item text-danger delete">
-                                                        <i class="icon-trash-2"></i>
+                                                        <i class="mdi mdi-delete"></i>
                                                     </div>
                                                 </form>
                                             </div>
@@ -123,4 +123,6 @@
             });
         });
     </script>
+
+
 @endsection
