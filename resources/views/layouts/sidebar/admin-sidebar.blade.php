@@ -32,21 +32,6 @@
                 <i class="menu-arrow"></i>
             </a>
         </li>
-        {{-- <li class="nav-item nav-category">Forms and Datas</li> --}}
-        {{-- <li class="nav-item">
-            <a class="nav-link" data-bs-toggle="collapse" href="#form-elements" aria-expanded="false"
-                aria-controls="form-elements">
-                <i class="menu-icon mdi mdi-alphabetical"></i>
-                <span class="menu-title">Form elements</span>
-                <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="form-elements">
-                <ul class="nav flex-column sub-menu">
-                    <li class="nav-item"><a class="nav-link" href="../pages/forms/basic_elements.html">Basic
-                            Elements</a></li>
-                </ul>
-            </div> --}}
-        {{-- </li> --}}
         <li class="nav-item">
             <a class="nav-link" data-bs-toggle="collapse" href="#charts" aria-expanded="false" aria-controls="charts">
                 <i class="menu-icon mdi mdi-barcode"></i>
