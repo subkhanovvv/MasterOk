@@ -42,7 +42,7 @@
                 </li>
                 <li class="menu-item">
                     <a href="{{route('brand')}}" class="">
-                        <div class="icon"><i class="fa-solid fa-tags"></i></div>
+                        <div class="icon"><i class="fa-solid fa-tags text-2xl"></i></div>
                         <div class="text">Бренд</div>
                     </a>
                 </li>

@@ -21,12 +21,11 @@ use Milon\Barcode\Facades\DNS1D;
 */
 
 Route::get('/', function () {
-   if (Auth::user()) {
-    return view('pages.index');
-   }
-   else{
-    return view('auth.login');
-   }
+    if (Auth::user()) {
+        return view('pages.index');
+    } else {
+        return view('auth.login');
+    }
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -51,11 +50,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('new-product', [ProductController::class, 'new_product'])->name('new-product');
     Route::post('store-product', [ProductController::class, 'store_product'])->name('store-product');
 
-    Route::get('logout' , [AuthController::class, 'logout'])->name('logout');
-
+    Route::get('logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('profile', [AuthController::class, 'profile'])->name('profile');
+    Route::get('edit-profile.{id}', [AuthController::class, 'edit_profile'])->name('edit-profile');
+    Route::post('update-profile', [AuthController::class, 'update_profile'])->name('update-profile');
 });
+
 Route::middleware(['guest'])->group(function () {
-Route::get('login', [AuthController::class, 'login'])->name('login');
-Route::get('register', [AuthController::class, 'register'])->name('register');
-Route::post('ProcessLogin', [AuthController::class, 'ProcessLogin'])->name('ProcessLogin');
+    Route::get('login', [AuthController::class, 'login'])->name('login');
+    Route::get('register', [AuthController::class, 'register'])->name('register');
+    Route::post('ProcessLogin', [AuthController::class, 'ProcessLogin'])->name('ProcessLogin');
 });

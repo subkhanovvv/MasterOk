@@ -287,7 +287,7 @@
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end has-content" aria-labelledby="dropdownMenuButton3">
                         <li>
-                            <a href="#" class="user-item">
+                            <a href="{{route('profile')}}" class="user-item">
                                 <div class="icon">
                                     <i class="icon-user"></i>
                                 </div>
