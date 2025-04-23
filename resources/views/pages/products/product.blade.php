@@ -69,7 +69,8 @@
 
                                     <td>
                                         <div class="list-icon-function d-flex justify-content-center gap-2">
-                                            <a href="">
+                                            <a data-bs-toggle="modal" data-bs-target="#viewProductModal"
+                                                data-product='@json($p)'>
                                                 <i class="mdi mdi-eye icon-sm text-warning"></i>
                                             </a>
                                             <a href="">
@@ -98,28 +99,7 @@
     @include('pages.products.modals.view-product')
     @include('pages.products.modals.delete-product')
 
-    <div class="modal fade" id="viewProductModal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Новый товар</h4>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
 
-                <div class="modal-body">
-                    <div>{{$products}}</div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary btn-lg text-white">Сохранить</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
 
     <script>
@@ -132,6 +112,14 @@
                 }
             });
         });
+
+        function viewProductModal(button) {
+            const product = JSON.parse(button.getAttribute('data-product'));
+            document.getElementById('modalProductId').textContent = product.id;
+            document.getElementById('modalProductName').textContent = product.name;
+            document.getElementById('modalProductPrice').textContent = product.price;
+        }
+
 
         let usdToUzsRate = null;
 

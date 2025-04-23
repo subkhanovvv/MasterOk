@@ -2,11 +2,15 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Новый товар</h4>
+                <h4 class="modal-title">View product</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
             <div class="modal-body">
+
+                <p>ID: <span id="modalProductId"></span></p>
+                <p>Name: <span id="modalProductName"></span></p>
+                <p>Price: $<span id="modalProductPrice"></span></p>
             </div>
 
             <div class="modal-footer">
