@@ -70,7 +70,8 @@
                                     <td>
                                         <div class="list-icon-function d-flex justify-content-center gap-2">
                                             <a data-bs-toggle="modal" data-bs-target="#viewProductModal"
-                                                data-product='@json($p)'>
+                                                data-product="{{ $p->toJson() }}" onclick="viewProductModal(this)"
+                                                href="javascript:void(0)">
                                                 <i class="mdi mdi-eye icon-sm text-warning"></i>
                                             </a>
                                             <a href="">
@@ -113,12 +114,25 @@
             });
         });
 
+        $(document).ready(function() {
+            $('#myFile').change(function() {
+                var fileName = $(this).val().split('\\').pop();
+                $(this).next('.custom-file-label').html(fileName);
+            });
+        });
+
         function viewProductModal(button) {
             const product = JSON.parse(button.getAttribute('data-product'));
-            document.getElementById('modalProductId').textContent = product.id;
-            document.getElementById('modalProductName').textContent = product.name;
-            document.getElementById('modalProductPrice').textContent = product.price;
+            const modal = document.getElementById('viewProductModal');
+
+            modal.querySelector('#modalProductId').textContent = product.id;
+            modal.querySelector('#modalProductName').textContent = product.name;
+            modal.querySelector('#modalProductPrice').textContent = product.price_usd.toFixed(2);
+            modal.querySelector('#modalProductPriceUz').textContent = product.price_uzs.toFixed(2);
+            modal.querySelector('#modalProductBrand').textContent = product.get_brand.name;
+            modal.querySelector('#modalProductStatus').textContent = product.status;
         }
+
 
 
         let usdToUzsRate = null;

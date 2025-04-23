@@ -1,4 +1,4 @@
-<div class="modal fade" id="viewProductModal">
+{{-- <div class="modal fade" id="viewProductModal">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -7,7 +7,6 @@
             </div>
 
             <div class="modal-body">
-
                 <p>ID: <span id="modalProductId"></span></p>
                 <p>Name: <span id="modalProductName"></span></p>
                 <p>Price: $<span id="modalProductPrice"></span></p>
@@ -18,4 +17,4 @@
             </div>
         </div>
     </div>
-</div>
+</div> --}}
