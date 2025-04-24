@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+{{-- @extends('layouts.admin')
 
 @section('content')
     <div class="main-content-inner">
@@ -121,4 +121,4 @@
             return "+998" + digits;
         }
     </script>
-@endsection
+@endsection --}}

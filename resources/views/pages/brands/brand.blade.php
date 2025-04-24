@@ -1,130 +1,136 @@
 @extends('layouts.admin')
 
 @section('content')
-    <div class="main-content-inner">
-        <div class="main-content-wrap">
-            <div class="flex items-center flex-wrap justify-between gap20 mb-27">
-                <h3>Бренды</h3>
-                <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
-                    <li>
-                        <a href="{{ route('index') }}">
-                            <div class="text-tiny">Панель</div>
-                        </a>
-                    </li>
-                    <li>
-                        <i class="icon-chevron-right"></i>
-                    </li>
-                    <li>
-                        <div class="text-tiny">Бренды</div>
-                    </li>
-                </ul>
-            </div>
-            <div class="wg-box">
-                <div class="flex items-center justify-between gap10 flex-wrap">
-                    <div class="wg-filter flex-grow">
-                        <form class="form-search">
-                            <fieldset class="name">
-                                <input type="text" placeholder="Поиск..." class="" name="name" tabindex="2"
-                                    value="" aria-required="true" required="">
-                            </fieldset>
-                            <div class="button-submit">
-                                <button class="" type="submit"><i class="icon-search"></i></button>
-                            </div>
-                        </form>
+        <div class="card">
+            <div class="card-body">
+                <div class="d-sm-flex justify-content-between align-items-start">
+                    <div>
+                        <h4 class="card-title card-title-dash">Products</h4>
                     </div>
-                    <button class="btn btn-primary btn-lg text-white mb-0 me-0" data-bs-toggle="modal"
+                    <div>
+                        <button class="btn btn-primary btn-lg text-white mb-0 me-0" data-bs-toggle="modal"
                             data-bs-target="#newBrandModal" type="button"><i class="mdi mdi-plus"></i>Add new</button>
+                    </div>
                 </div>
-                <div class="wg-table table-all-user">
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Название</th>
+                                <th>photo</th>
+                                <th>phone</th>
+                                <th>desc</th>
+                                <th>Действие</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($brands as $b)
                                 <tr>
-                                    <th>#</th>
-                                    <th>Имя</th>
-                                    <th>photo</th>
-                                    <th>Телефон</th>
-                                    <th>Товары</th>
-                                    <th>Действия</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($brands as $b)
-                                    <tr>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td class="pname">
-                                            <a href="#" target="blank">
-                                           
-                                            <div class="name" title="{{ $b->description }}">
-                                                <a class="body-title-2">{{ $b->name }}</a>
-                                            </div>
-                                        </a>
-                                        </td>
-                                        <td> <div class="image">
-                                                <img src="{{ Storage::url($b->photo) }}" alt="{{ $b->name }}"
-                                                    width="150">
-                                            </div></td>
-                                        <td>{{ $b->phone }}</td>
-                                        <td>
-                                            <a href="#">
-                                                {{ $b->products_count }}
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $b->name }}</td>
+                                    <td>
+                                        <img src="{{ $b->photo ? Storage::url($b->photo) : asset('admin/assets/images/default_product.png') }}"
+                                            alt="{{ $b->name }}" class="image">
+                                    </td>
+
+                                    <td>{{ $b->phone }}</td>
+                                    <td>{{ $b->description }}</td>
+
+                                    <td>
+                                        <div class="list-icon-function d-flex justify-content-center gap-2">
+                                            <a data-bs-toggle="modal" data-bs-target="#viewProductModal"
+                                                data-product="{{ $b->toJson() }}" onclick="viewProductModal(this)"
+                                                href="javascript:void(0)">
+                                                <i class="mdi mdi-eye icon-sm text-warning"></i>
                                             </a>
-                                        </td>
-                                        <td>
-                                            <div class="list-icon-function">
-                                                <a href="{{ route('edit-brand', ['id' => $b->id]) }}">
-                                                    <div class="item edit">
-                                                        <i class="icon-edit-3"></i>
-                                                    </div>
-                                                </a>
-                                                <form action="{{ route('destroy-brand', $b->id) }}" method="POST"
-                                                    class="delete-form">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <div class="item text-danger delete">
-                                                        <i class="mdi mdi-delete"></i>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                            <a href="">
+                                                <i class="mdi mdi-pencil icon-sm"></i>
+                                            </a>
+                                            <a href="javascript:void(0);" class="deleteProduct" data-bs-toggle="modal"
+                                                data-bs-target="#deleteProductModal" data-id="{{ $b->id }}"
+                                                data-token="{{ csrf_token() }}">
+                                                <i class="mdi mdi-delete icon-sm text-danger"></i>
+                                            </a>
+
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table><br>
+                </div>
+                @if ($brands->count())
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <p class="text-muted mb-0">
+                            Показаны с {{ $brands->firstItem() }} по {{ $brands->lastItem() }} из
+                            {{ $brands->total() }} результатов
+                        </p>
+
+                        <div class="pagination mb-0">
+                            {{ $brands->links('pagination::bootstrap-4') }}
+                        </div>
                     </div>
-                    <div class="divider"></div>
-                    <div class="flex items-center justify-between flex-wrap gap10 wgp-pagination">
-                        {{ $brands->links() }}
-                    </div>
+                @endif
+            </div>
+        </div>
+    {{-- </div> --}}
+    <br>
+
+    <div class="modal fade" id="deleteProductModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Подтверждение удаления</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Вы уверены, что хотите удалить этот товар?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-danger text-white" id="confirmDeleteBtn">Удалить</button>
                 </div>
             </div>
         </div>
     </div>
+    @include('pages.brands.modals.new-brand')
+    @include('pages.brands.modals.edit-brand')
+    {{-- @include('pages.brands.modals.view-product') --}}
+    {{-- @include('pages.products.modals.delete-product') --}}
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            document.querySelectorAll(".delete").forEach(function(button) {
-                button.addEventListener("click", function(e) {
-                    e.preventDefault();
-                    let form = this.closest("form");
+        // When the delete button is clicked
+        $(".deleteProduct").click(function() {
+            // Capture the product ID and CSRF token from the clicked link
+            var productId = $(this).data("id");
+            var token = $(this).data("token");
 
-                    Swal.fire({
-                        title: "Вы уверены?",
-                        text: "Это действие невозможно отменить!",
-                        icon: "warning",
-                        showCancelButton: true,
-                        confirmButtonColor: "#dc3545",
-                        cancelButtonColor: "#6c757d",
-                        confirmButtonText: "Да, удалить!"
+            // Set up the confirmation button click to actually delete the product
+            $("#confirmDeleteBtn").off("click").on("click", function() {
+                // Send the AJAX DELETE request to delete the product
+                $.ajax({
+                    url: "/destroy-product/" + productId, // Use the correct endpoint
+                    type: 'DELETE',
+                    dataType: "JSON",
+                    data: {
+                        "_token": token, // Send the CSRF token
+                    },
+                    success: function(response) {
+                        // Close the modal
+                        $("#deleteProductModal").modal('hide');
 
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            form.submit();
-                        }
-                    });
+                        // Optionally, show a success message
+                        alert(response.message || "Товар успешно удалён!");
+
+                        // Remove the deleted row from the table (assuming you have a table with the corresponding ID)
+                        $("button[data-id='" + productId + "']").closest("tr").remove();
+                    },
+                    error: function(xhr, status, error) {
+                        alert("Ошибка при удалении товара");
+                    }
                 });
             });
         });
     </script>
-@include('pages.brands.modals.new-brand')
-
 @endsection

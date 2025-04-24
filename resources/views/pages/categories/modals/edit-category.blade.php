@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+{{-- @extends('layouts.admin')
 
 @section('content')
     <div class="main-content-inner">
@@ -85,4 +85,4 @@
             });
         });
     </script>
-@endsection
+@endsection --}}
