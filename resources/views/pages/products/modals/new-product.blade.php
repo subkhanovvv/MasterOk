@@ -1,7 +1,7 @@
 
 <div class="modal fade" id="newProductModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg">
             <div class="modal-header">
                 <h4 class="modal-title">Новый товар</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -10,11 +10,11 @@
                 <form class="forms-sample" method="POST" action="{{ route('store-product') }}"
                     enctype="multipart/form-data">
                     @csrf
-                    <div class="d-flex justify-content-between gap-3">
+                    <div class="d-flex justify-content-between gap-5">
                         <div class="w-50">
                             <div class="form-group">
                                 <label for="productName">Название товара</label>
-                                <input type="text" class="form-control" placeholder="Название товара" name="name"
+                                <input type="text" class="form-control form-control-sm" placeholder="Название товара" name="name"
                                     required>
                             </div>
                             <div class="form-group">
@@ -96,11 +96,11 @@
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary btn-lg text-white">Сохранить</button>
-                    </div>
-                    </form>
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary btn-lg text-white">Сохранить</button>
+                </div>
+                </form>
         </div>
     </div>
 </div>
