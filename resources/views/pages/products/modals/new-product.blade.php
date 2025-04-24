@@ -1,3 +1,4 @@
+
 <div class="modal fade" id="newProductModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -134,34 +135,3 @@
     });
 </script>
 
-
-@if ($errors->any())
-<div class="alert alert-danger">
-    <ul>
-        @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-        @endforeach
-    </ul>
-</div>
-@endif
-@if (Session::has('success'))
-<div class="alert aler  t-success">
-    {{ Session::get('success') }}
-</div>
-@endif
-
-
-@if ($errors->any())
-<div class="alert alert-danger">
-    <ul>
-        @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-        @endforeach
-    </ul>
-</div>
-@endif
-@if (Session::has('success'))
-<div class="alert alert-success">
-    {{ Session::get('success') }}
-</div>
-@endif

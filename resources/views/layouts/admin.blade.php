@@ -56,10 +56,26 @@
             @include('layouts.sidebar.admin-sidebar')
 
             <div class="main-panel">
-
                 <div class="content-wrapper">
-
                     <div class="row">
+
+                        @if ($errors->any())
+                            <div class="alert alert-danger alert-dismissible fade show">
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                            aria-label="Закрыть"></button>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+                        @if (Session::has('success'))
+                            <div class="alert alert-success alert-dismissible fade show">
+                                {{ Session::get('success') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+                            </div>
+                        @endif
 
                         <div class="col-sm-12">
 

@@ -23,6 +23,7 @@ return new class extends Migration
             $table->decimal('sale_price', 15, 2)->nullable();
             $table->enum('status', ['normal', 'low', 'out_of_stock'])->default('out_of_stock');
             $table->foreignId('category_id')->constrained()->onDelete('restrict');
+            $table->decimal('tax')->default(0);
             $table->foreignId('brand_id')->constrained()->onDelete('restrict');
             $table->timestamps();
             $table->index('status');

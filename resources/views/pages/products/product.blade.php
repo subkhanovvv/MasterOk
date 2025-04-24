@@ -25,7 +25,7 @@
                                 <th>Цена (USD)</th>
                                 <th>Бренд</th>
                                 <th>Статус</th>
-                                <th>Цена распродажи</th>
+                                <th>Цена</th>
                                 <th>Склад</th>
                                 <th>Действие</th>
                             </tr>
@@ -34,10 +34,7 @@
                             @foreach ($products as $p)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td>
-                                        {{ $p->name }}
-                                        {{-- {{ $p->get_category->name }} --}}
-                                    </td>
+                                    <td>{{ $p->name }}</td>
                                     <td><img src="{{ Storage::url($p->photo) }}" alt="" class="image"></td>
                                     <td>{{ number_format($p->price_uzs) }} uzs</td>
                                     <td>${{ number_format($p->price_usd, 2) }}</td>
@@ -48,8 +45,8 @@
                                                 $p->status === 'normal'
                                                     ? 'success'
                                                     : ($p->status === 'low'
-                                                        ? 'danger'
-                                                        : 'warning');
+                                                        ? 'warning'
+                                                        : 'danger');
 
                                             // Russian translation
                                             $statusRu = match ($p->status) {
@@ -85,19 +82,26 @@
                                 </tr>
                             @endforeach
                         </tbody>
-                    </table>
+                    </table><br>
                 </div>
+                @if ($products->count())
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <p class="text-muted mb-0">
+                            Показаны с {{ $products->firstItem() }} по {{ $products->lastItem() }} из
+                            {{ $products->total() }} результатов
+                        </p>
+
+                        <div class="pagination mb-0">
+                            {{ $products->links('pagination::bootstrap-4') }}
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
-    <div class="divider"></div>
-    <div class="flex items-center justify-between flex-wrap gap10 wgp-pagination">
-        {{ $products->links() }}
-    </div>
-
+    <br>
     @include('pages.products.modals.new-product')
     @include('pages.products.modals.edit-product')
     @include('pages.products.modals.view-product')
     @include('pages.products.modals.delete-product')
-
 @endsection
