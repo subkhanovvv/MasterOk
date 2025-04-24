@@ -32,8 +32,8 @@
                             </div>
                         </form>
                     </div>
-                    <a class="tf-button style-1 w208" href="{{ route('new-brand') }}"><i class="icon-plus"></i>Новый
-                        Бренд</a>
+                    <button class="btn btn-primary btn-lg text-white mb-0 me-0" data-bs-toggle="modal"
+                            data-bs-target="#newBrandModal" type="button"><i class="mdi mdi-plus"></i>Add new</button>
                 </div>
                 <div class="wg-table table-all-user">
                     <div class="table-responsive">
@@ -125,6 +125,6 @@
             });
         });
     </script>
-
+@include('pages.brands.modals.new-brand')
 
 @endsection
