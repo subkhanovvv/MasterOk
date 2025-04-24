@@ -33,7 +33,7 @@
                                 <label for="photo">Загрузить изображения</label>
                                 <input class="form-control form-control-sm" type="file" name="photo">
                             </div>
-                           
+
 
                         </div>
                         <div class="col-12 col-md-4">
@@ -50,7 +50,7 @@
                                     @endforeach
                                 </select>
                             </div>
-                           
+
 
                             <div class="mb-3 form-group">
                                 <label for="price_uzs">Цена в UZS</label>
@@ -92,7 +92,7 @@
                                     <option value="набор">набор</option>
                                 </select>
                             </div>
-                            
+
                             <div class="mb-3 form-group">
                                 <label for="sale_price">Цена продажи</label>
                                 <input type="number" class="form-control decimal-input" name="sale_price"
@@ -140,19 +140,14 @@
     document.querySelectorAll('.decimal-input').forEach(input => {
         input.addEventListener('input', function() {
             let v = this.value
-                // 1) commas → dots
                 .replace(/,/g, '.')
-                // 2) strip any character except digits & dots
                 .replace(/[^0-9.]/g, '');
 
-            // 3) if more than one dot, keep only first
             const firstDot = v.indexOf('.');
             if (firstDot !== -1) {
-                // take up through first dot + the rest with dots removed
                 v = v.slice(0, firstDot + 1) +
                     v.slice(firstDot + 1).replace(/\./g, '');
             }
-
             this.value = v;
         });
     });

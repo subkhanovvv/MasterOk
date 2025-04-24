@@ -50,6 +50,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('product', [ProductController::class, 'product'])->name('product');
     Route::get('new-product', [ProductController::class, 'new_product'])->name('new-product');
     Route::post('store-product', [ProductController::class, 'store_product'])->name('store-product');
+    Route::delete('destroy-product/{id}', [ProductController::class, 'destroy_product'])->name('destroy-product');
 
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('profile', [AuthController::class, 'profile'])->name('profile');

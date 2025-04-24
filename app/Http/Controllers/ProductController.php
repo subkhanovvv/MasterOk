@@ -6,6 +6,7 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -21,7 +22,7 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'photo' => 'nullable',
+            'photo' => 'nullable|image',  // Photo is now optional and should be an image if provided
             'unit' => 'required|string|max:50',
             'price_uzs' => 'required|numeric|min:0',
             'price_usd' => 'required|numeric|min:0',
@@ -31,12 +32,17 @@ class ProductController extends Controller
             'category_id' => 'required',
             'brand_id' => 'required',
         ]);
-
-        $photoPath = $request->file('photo')->store('products', 'public');
-
+    
+        $photoPath = null;
+        
+        // Check if a file is uploaded for the 'photo' field
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('products', 'public');
+        }
+    
         Product::create([
             'name'  => $validated['name'],
-            'photo' => $photoPath,
+            'photo' => $photoPath,  // Save the photo path if a photo was uploaded
             'unit' => $validated['unit'],
             'price_uzs' => $validated['price_uzs'],
             'price_usd' => $validated['price_usd'],
@@ -47,7 +53,20 @@ class ProductController extends Controller
             'brand_id' => $validated['brand_id'],
         ]);
         
-        // return dd($validated);
-        return back()->with('success', 'Категория успешно сохранён!');
+        return back()->with('success', 'Товар успешно сохранён!');
     }
+    public function destroy_product($id)
+{
+    $product = Product::findOrFail($id);
+    if ($product->photo) {
+        Storage::disk('public')->delete($product->photo);
+    }
+    $product->delete();
+    return response()->json([
+        'message' => 'Товар успешно удален!',
+        'id' => $id,
+    ]);
+    
+}
+
 }
