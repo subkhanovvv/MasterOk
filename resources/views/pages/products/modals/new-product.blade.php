@@ -31,7 +31,7 @@
                             </div>
                             <div class="mb-3 form-group">
                                 <label for="photo">Загрузить изображения</label>
-                                <input class="form-control form-control-sm" type="file" name="photo">
+                                <input class="form-control form-control-sm "onchange="previewImage(event)" type="file" name="photo">
                             </div>
 
 
@@ -98,6 +98,10 @@
                                 <input type="number" class="form-control decimal-input" name="sale_price"
                                     placeholder="Цена продажи" required>
                             </div>
+                            <div class="preview mb-3" id="imagePreview" style="display: none;">
+                                <img id="preview" src="" alt="Image Preview" class="img-thumbnail"
+                                    style="max-width: 50%;">
+                            </div>
                         </div>
                     </div>
             </div>
@@ -151,4 +155,24 @@
             this.value = v;
         });
     });
+</script>
+<script>
+    function previewImage(event) {
+        const input = event.target;
+        const preview = document.getElementById('imagePreview');
+        const previewImg = document.getElementById('preview');
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                preview.style.display = 'block';
+            };
+
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            preview.style.display = 'none';
+        }
+    }
 </script>

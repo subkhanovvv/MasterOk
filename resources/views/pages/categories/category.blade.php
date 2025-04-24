@@ -32,8 +32,8 @@
                             </div>
                         </form>
                     </div>
-                    <a class="tf-button style-1 w208" href="{{ route('new-category') }}"><i class="icon-plus"></i>Новый
-                        Категория</a>
+                    <button class="btn btn-primary btn-lg text-white mb-0 me-0" data-bs-toggle="modal"
+                        data-bs-target="#newCategoryModal" type="button"><i class="mdi mdi-plus"></i>Add new</button>
                 </div>
                 <div class="wg-table table-all-user">
                     <div class="table-responsive">
@@ -52,7 +52,7 @@
                                         <td class="pname">
                                             <div class="image">
                                                 <img src="{{ Storage::url($c->photo) }}" alt="{{ $c->name }}"
-                                                width="150">
+                                                    width="150">
                                             </div>
                                             <div class="name">
                                                 <a href="#" class="body-title-2">{{ $c->name }}</a>
@@ -88,6 +88,7 @@
             </div>
         </div>
     </div>
+    @include('pages.categories.modals.new-category')
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             document.querySelectorAll(".delete").forEach(function(button) {
