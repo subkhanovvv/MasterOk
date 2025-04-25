@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Brand;
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
 class ExpenseController extends Controller
 {
-    public function index()
+    public function expense()
     {
-        $products = Product::orderBy('id','desc')->paginate('10');
-        return view('pages.expenses.expense', compact('products'));
+        $caregories = Category::orderBy('id', 'desc')->get();
+        $brands = Brand::orderBy('id', 'desc')->get();
+        $products = Product::orderBy('id', 'desc')->paginate('10');
+        return view('pages.expenses.expense', compact('products' , 'brands', 'caregories'));
     }
 
     public function create()

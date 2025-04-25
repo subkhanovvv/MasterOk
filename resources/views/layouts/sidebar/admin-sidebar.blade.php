@@ -29,7 +29,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('warehouse') }}">
+            <a class="nav-link" href="{{ route('expense') }}">
                 <i class="menu-icon mdi mdi-warehouse"></i>
                 <span class="menu-title">Склад</span>
                 <i class="menu-arrow"></i>

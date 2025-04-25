@@ -1,53 +1,32 @@
 @extends('layouts.admin')
 
 @section('content')
-    <div class="main-content-inner">
-        <div class="main-content-wrap">
-            <div class="flex items-center flex-wrap justify-between gap20 mb-27">
-                <h3>Товары</h3>
-                <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
-                    <li>
-                        <a href="{{ route('index') }}">
-                            <div class="text-tiny">Панель</div>
-                        </a>
-                    </li>
-                    <li>
-                        <i class="icon-chevron-right"></i>
-                    </li>
-                    <li>
-                        <div class="text-tiny">Товары</div>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="wg-box">
-                <div class="flex items-center justify-between gap10 flex-wrap">
-                    <div class="wg-filter flex-grow">
-                        <form class="form-search">
-                            <fieldset class="name">
-                                <input type="text" placeholder="Поиск..." class="" name="name" tabindex="2"
-                                    value="" aria-required="true" required="">
-                            </fieldset>
-                            <div class="button-submit">
-                                <button class="" type="submit"><i class="icon-search"></i></button>
-                            </div>
-                        </form>
+    <div class="row">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-sm-flex justify-content-between align-items-start">
+                    <div>
+                        <h4 class="card-title card-title-dash">Склад</h4>
                     </div>
-                    <a class="tf-button style-1 w208" href="{{ route('new-product') }}"><i class="icon-plus"></i>Новый
-                        товар</a>
+                    <div>
+                        <a href="#" class="btn btn-success btn-lg text-white mb-0 me-0">
+                            <i class="mdi mdi-plus"></i> Добавить расход
+                        </a>
+                    </div>
                 </div>
                 <div class="table-responsive">
-                    <table class="table table-striped table-bordered">
+                    <table class="table table-hover">
                         <thead>
                             <tr>
                                 <th>#</th>
                                 <th>Название</th>
+                                <th>Фото</th>
                                 <th>Цена (UZS)</th>
                                 <th>Цена (USD)</th>
                                 <th>Бренд</th>
                                 <th>Статус</th>
-                                <th>Цена распродажи</th>
-                                <th>Склад</th>
+                                <th>Скидочная цена</th>
+                                <th>Остаток</th>
                                 <th>Действие</th>
                             </tr>
                         </thead>
@@ -55,74 +34,50 @@
                             @foreach ($products as $p)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td class="pname">
-                                        <div class="image">
-                                            <img src="{{ Storage::url($p->photo) }}" alt="" class="image">
-                                        </div>
-                                        <div class="name">
-                                            <a href="#" class="body-title-2">{{ $p->name }}</a>
-                                            <div class="text-tiny mt-3">{{ $p->get_category->name }}</div>
-                                        </div>
+                                    <td>{{ $p->name }}</td>
+                                    <td>
+                                        <img src="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
+                                            alt="{{ $p->name }}" class="image"
+                                            style="width: 50px; height: 50px; object-fit: cover;">
                                     </td>
                                     <td>{{ number_format($p->price_uzs) }} UZS</td>
                                     <td>${{ number_format($p->price_usd, 2) }}</td>
                                     <td>{{ $p->get_brand->name }}</td>
                                     <td>
                                         @php
-                                            $bg = $p->status === 'normal'
-                                                ? '#d1fae5'   // green
-                                                : ($p->status === 'low'
-                                                    ? '#fef3c7' // yellow
-                                                    : '#fee2e2' // red
-                                                );
-                                    
-                                            $color = $p->status === 'normal'
-                                                ? '#065f46'
-                                                : ($p->status === 'low'
-                                                    ? '#92400e'
-                                                    : '#991b1b'
-                                                );
-                                    
-                                            // Russian translation
-                                            $statusRu = match($p->status) {
+                                            $color = match ($p->status) {
+                                                'normal' => 'success',
+                                                'low' => 'warning',
+                                                'out_of_stock' => 'danger',
+                                                default => 'secondary',
+                                            };
+
+                                            $statusRu = match ($p->status) {
                                                 'normal' => 'В наличии',
                                                 'low' => 'Мало',
                                                 'out_of_stock' => 'Нет в наличии',
-                                                default => $p->status
+                                                default => $p->status,
                                             };
                                         @endphp
-                                    
-                                        <span style="
-                                            display: inline-block;
-                                            padding: 0.25rem 0.5rem;
-                                            border-radius: 0.375rem;
-                                            font-weight: 600;
-                                            background-color: {{ $bg }};
-                                            color: {{ $color }};
-                                        ">
-                                            {{ $statusRu }}
-                                        </span>
+                                        <span class="badge bg-{{ $color }}">{{ $statusRu }}</span>
                                     </td>
-                                    <td>{{$p->sale_price}}</td>
+                                    <td>{{ $p->sale_price }}</td>
                                     <td>{{ $p->qty }} {{ $p->unit }}</td>
-
                                     <td>
-                                        <div class="list-icon-function">
-                                            <a href="#" target="_blank">
-                                                <div class="item eye">
-                                                    <i class="icon-eye"></i>
-                                                </div>
+                                        <div class="d-flex gap-2">
+                                            <a data-bs-toggle="modal" data-bs-target="#viewProductModal"
+                                                data-product="{{ $p->toJson() }}" onclick="viewProductModal(this)"
+                                                href="#">
+                                                <i class="mdi mdi-eye text-warning"></i>
                                             </a>
-                                            <a href="#">
-                                                <div class="item edit">
-                                                    <i class="icon-edit-3"></i>
-                                                </div>
+                                            <a href="#" onclick="set_id({{ $p->id }})">
+                                                <i class="mdi mdi-coin"></i>
                                             </a>
-                                            <form action="#" method="POST">
-                                                <div class="item text-danger delete">
-                                                    <i class="icon-trash-2"></i>
-                                                </div>
-                                            </form>
+                                            <a href="javascript:void(0);" class="deleteProduct" data-bs-toggle="modal"
+                                                data-bs-target="#deleteProductModal" data-id="{{ $p->id }}"
+                                                data-token="{{ csrf_token() }}">
+                                                <i class="mdi mdi-delete text-danger"></i>
+                                            </a>
                                         </div>
                                     </td>
                                 </tr>
@@ -131,34 +86,97 @@
                     </table>
                 </div>
 
-                <div class="divider"></div>
-                <div class="flex items-center justify-between flex-wrap gap10 wgp-pagination">
-                    {{ $products->links() }}
+                @if ($products->count())
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <p class="text-muted mb-0">
+                            Показаны с {{ $products->firstItem() }} по {{ $products->lastItem() }} из
+                            {{ $products->total() }} результатов
+                        </p>
+                        <div class="pagination mb-0">
+                            {{ $products->links('pagination::bootstrap-4') }}
+                        </div>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Product Modal -->
+    <div class="modal fade" id="deleteProductModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Подтверждение удаления</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Вы уверены, что хотите удалить этот товар?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-danger text-white" id="confirmDeleteBtn">Удалить</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            document.querySelectorAll(".delete").forEach(function(button) {
-                button.addEventListener("click", function(e) {
-                    e.preventDefault();
-                    let form = this.closest("form");
+        var product_id;
 
-                    Swal.fire({
-                        title: "Вы уверены?",
-                        text: "Это действие невозможно отменить!",
-                        icon: "warning",
-                        showCancelButton: true,
-                        confirmButtonColor: "#dc3545",
-                        cancelButtonColor: "#6c757d",
-                        confirmButtonText: "Да, удалить!"
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            form.submit();
-                        }
-                    });
+        function set_id(id) {
+            product_id = id;
+        }
+
+        function consume() {
+
+            var form = new FormData();
+            form.append("product_id", product_id);
+            form.append("_token", '{{ csrf_token() }}');
+            form.append("qty", $('#consuption').val());
+            form.append("date", $('#consuption_date').val());
+
+
+            var settings = {
+                "url": "{{ env('APP_URL') }}/consume_product",
+                "method": "POST",
+                "timeout": 0,
+                "processData": false,
+                "mimeType": "multipart/form-data",
+                "contentType": false,
+                "data": form
+            };
+
+            $.ajax(settings).done(function(response) {
+
+                let parsed = JSON.parse(response);
+
+                console.log(response);
+
+                set_data(parsed);
+
+            });
+        }
+        $(document).on("click", ".deleteProduct", function() {
+            var productId = $(this).data("id");
+            var token = $(this).data("token");
+
+            $("#confirmDeleteBtn").off("click").on("click", function() {
+                $.ajax({
+                    url: "/destroy-product/" + productId,
+                    type: 'DELETE',
+                    dataType: "JSON",
+                    data: {
+                        "_token": token,
+                    },
+                    success: function(response) {
+                        $("#deleteProductModal").modal('hide');
+                        alert(response.message || "Товар успешно удалён!");
+                        location.reload();
+                    },
+                    error: function(xhr, status, error) {
+                        alert("Ошибка при удалении товара");
+                    }
                 });
             });
         });
