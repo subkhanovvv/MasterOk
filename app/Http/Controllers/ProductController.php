@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductActivity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
@@ -98,5 +99,19 @@ class ProductController extends Controller
             'message' => 'Товар успешно удален!',
             'id' => $id,
         ]);
+    }
+    public function consume(Request $req)
+    {
+        ProductActivity::create([
+            'product_id' => $req->product_id,
+            'qty' => $req->qty,
+            'type' => $req->type,
+            'price' => $req->price,
+            'date' => $req->date,
+        ]);
+
+        Product::find($req->product_id)->decrement('qty', $req->qty);
+
+        return Product::all();
     }
 }
