@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Expenses;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -14,7 +15,7 @@ class ExpenseController extends Controller
         $caregories = Category::orderBy('id', 'desc')->get();
         $brands = Brand::orderBy('id', 'desc')->get();
         $products = Product::orderBy('id', 'desc')->paginate('10');
-        return view('pages.expenses.expense', compact('products' , 'brands', 'caregories'));
+        return view('pages.expenses.expense', compact('products', 'brands', 'caregories'));
     }
 
     public function create()
@@ -33,14 +34,18 @@ class ExpenseController extends Controller
         return view('expenses.show', compact('id'));
     }
 
-    public function edit($id)
+    public function consume(Request $req)
     {
-        return view('expenses.edit', compact('id'));
-    }
+        Expenses::create([
+            'product_id' => $req->product_id,
+            'qty' => $req->qty,
+            'type' => $req->type,
+            'price' => $req->price,
+            'date' => $req->date,
+        ]);
 
-    public function update(Request $request, $id)
-    {
-        // Validate and update the expense
-        // Redirect or return a response
+        Product::find($req->product_id)->decrement('qty', $req->qty);
+
+        return Product::all();
     }
 }

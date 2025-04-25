@@ -58,20 +58,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('edit-profile.{id}', [AuthController::class, 'edit_profile'])->name('edit-profile');
     Route::post('update-profile', [AuthController::class, 'update_profile'])->name('update-profile');
 
-
-    Route::get('expense', [ExpenseController::class, 'expense'])->name('expense');
-
     Route::get('barcode',[Controller::class, 'barcode'])->name('barcode');
-    Route::get('report',[Controller::class, 'report'])->name('report');
-    Route::get('history',[Controller::class, 'history'])->name('history');
-    Route::get('warehouse',[Controller::class, 'warehouse'])->name('warehouse');
-
-
 
 });
 
 Route::middleware(['guest'])->group(function () {
     Route::get('login', [AuthController::class, 'login'])->name('login');
-    Route::get('register', [AuthController::class, 'register'])->name('register');
     Route::post('ProcessLogin', [AuthController::class, 'ProcessLogin'])->name('ProcessLogin');
 });

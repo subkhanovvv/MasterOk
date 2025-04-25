@@ -40,7 +40,7 @@
                                             alt="{{ $p->name }}" class="image">
                                     </td>
                                     <td>{{ number_format($p->price_uzs) }} uzs</td>
-                                    <td>${{ number_format($p->price_usd, 2) }}</td>
+                                    <td>${{ ($p->price_usd) }}</td>
                                     <td>{{ $p->get_brand->name }}</td>
                                     <td>
                                         @php
@@ -67,22 +67,23 @@
                                     <td>{{ $p->qty }} {{ $p->unit }}</td>
 
                                     <td>
-                                        <div class="list-icon-function d-flex justify-content-center gap-2">
-                                            <a data-bs-toggle="modal" data-bs-target="#viewProductModal"
-                                                data-product="{{ $p->toJson() }}" onclick="viewProductModal(this)"
-                                                href="javascript:void(0)">
-                                                <i class="mdi mdi-eye icon-sm text-warning"></i>
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <a href="" title="Расход товара">
+                                                <i class="mdi mdi-database-minus icon-sm text-primary"></i>
                                             </a>
-                                            <a href="">
-                                                <i class="mdi mdi-pencil icon-sm"></i>
+                                            <a href="" title="Приход товара">
+                                                <i class="mdi mdi-database-plus icon-sm text-success"></i>
+                                            </a>
+                                            <a href="" title="Редактировать">
+                                                <i class="mdi mdi-pencil icon-sm text-primary"></i>
                                             </a>
                                             <a href="javascript:void(0);" class="deleteProduct" data-bs-toggle="modal"
-                                                data-bs-target="#deleteProductModal" data-id="{{ $p->id }}"
-                                                data-token="{{ csrf_token() }}">
+                                               data-bs-target="#deleteProductModal" data-id="{{ $p->id }}"
+                                               data-token="{{ csrf_token() }}" title="Удалить">
                                                 <i class="mdi mdi-delete icon-sm text-danger"></i>
                                             </a>
-
                                         </div>
+                                        
                                     </td>
                                 </tr>
                             @endforeach
