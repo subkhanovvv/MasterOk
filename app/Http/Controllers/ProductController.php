@@ -6,6 +6,7 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
@@ -52,7 +53,17 @@ class ProductController extends Controller
             'category_id' => $validated['category_id'],
             'brand_id' => $validated['brand_id'],
         ]);
-        
+        $message = "🛒 Новый продукт добавлен:\n\nНазвание: {$request->name}\n\nФото: {$request->file('photo')->getClientOriginalName()}\n\n
+        Цена: {$request->price_uzs} UZS\n\nЦена: {$request->price_usd} USD\n\nНалог: {$request->tax}\n\nКраткое описание: {$request->short_description}\n\nСкидочная цена: {$request->sale_price}\n\nКатегория: {$request->category_id}\n\nБренд: {$request->brand_id}";
+        $botToken = config('services.telegram.token');
+        $chatIds = config('services.telegram.chat_ids');
+
+        foreach ($chatIds as $chatId) {
+            Http::post("https://api.telegram.org/bot{$botToken}/sendMessage", [
+                'chat_id' => trim($chatId),
+                'text' => $message
+            ]);
+        }
         return back()->with('success', 'Товар успешно сохранён!');
     }
     public function destroy_product($id)

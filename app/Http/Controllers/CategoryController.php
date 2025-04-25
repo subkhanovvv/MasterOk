@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -39,6 +40,18 @@ class CategoryController extends Controller
             'name'  => $validated['name'],
             'photo' => $photoPath,
         ]);
+
+        $message = "🛒 Новый продукт добавлен:\n\nНазвание: {$request->name}\n\nФото: {$request->file('photo')->getClientOriginalName()}\n\n";
+        $botToken = config('services.telegram.token');
+        $chatIds = config('services.telegram.chat_ids');
+
+        foreach ($chatIds as $chatId) {
+            Http::post("https://api.telegram.org/bot{$botToken}/sendMessage", [
+                'chat_id' => trim($chatId),
+                'text' => $message
+            ]);
+        }
+
 
         return redirect()->route('category')->with('success', 'Категория успешно сохранён!');
     }

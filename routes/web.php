@@ -61,6 +61,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('report',[Controller::class, 'report'])->name('report');
     Route::get('history',[Controller::class, 'history'])->name('history');
     Route::get('warehouse',[Controller::class, 'warehouse'])->name('warehouse');
+
+
+
 });
 
 Route::middleware(['guest'])->group(function () {

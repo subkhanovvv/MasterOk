@@ -6,6 +6,7 @@ use App\Models\Brand;
 use App\Models\Product;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -13,11 +14,11 @@ class BrandController extends Controller
 {
    public function brand()
    {
-       $brands = Brand::withCount('products') // add this line
-                      ->orderBy('id', 'desc')
-                      ->paginate(10);
-   
-       return view('pages.brands.brand', compact('brands'));
+      $brands = Brand::withCount('products') // add this line
+         ->orderBy('id', 'desc')
+         ->paginate(10);
+
+      return view('pages.brands.brand', compact('brands'));
    }
 
    public function new_brand()
@@ -47,6 +48,16 @@ class BrandController extends Controller
          'description' => $validated['description'],
          'photo' => $photoPath,
       ]);
+      $message = "🛒 Новый brand добавлен:\n\nНазвание: {$request->name}\n\nФото: {$request->file('photo')->getClientOriginalName()}\n\n telefon: {$request->phone}";
+      $botToken = config('services.telegram.token');
+      $chatIds = config('services.telegram.chat_ids');
+
+      foreach ($chatIds as $chatId) {
+         Http::post("https://api.telegram.org/bot{$botToken}/sendMessage", [
+            'chat_id' => trim($chatId),
+            'text' => $message
+         ]);
+      }
 
       return redirect()->route('brand')->with('success', 'Бренд успешно сохранён!');
    }
