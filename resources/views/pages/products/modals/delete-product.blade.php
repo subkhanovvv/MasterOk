@@ -16,38 +16,3 @@
         </div>
     </div>
 </div>
-
-<script>
-    // When the delete button is clicked
-    $(".deleteProduct").click(function() {
-        // Capture the product ID and CSRF token from the clicked link
-        var productId = $(this).data("id");
-        var token = $(this).data("token");
-
-        // Set up the confirmation button click to actually delete the product
-        $("#confirmDeleteBtn").off("click").on("click", function() {
-            // Send the AJAX DELETE request to delete the product
-            $.ajax({
-                url: "/destroy-product/" + productId, // Use the correct endpoint
-                type: 'DELETE',
-                dataType: "JSON",
-                data: {
-                    "_token": token, // Send the CSRF token
-                },
-                success: function(response) {
-                    // Close the modal
-                    $("#deleteProductModal").modal('hide');
-
-                    // Optionally, show a success message
-                    alert(response.message || "Товар успешно удалён!");
-
-                    // Remove the deleted row from the table (assuming you have a table with the corresponding ID)
-                    $("button[data-id='" + productId + "']").closest("tr").remove();
-                },
-                error: function(xhr, status, error) {
-                    alert("Ошибка при удалении товара");
-                }
-            });
-        });
-    });
-</script>
