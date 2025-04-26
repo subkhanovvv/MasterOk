@@ -13,7 +13,7 @@
                 </div>
             </div>
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover mb-3">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -35,10 +35,10 @@
                                 <td>{{ $p->name }}</td>
                                 <td>
                                     <img src="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
-                                        alt="{{ $p->name }}" class="image">
+                                        alt="{{ $p->name }}">
                                 </td>
                                 <td>{{ number_format($p->price_uzs) }} uzs</td>
-                                <td>${{ $p->price_usd }}</td>
+                                <td>$ {{ $p->price_usd }}</td>
                                 <td>{{ $p->get_brand->name }}</td>
                                 <td>
                                     @php
@@ -56,54 +56,49 @@
                                             default => $p->status,
                                         };
                                     @endphp
-
                                     <span class="badge badge-{{ $color }}">
                                         {{ $statusRu }}
                                     </span>
                                 </td>
                                 <td>{{ $p->sale_price }}</td>
                                 <td>{{ $p->qty }} {{ $p->unit }}</td>
-
                                 <td>
-                                    <div class="d-flex justify-content-center gap-2">
-                                        <a href="" title="Расход товара" data-bs-toggle="modal"
+                                    <div class="d-flex justify-content-center gap-1">
+                                        <a href="javascript:void(0);" title="Расход товара" data-bs-toggle="modal"
                                             data-bs-target="#consumeProductModal">
                                             <i class="mdi mdi-database-minus icon-sm text-primary"></i>
                                         </a>
-                                        <a href="" title="Приход товара" data-bs-toggle="modal"
+                                        <a href="javascript:void(0);" title="Приход товара" data-bs-toggle="modal"
                                             data-bs-target="#intakeProductModal">
                                             <i class="mdi mdi-database-plus icon-sm text-success"></i>
                                         </a>
-                                        <a href="" title="Редактировать">
+                                        <a href="javascript:void(0);" title="Редактировать" data-bs-toggle="modal"
+                                            data-bs-target="#editProductModal">
                                             <i class="mdi mdi-pencil icon-sm text-primary"></i>
                                         </a>
-                                        <a href="javascript:void(0);" class="deleteProduct" data-bs-toggle="modal"
-                                            data-bs-target="#deleteProductModal" data-id="{{ $p->id }}"
-                                            data-token="{{ csrf_token() }}" title="Удалить">
+                                        <a href="javascript:void(0);" title="Удалить" data-bs-toggle="modal"
+                                            data-bs-target="#deleteProductModal">
                                             <i class="mdi mdi-delete icon-sm text-danger"></i>
                                         </a>
                                     </div>
-
                                 </td>
                             </tr>
                         @endforeach
                     </tbody>
-                </table><br>
+                </table>
             </div>
-            @if ($products->count())
-                <div class="d-flex justify-content-between align-items-center mt-4">
-                    <p class="text-muted mb-0">
-                        Показаны с {{ $products->firstItem() }} по {{ $products->lastItem() }} из
-                        {{ $products->total() }} результатов
-                    </p>
-
-                    <div class="pagination mb-0">
-                        {{ $products->links('pagination::bootstrap-4') }}
-                    </div>
+            <div class="mt-3">
+                <div class="pagination mb-0">
+                    {{ $products->links('pagination::bootstrap-4') }}
                 </div>
-            @endif
+                <p class="text-muted mb-0">
+                    Показаны с {{ $products->firstItem() }} по {{ $products->lastItem() }} из
+                    {{ $products->total() }} результатов
+                </p>
+            </div>
         </div>
     </div>
+
     @include('pages.products.modals.new-product')
     @include('pages.products.modals.edit-product')
     @include('pages.products.modals.view-product')
