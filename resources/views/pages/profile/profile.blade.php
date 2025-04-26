@@ -1,19 +1,37 @@
 @extends('layouts.admin')
 
 @section('content')
-    <div class="container">
-        <h1>Profile Page</h1>
-        <p>Welcome to your profile page!</p>
+    <div class="card w-50 justify-content-center mx-auto pb-5 pt-2 mb-5">
+        <div class="card-body">
+            <div class="d-flex align-items-center mb-4 gap-3">
+                <a href="javascript::void(0);" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                <img src="{{ asset('admin/assets/images/edit_profile.png') }}" class="rounded-circle" alt="Profile Image"
+                    width="100" height="100"></a>
+                <h3 class="">Profile information</h3>
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <tr>
+                        <th>Name</th>
+                        <td>{{ Auth::user()->name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Email</th>
+                        <td>{{ Auth::user()->email }}</td>
+                    </tr>
+                    <tr>
+                        <th>Created at</th>
+                        <td>{{ Auth::user()->created_at }}</td>
+                    </tr>
+                    <tr>
+                        <th>Updated at</th>
+                        <td>{{ Auth::user()->updated_at }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
     </div>
-    <div class="container mt-4">
-        <h2>Your Information</h2>
-        <ul class="list-group">
-            <li class="list-group-item">Name: {{ Auth::user()->name}}</li>
-            <li class="list-group-item">Email: {{Auth::user()->email}}</li>
-            <li class="list-group-item">Created At: {{Auth::user()->created_at}}</li>
-            <li class="list-group-item">Updated At: {{ $user->updated_at }}</li>
-        </ul>
-        <a href="#" class="btn btn-primary mt-3">Edit Profile</a>
-    </div>
+
+    @include('pages.profile.modals.edit-profile')
 
 @endsection

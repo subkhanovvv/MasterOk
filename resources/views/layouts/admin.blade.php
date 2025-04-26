@@ -77,15 +77,12 @@
                             </div>
                         @endif
 
-                        <div class="col-sm-12">
 
-                            <div class="home-tab">
-
+                          
                                 @yield('content')
 
-                            </div>
+                          
 
-                        </div>
 
                     </div>
 
