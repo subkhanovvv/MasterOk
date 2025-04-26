@@ -184,16 +184,13 @@
                 </a>
                 <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
                     <div class="dropdown-header text-center">
-                        <strong class="mb-1 mt-3 font-weight-semibold">{{ Auth::user()->name }}</strong>
+                        <strong class="mb-1 mt-3 font-weight-semibold text-capitalize">{{ Auth::user()->name }}</strong>
                     </div>
                     <a class="dropdown-item" href="{{ route('profile') }}"><i
                             class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My
-                        Profile <span class="badge badge-pill badge-danger">1</span></a>
-                    <a class="dropdown-item"><i
-                            class="dropdown-item-icon mdi mdi-help-circle-outline text-primary me-2"></i>
-                        FAQ</a>
+                        Profile</a>
                     <a class="dropdown-item" href="{{ route('logout') }}"><i
-                            class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign
+                            class="dropdown-item-icon mdi mdi-logout text-primary me-2"></i>Sign
                         Out</a>
                 </div>
             </li>
