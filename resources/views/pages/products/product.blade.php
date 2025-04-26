@@ -60,14 +60,19 @@
                                         {{ $statusRu }}
                                     </span>
                                 </td>
-                                <td>{{ $p->sale_price }}</td>
+                                <td>{{ number_format($p->sale_price) }}</td>
                                 <td>{{ $p->qty }} {{ $p->unit }}</td>
                                 <td>
                                     <div class="d-flex justify-content-center gap-1">
                                         <a href="javascript:void(0);" title="Расход товара" data-bs-toggle="modal"
-                                            data-bs-target="#consumeProductModal">
+                                            data-bs-target="#consumeProductModal" data-id="{{ $p->id }}"
+                                            data-photo="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
+                                            data-name="{{ $p->name }}" data-sale_price="{{ $p->sale_price }}"
+                                            data-unit="{{ $p->unit }}" onclick="openModal(this)">
                                             <i class="mdi mdi-database-minus icon-sm text-primary"></i>
                                         </a>
+
+
                                         <a href="javascript:void(0);" title="Приход товара" data-bs-toggle="modal"
                                             data-bs-target="#intakeProductModal">
                                             <i class="mdi mdi-database-plus icon-sm text-success"></i>
@@ -98,6 +103,66 @@
             </div>
         </div>
     </div>
+
+    <script>
+        var unitPrice = 0;
+        var quantity = 1;
+        
+        function openModal(element) {
+            var id = element.getAttribute('data-id');
+            var photo = element.getAttribute('data-photo');
+            var name = element.getAttribute('data-name');
+            var salePrice = element.getAttribute('data-sale_price').replace(/\s/g, ''); // remove spaces
+        
+            unitPrice = parseFloat(salePrice);
+            quantity = 1;
+        
+            document.getElementById('product_id').value = id;
+            document.getElementById('product_photo').src = photo;
+            document.getElementById('product_name').textContent = name;
+            document.getElementById('product_sale_price').textContent = 'Цена продажи: ' + Number(unitPrice).toLocaleString() + ' сум';
+        
+            document.getElementById('qty').value = quantity;
+            updateTotal();
+            onTransactionTypeChange(); // reset phone field visibility
+        }
+        
+        function increaseQty() {
+            quantity++;
+            document.getElementById('qty').value = quantity;
+            updateTotal();
+        }
+        
+        function decreaseQty() {
+            if (quantity > 1) {
+                quantity--;
+                document.getElementById('qty').value = quantity;
+                updateTotal();
+            }
+        }
+        
+        function updateTotal() {
+            quantity = parseInt(document.getElementById('qty').value) || 1;
+            var total = unitPrice * quantity;
+            document.getElementById('total_price').textContent = total.toLocaleString();
+        }
+        
+        function onTransactionTypeChange() {
+            var type = document.getElementById('transaction_type').value;
+            var phoneGroup = document.getElementById('client_phone_group');
+            var phoneInput = document.getElementById('client_phone');
+        
+            if (type === 'loan') {
+                phoneGroup.style.display = 'block';
+            } else {
+                phoneGroup.style.display = 'none';
+                phoneInput.value = ''; // Clear phone input if not loan
+            }
+        }
+        </script>
+        
+
+
 
     @include('pages.products.modals.new-product')
     @include('pages.products.modals.edit-product')
