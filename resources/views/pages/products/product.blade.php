@@ -74,7 +74,7 @@
 
 
                                         <a href="javascript:void(0);" title="Приход товара" data-bs-toggle="modal"
-                                            data-bs-target="#intakeProductModal">
+                                            data-bs-target="#intakeProductModal" >
                                             <i class="mdi mdi-database-plus icon-sm text-success"></i>
                                         </a>
                                         <a href="javascript:void(0);" title="Редактировать" data-bs-toggle="modal"

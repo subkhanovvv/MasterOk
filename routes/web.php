@@ -61,6 +61,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('barcode',[Controller::class, 'barcode'])->name('barcode');
 
     Route::post('consume', [ProductController::class, 'consume'])->name('consume');
+    Route::post('intake', [ProductController::class, 'intake'])->name('intake');
 
 });
 

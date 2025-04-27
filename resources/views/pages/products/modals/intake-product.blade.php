@@ -6,7 +6,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form action="{{ route('consume') }}" method="POST">
+                <form action="{{ route('intake') }}" method="POST">
                     <div class="row">
                         <!-- Left side: Product image -->
                         <div class="col-md-6 text-center">
@@ -47,8 +47,8 @@
                                 <label for="transaction_type" class="form-label">Тип транзакции</label>
                                 <select id="transaction_type" class="form-select" name="type"
                                     onchange="onTransactionTypeChange()">
-                                    <option value="intake">Продажа (расход)</option>
-                                    <option value="intake_loan">В долг (клиент берет)</option>
+                                    <option value="intake">Приход</option>
+                                    <option value="intake_loan">В долг</option>
                                     <option value="intake_return">Возврат товара</option>
                                 </select>
                             </div>
