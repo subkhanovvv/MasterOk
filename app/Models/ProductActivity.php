@@ -9,6 +9,5 @@ class ProductActivity extends Model
 {
     use HasFactory;
 
-    protected $guarded = [
-    ];
+    protected $guarded = [];
 }

@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('product_activities', function (Blueprint $table) {
             $table->id();
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
-            $table->integer('qty'); // e.g., 'created', 'updated', 'deleted'
-            $table->enum('type', ['consume', 'loan', 'return']);
+            $table->integer('qty');
+            $table->enum('type', ['consume', 'loan', 'return','intake']);
             $table->string('client_phone')->nullable();
+            $table->string('paid_amount')->nullable();
             $table->string('return_reason')->nullable();
             $table->string('total_price');
-
             $table->timestamps();
         });
     }

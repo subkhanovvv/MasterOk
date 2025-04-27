@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductActivity;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
@@ -107,37 +108,48 @@ class ProductController extends Controller
             'qty' => 'required|integer|min:1',
             'type' => 'required|string|max:50',
             'total_price' => 'required|numeric|min:0',
+            'paid_amount' => 'nullable|numeric|min:0',
             'client_phone' => 'nullable|string|max:20',
             'return_reason' => 'nullable|string|max:255',
         ]);
-
-        // Get the product
-        $product = Product::findOrFail($validated['product_id']);
-
-        // Check if stock is sufficient when consuming (decrementing stock)
-        if ($validated['type'] === 'consume' && $product->qty < $validated['qty']) {
-            return back()->withErrors(['qty' => 'Недостаточно товара на складе для расхода.']);
+    
+        // Start a database transaction
+        DB::beginTransaction();
+    
+        try {
+            $product = Product::findOrFail($validated['product_id']);
+        
+            if ($validated['type'] === 'consume' && $product->qty < $validated['qty']) {
+                return back()->withErrors(['qty' => 'Недостаточно товара на складе для расхода.']);
+            }
+        
+            if (in_array($validated['type'], ['return', 'intake'])) {
+                $product->increment('qty', $validated['qty']);
+            } else {
+                $product->decrement('qty', $validated['qty']);
+            }
+        
+            // Fix: if paid_amount is null, set to 0
+            $validated['paid_amount'] = $validated['paid_amount'] ?? 0;
+        
+            ProductActivity::create([
+                'product_id' => $validated['product_id'],
+                'qty' => $validated['qty'],
+                'type' => $validated['type'],
+                'total_price' => $validated['total_price'],
+                'paid_amount' => $validated['paid_amount'],
+                'client_phone' => $validated['client_phone'],
+                'return_reason' => $validated['return_reason'],
+            ]);
+        
+            DB::commit();
+        
+            return back()->with('success', 'Расход успешно сохранён!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+        
+            return back()->withErrors(['error' => 'Произошла ошибка при сохранении расхода: ' . $e->getMessage()]);
         }
-
-        // Create the product activity record
-        ProductActivity::create([
-            'product_id' => $validated['product_id'],
-            'qty' => $validated['qty'],
-            'type' => $validated['type'],
-            'total_price' => $validated['total_price'],
-            'client_phone' => $validated['client_phone'],
-            'return_reason' => $validated['return_reason'],
-        ]);
-
-        // Update stock based on transaction type
-        if ($validated['type'] === 'return') {
-            // Return product, increment stock
-            $product->increment('qty', $validated['qty']);
-        } else {
-            // Consume product, decrement stock
-            $product->decrement('qty', $validated['qty']);
-        }
-
-        return back()->with('success', 'Расход успешно сохранён!');
+        
     }
 }
