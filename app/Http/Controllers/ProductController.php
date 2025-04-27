@@ -113,25 +113,30 @@ class ProductController extends Controller
             'return_reason' => 'nullable|string|max:255',
         ]);
     
-        // Start a database transaction
         DB::beginTransaction();
     
         try {
             $product = Product::findOrFail($validated['product_id']);
-        
+    
             if ($validated['type'] === 'consume' && $product->qty < $validated['qty']) {
                 return back()->withErrors(['qty' => 'Недостаточно товара на складе для расхода.']);
             }
-        
+    
+            // Обновляем количество товара
             if (in_array($validated['type'], ['return', 'intake'])) {
                 $product->increment('qty', $validated['qty']);
             } else {
                 $product->decrement('qty', $validated['qty']);
             }
-        
-            // Fix: if paid_amount is null, set to 0
+    
+            // После изменения количества обязательно вызываем save(),
+            // чтобы событие "saving" автоматически обновило статус
+            $product->save();
+    
+            // Обеспечиваем, что paid_amount всегда есть
             $validated['paid_amount'] = $validated['paid_amount'] ?? 0;
-        
+    
+            // Создаём запись об операции
             ProductActivity::create([
                 'product_id' => $validated['product_id'],
                 'qty' => $validated['qty'],
@@ -141,15 +146,62 @@ class ProductController extends Controller
                 'client_phone' => $validated['client_phone'],
                 'return_reason' => $validated['return_reason'],
             ]);
-        
+    
             DB::commit();
-        
-            return back()->with('success', 'Расход успешно сохранён!');
+    
+            return back()->with('success', 'Операция успешно сохранена!');
         } catch (\Exception $e) {
             DB::rollBack();
-        
-            return back()->withErrors(['error' => 'Произошла ошибка при сохранении расхода: ' . $e->getMessage()]);
+            return back()->withErrors(['error' => 'Произошла ошибка: ' . $e->getMessage()]);
         }
-        
+    }
+    public function intake(Request $req )
+    {
+          $validated = $req->validate([
+            'product_id' => 'required|exists:products,id',
+            'qty' => 'required|integer|min:1',
+            'type' => 'required|string|max:50',
+            'total_price' => 'required|numeric|min:0',
+            'paid_amount' => 'nullable|numeric|min:0',
+            'return_reason' => 'nullable|string|max:255',
+        ]);
+    
+        DB::beginTransaction();
+    
+        try {
+            $product = Product::findOrFail($validated['product_id']);
+    
+            // Обновляем количество товара
+            if (in_array($validated['type'], ['loan_intake', 'intake'])) {
+                $product->increment('qty', $validated['qty']);
+            } else {
+                $product->decrement('qty', $validated['qty']);
+            }
+    
+            // После изменения количества обязательно вызываем save(),
+            // чтобы событие "saving" автоматически обновило статус
+            $product->save();
+    
+            // Обеспечиваем, что paid_amount всегда есть
+            $validated['paid_amount'] = $validated['paid_amount'] ?? 0;
+    
+            // Создаём запись об операции
+            ProductActivity::create([
+                'product_id' => $validated['product_id'],
+                'qty' => $validated['qty'],
+                'type' => $validated['type'],
+                'total_price' => $validated['total_price'],
+                'paid_amount' => $validated['paid_amount'],
+                'client_phone' => $validated['client_phone'],
+                'return_reason' => $validated['return_reason'],
+            ]);
+    
+            DB::commit();
+    
+            return back()->with('success', 'Операция успешно сохранена!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Произошла ошибка: ' . $e->getMessage()]);
+        }
     }
 }

@@ -19,5 +19,17 @@ class Product extends Model
     {
         return $this->hasOne(Category::class, 'id', 'category_id');
     }
-   
+    protected static function booted()
+    {
+        static::saving(function ($product) {
+            // Проверяем новое значение qty
+            if ($product->qty == 0) {
+                $product->status = 'out_of_stock';
+            } elseif ($product->qty < 10) {
+                $product->status = 'low';
+            } else {
+                $product->status = 'normal';
+            }
+        });
+    }
 }
