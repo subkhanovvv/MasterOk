@@ -107,75 +107,96 @@
     <script>
         var unitPrice = 0;
         var quantity = 1;
-    
+
         function openModal(element) {
             var id = element.getAttribute('data-id');
             var photo = element.getAttribute('data-photo');
             var name = element.getAttribute('data-name');
             var salePrice = element.getAttribute('data-sale_price').replace(/\s/g, ''); // Remove spaces
-    
+
             unitPrice = parseFloat(salePrice);
             quantity = 1;
-    
+
             document.getElementById('product_id').value = id;
             document.getElementById('product_photo').src = photo;
             document.getElementById('product_name').textContent = name;
-            document.getElementById('product_sale_price').textContent = 'Цена за единицу: ' + Number(unitPrice).toLocaleString() + ' сум';
+            document.getElementById('product_sale_price').textContent = 'Цена за единицу: ' + Number(unitPrice)
+                .toLocaleString() + ' сум';
             document.getElementById('qty').value = quantity;
-    
+
             updateTotal();
             onTransactionTypeChange(); // reset fields
         }
-    
+
         function increaseQty() {
-            quantity++;
-            document.getElementById('qty').value = quantity;
-            updateTotal();
-        }
-    
-        function decreaseQty() {
-            if (quantity > 1) {
-                quantity--;
-                document.getElementById('qty').value = quantity;
-                updateTotal();
+            var currentQty = parseInt(document.getElementById('qty').value);
+            if (!isNaN(currentQty)) {
+                currentQty++; // Increase by 1
+                document.getElementById('qty').value = currentQty; // Update input value
+                updateTotal(); // Update total price
             }
         }
-    
-        function updateTotal() {
-            var total = unitPrice * quantity;
-            document.getElementById('total_price').textContent = total.toLocaleString();
+
+        // Function to decrease the quantity by 1
+        function decreaseQty() {
+            var currentQty = parseInt(document.getElementById('qty').value);
+            if (!isNaN(currentQty) && currentQty > 1) {
+                currentQty--; // Decrease by 1
+                document.getElementById('qty').value = currentQty; // Update input value
+                updateTotal(); // Update total price
+            }
         }
-    
+
+        function updateTotal() {
+            // Get the quantity from the input field
+            var quantity = parseInt(document.getElementById('qty').value);
+
+            // Validate the quantity to be a positive integer
+            if (isNaN(quantity) || quantity < 1) {
+                quantity = 1; // Default to 1 if invalid
+                document.getElementById('qty').value = quantity;
+            }
+
+            // Calculate the total price
+            var total = unitPrice * quantity;
+
+            // Update the total price display
+            document.getElementById('total_price').textContent = total.toLocaleString();
+
+            // Update the hidden input field to send total_price with the form
+            document.getElementById('hidden_total_price').value = total;
+        }
+
+
         function onTransactionTypeChange() {
-    const type = document.getElementById('transaction_type').value;
-    const clientPhoneGroup = document.getElementById('client_phone_group');
-    const returnReasonGroup = document.getElementById('return_reason_group');
-    const clientPhoneInput = document.getElementById('client_phone');
-    const returnReasonInput = document.getElementById('return_reason');
+            const type = document.getElementById('transaction_type').value;
+            const clientPhoneGroup = document.getElementById('client_phone_group');
+            const returnReasonGroup = document.getElementById('return_reason_group');
+            const clientPhoneInput = document.getElementById('client_phone');
+            const returnReasonInput = document.getElementById('return_reason');
 
-    if (type === 'loan') {
-        clientPhoneGroup.style.display = 'block';
-        setTimeout(() => {
-            clientPhoneInput.focus(); // auto focus phone
-        }, 100); 
-    } else {
-        clientPhoneGroup.style.display = 'none';
-        clientPhoneInput.value = '';
-    }
+            if (type === 'loan') {
+                clientPhoneGroup.style.display = 'block';
+                setTimeout(() => {
+                    clientPhoneInput.focus(); // auto focus phone
+                }, 100);
+            } else {
+                clientPhoneGroup.style.display = 'none';
+                clientPhoneInput.value = '';
+            }
 
-    if (type === 'return') {
-        returnReasonGroup.style.display = 'block';
-        setTimeout(() => {
-            returnReasonInput.focus(); // auto focus reason
-        }, 100);
-    } else {
-        returnReasonGroup.style.display = 'none';
-        returnReasonInput.value = '';
-    }
-}
-
+            if (type === 'return') {
+                returnReasonGroup.style.display = 'block';
+                setTimeout(() => {
+                    returnReasonInput.focus(); // auto focus reason
+                }, 100);
+            } else {
+                returnReasonGroup.style.display = 'none';
+                returnReasonInput.value = '';
+            }
+        }
     </script>
-    
+
 
 
 

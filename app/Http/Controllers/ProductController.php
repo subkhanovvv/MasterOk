@@ -102,16 +102,42 @@ class ProductController extends Controller
     }
     public function consume(Request $req)
     {
-        ProductActivity::create([
-            'product_id' => $req->product_id,
-            'qty' => $req->qty,
-            'type' => $req->type,
-            'price' => $req->price,
-            'date' => $req->date,
+        $validated = $req->validate([
+            'product_id' => 'required|exists:products,id',
+            'qty' => 'required|integer|min:1',
+            'type' => 'required|string|max:50',
+            'total_price' => 'required|numeric|min:0',
+            'client_phone' => 'nullable|string|max:20',
+            'return_reason' => 'nullable|string|max:255',
         ]);
 
-        Product::find($req->product_id)->decrement('qty', $req->qty);
+        // Get the product
+        $product = Product::findOrFail($validated['product_id']);
 
-        return Product::all();
+        // Check if stock is sufficient when consuming (decrementing stock)
+        if ($validated['type'] === 'consume' && $product->qty < $validated['qty']) {
+            return back()->withErrors(['qty' => 'Недостаточно товара на складе для расхода.']);
+        }
+
+        // Create the product activity record
+        ProductActivity::create([
+            'product_id' => $validated['product_id'],
+            'qty' => $validated['qty'],
+            'type' => $validated['type'],
+            'total_price' => $validated['total_price'],
+            'client_phone' => $validated['client_phone'],
+            'return_reason' => $validated['return_reason'],
+        ]);
+
+        // Update stock based on transaction type
+        if ($validated['type'] === 'return') {
+            // Return product, increment stock
+            $product->increment('qty', $validated['qty']);
+        } else {
+            // Consume product, decrement stock
+            $product->decrement('qty', $validated['qty']);
+        }
+
+        return back()->with('success', 'Расход успешно сохранён!');
     }
 }
