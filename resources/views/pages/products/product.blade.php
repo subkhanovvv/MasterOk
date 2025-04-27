@@ -107,32 +107,32 @@
     <script>
         var unitPrice = 0;
         var quantity = 1;
-        
+    
         function openModal(element) {
             var id = element.getAttribute('data-id');
             var photo = element.getAttribute('data-photo');
             var name = element.getAttribute('data-name');
-            var salePrice = element.getAttribute('data-sale_price').replace(/\s/g, ''); // remove spaces
-        
+            var salePrice = element.getAttribute('data-sale_price').replace(/\s/g, ''); // Remove spaces
+    
             unitPrice = parseFloat(salePrice);
             quantity = 1;
-        
+    
             document.getElementById('product_id').value = id;
             document.getElementById('product_photo').src = photo;
             document.getElementById('product_name').textContent = name;
-            document.getElementById('product_sale_price').textContent = 'Цена продажи: ' + Number(unitPrice).toLocaleString() + ' сум';
-        
+            document.getElementById('product_sale_price').textContent = 'Цена за единицу: ' + Number(unitPrice).toLocaleString() + ' сум';
             document.getElementById('qty').value = quantity;
+    
             updateTotal();
-            onTransactionTypeChange(); // reset phone field visibility
+            onTransactionTypeChange(); // reset fields
         }
-        
+    
         function increaseQty() {
             quantity++;
             document.getElementById('qty').value = quantity;
             updateTotal();
         }
-        
+    
         function decreaseQty() {
             if (quantity > 1) {
                 quantity--;
@@ -140,27 +140,42 @@
                 updateTotal();
             }
         }
-        
+    
         function updateTotal() {
-            quantity = parseInt(document.getElementById('qty').value) || 1;
             var total = unitPrice * quantity;
             document.getElementById('total_price').textContent = total.toLocaleString();
         }
-        
+    
         function onTransactionTypeChange() {
-            var type = document.getElementById('transaction_type').value;
-            var phoneGroup = document.getElementById('client_phone_group');
-            var phoneInput = document.getElementById('client_phone');
-        
-            if (type === 'loan') {
-                phoneGroup.style.display = 'block';
-            } else {
-                phoneGroup.style.display = 'none';
-                phoneInput.value = ''; // Clear phone input if not loan
-            }
-        }
-        </script>
-        
+    const type = document.getElementById('transaction_type').value;
+    const clientPhoneGroup = document.getElementById('client_phone_group');
+    const returnReasonGroup = document.getElementById('return_reason_group');
+    const clientPhoneInput = document.getElementById('client_phone');
+    const returnReasonInput = document.getElementById('return_reason');
+
+    if (type === 'loan') {
+        clientPhoneGroup.style.display = 'block';
+        setTimeout(() => {
+            clientPhoneInput.focus(); // auto focus phone
+        }, 100); 
+    } else {
+        clientPhoneGroup.style.display = 'none';
+        clientPhoneInput.value = '';
+    }
+
+    if (type === 'return') {
+        returnReasonGroup.style.display = 'block';
+        setTimeout(() => {
+            returnReasonInput.focus(); // auto focus reason
+        }, 100);
+    } else {
+        returnReasonGroup.style.display = 'none';
+        returnReasonInput.value = '';
+    }
+}
+
+    </script>
+    
 
 
 
