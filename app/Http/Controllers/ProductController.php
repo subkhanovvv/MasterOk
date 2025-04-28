@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Barcode;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
@@ -10,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use Milon\Barcode\DNS1D;
 
 class ProductController extends Controller
 {
@@ -23,6 +25,7 @@ class ProductController extends Controller
 
     public function store_product(Request $request)
     {
+        // Validate incoming request
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'photo' => 'nullable|image',
@@ -35,13 +38,14 @@ class ProductController extends Controller
             'category_id' => 'required',
             'brand_id' => 'required',
         ]);
-
+    
+        // Handle product photo upload
         $photoPath = null;
-
         if ($request->hasFile('photo')) {
             $photoPath = $request->file('photo')->store('products', 'public');
         }
-
+    
+        // Create product entry
         $product = Product::create([
             'name' => $validated['name'],
             'photo' => $photoPath,
@@ -54,7 +58,24 @@ class ProductController extends Controller
             'category_id' => $validated['category_id'],
             'brand_id' => $validated['brand_id'],
         ]);
-
+    
+        // Generate the barcode for the product (using product ID or another unique value)
+        $barcodeGenerator = new DNS1D();
+        $barcodeValue = $product->id; // You can use a custom value here
+        $barcode = $barcodeGenerator->getBarcode($barcodeValue, 'C39'); // Use 'C39' for Code 39
+    
+        // Optionally, save the barcode as an image file
+        $barcodeImagePath = 'barcodes/' . $product->id . '.png';
+        $barcodeGenerator->save(storage_path('app/public/' . $barcodeImagePath), $barcodeValue);
+    
+        // Store the barcode details in the Barcode table
+        Barcode::create([
+            'barcode' => $barcodeValue,  // Unique barcode value (could be product ID or custom identifier)
+            'product_id' => $product->id,
+            'barcode_path' => $barcodeImagePath,
+        ]);
+    
+        // Prepare message for Telegram notification
         $message = "🛒 Новый продукт добавлен:\n\n" .
             "📦 Название: {$product->name}\n" .
             "💰 Цена: {$product->price_uzs} UZS / {$product->price_usd} USD\n" .
@@ -63,10 +84,11 @@ class ProductController extends Controller
             "🔥 Скидочная цена: {$product->sale_price}\n" .
             "📁 Категория: {$product->category_id}\n" .
             "🏷️ Бренд: {$product->brand_id}";
-
+    
+        // Send Telegram notification with product details and photo (if available)
         $botToken = config('services.telegram.token');
         $chatIds = config('services.telegram.chat_ids');
-
+    
         foreach ($chatIds as $chatId) {
             if ($photoPath) {
                 Http::attach(
@@ -86,7 +108,8 @@ class ProductController extends Controller
                 ]);
             }
         }
-
+    
+        // Return success message
         return back()->with('success', 'Товар успешно сохранён!');
     }
     public function destroy_product($id)
@@ -112,12 +135,12 @@ class ProductController extends Controller
             'client_phone' => 'nullable|string|max:20',
             'return_reason' => 'nullable|string|max:255',
         ]);
-    
+
         DB::beginTransaction();
-    
+
         try {
             $product = Product::findOrFail($validated['product_id']);
-    
+
             if ($validated['type'] === 'consume' && $product->qty < $validated['qty']) {
                 return back()->withErrors(['qty' => 'Недостаточно товара на складе для расхода.']);
             }
@@ -127,7 +150,7 @@ class ProductController extends Controller
                 $product->decrement('qty', $validated['qty']);
             }
             $product->save();
-    
+
             // Обеспечиваем, что paid_amount всегда есть
             $validated['paid_amount'] = $validated['paid_amount'] ?? 0;
 
@@ -140,18 +163,18 @@ class ProductController extends Controller
                 'client_phone' => $validated['client_phone'],
                 'return_reason' => $validated['return_reason'],
             ]);
-    
+
             DB::commit();
-    
+
             return back()->with('success', 'Операция успешно сохранена!');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withErrors(['error' => 'Произошла ошибка: ' . $e->getMessage()]);
         }
     }
-    public function intake(Request $req )
+    public function intake(Request $req)
     {
-          $validated = $req->validate([
+        $validated = $req->validate([
             'product_id' => 'required|exists:products,id',
             'qty' => 'required|integer|min:1',
             'type' => 'required|string|max:50',
@@ -159,12 +182,12 @@ class ProductController extends Controller
             'paid_amount' => 'nullable|numeric|min:0',
             'return_reason' => 'nullable|string|max:255',
         ]);
-    
+
         DB::beginTransaction();
-    
+
         try {
             $product = Product::findOrFail($validated['product_id']);
-  
+
             if (in_array($validated['type'], ['intake_loan', 'intake'])) {
                 $product->increment('qty', $validated['qty']);
             } else {
@@ -181,9 +204,9 @@ class ProductController extends Controller
                 'paid_amount' => $validated['paid_amount'],
                 'return_reason' => $validated['return_reason'],
             ]);
-    
+
             DB::commit();
-    
+
             return back()->with('success', 'Операция успешно сохранена!');
         } catch (\Exception $e) {
             DB::rollBack();
