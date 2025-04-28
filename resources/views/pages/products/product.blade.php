@@ -110,6 +110,7 @@
     <script>
         var unitPrice = 0;
         var quantity = 1;
+        var currentModalType = 'consume'; // Default
 
         function openModal(element) {
             var id = element.getAttribute('data-id');
@@ -121,81 +122,82 @@
             quantity = 1;
 
             const modalId = element.getAttribute('data-bs-target');
+            currentModalType = modalId === '#consumeProductModal' ? 'consume' : 'intake';
 
-            if (modalId === '#consumeProductModal') {
+            if (currentModalType === 'consume') {
                 document.getElementById('consume_product_id').value = id;
                 document.getElementById('consume_product_photo').src = photo;
                 document.getElementById('consume_product_name').textContent = name;
-                document.getElementById('consume_product_sale_price').textContent = 'Цена за единицу: ' + Number(unitPrice)
+                document.getElementById('consume_product_sale_price').textContent = 'Цена за единицу: ' + unitPrice
                     .toLocaleString() + ' сум';
                 document.getElementById('consume_qty').value = quantity;
-            } else if (modalId === '#intakeProductModal') {
+            } else if (currentModalType === 'intake') {
                 document.getElementById('intake_product_id').value = id;
                 document.getElementById('intake_product_photo').src = photo;
                 document.getElementById('intake_product_name').textContent = name;
-                document.getElementById('intake_product_sale_price').textContent = 'Цена за единицу: ' + Number(unitPrice)
+                document.getElementById('intake_product_sale_price').textContent = 'Цена за единицу: ' + unitPrice
                     .toLocaleString() + ' сум';
                 document.getElementById('intake_qty').value = quantity;
             }
 
-            updateTotal(modalId); // Pass modalId
-            onTransactionTypeChange(modalId === '#consumeProductModal' ? 'consume' : 'intake');
+            updateTotal();
+            onTransactionTypeChange(); // handle default fields
         }
 
-
         function increaseQty() {
-            var currentQty = parseInt(document.getElementById('qty').value);
+            var qtyInputId = currentModalType === 'consume' ? 'consume_qty' : 'intake_qty';
+            var qtyInput = document.getElementById(qtyInputId);
+
+            var currentQty = parseInt(qtyInput.value);
             if (!isNaN(currentQty)) {
-                currentQty++;
-                document.getElementById('qty').value = currentQty;
+                qtyInput.value = currentQty + 1;
                 updateTotal();
             }
         }
 
         function decreaseQty() {
-            var currentQty = parseInt(document.getElementById('qty').value);
+            var qtyInputId = currentModalType === 'consume' ? 'consume_qty' : 'intake_qty';
+            var qtyInput = document.getElementById(qtyInputId);
+
+            var currentQty = parseInt(qtyInput.value);
             if (!isNaN(currentQty) && currentQty > 1) {
-                currentQty--;
-                document.getElementById('qty').value = currentQty;
+                qtyInput.value = currentQty - 1;
                 updateTotal();
             }
         }
 
-        function updateTotal(modalId) {
-    var qtyId = modalId === '#consumeProductModal' ? 'consume_qty' : 'intake_qty';
-    var totalPriceId = modalId === '#consumeProductModal' ? 'consume_total_price' : 'intake_total_price';
-    var hiddenTotalPriceId = modalId === '#consumeProductModal' ? 'consume_hidden_total_price' : 'intake_hidden_total_price';
+        function updateTotal() {
+            var qtyInputId = currentModalType === 'consume' ? 'consume_qty' : 'intake_qty';
+            var totalPriceId = currentModalType === 'consume' ? 'consume_total_price' : 'intake_total_price';
+            var hiddenTotalPriceId = currentModalType === 'consume' ? 'consume_hidden_total_price' :
+                'intake_hidden_total_price';
 
-    var quantity = parseInt(document.getElementById(qtyId).value);
-    if (isNaN(quantity) || quantity < 1) {
-        quantity = 1;
-        document.getElementById(qtyId).value = quantity;
-    }
+            var quantity = parseInt(document.getElementById(qtyInputId).value);
+            if (isNaN(quantity) || quantity < 1) {
+                quantity = 1;
+                document.getElementById(qtyInputId).value = quantity;
+            }
 
-    var total = unitPrice * quantity;
+            var total = unitPrice * quantity;
 
-    document.getElementById(totalPriceId).textContent = total.toLocaleString();
-    document.getElementById(hiddenTotalPriceId).value = total;
-}
+            document.getElementById(totalPriceId).textContent = total.toLocaleString();
+            document.getElementById(hiddenTotalPriceId).value = total;
+        }
 
+        function onTransactionTypeChange() {
+            var typeSelectId = currentModalType === 'consume' ? 'consume_transaction_type' : 'intake_transaction_type';
+            var selectElement = document.getElementById(typeSelectId);
 
-        function onTransactionTypeChange(modalType) {
-            let typeSelectId = modalType === 'consume' ? 'transaction_type_consume' : 'transaction_type';
-            let returnReasonGroup = document.getElementById(modalType === 'consume' ? 'return_reason_group_consume' :
-                'return_reason_group');
-            let returnReasonInput = document.getElementById(modalType === 'consume' ? 'return_reason_consume' :
-                'return_reason');
+            if (!selectElement) return;
 
-            let clientPhoneGroup = modalType === 'consume' ? document.getElementById('client_phone_group_consume') : null;
-            let clientPhoneInput = modalType === 'consume' ? document.getElementById('client_phone_consume') : null;
+            var type = selectElement.value;
 
-            const selectElement = document.getElementById(typeSelectId);
-            if (!selectElement) return; // Safe-check: if element not exist
+            if (currentModalType === 'consume') {
+                var clientPhoneGroup = document.getElementById('consume_client_phone_group');
+                var clientPhoneInput = document.getElementById('consume_client_phone');
+                var returnReasonGroup = document.getElementById('consume_return_reason_group');
+                var returnReasonInput = document.getElementById('consume_return_reason');
 
-            const type = selectElement.value;
-
-            // Handle client phone (only in consume modal)
-            if (modalType === 'consume' && clientPhoneGroup && clientPhoneInput) {
                 if (type === 'loan') {
                     clientPhoneGroup.style.display = 'block';
                     setTimeout(() => clientPhoneInput.focus(), 100);
@@ -203,11 +205,20 @@
                     clientPhoneGroup.style.display = 'none';
                     clientPhoneInput.value = '';
                 }
-            }
 
-            // Handle return reason
-            if (returnReasonGroup && returnReasonInput) {
-                if (type === 'return' || type === 'intake_return') {
+                if (type === 'return') {
+                    returnReasonGroup.style.display = 'block';
+                    setTimeout(() => returnReasonInput.focus(), 100);
+                } else {
+                    returnReasonGroup.style.display = 'none';
+                    returnReasonInput.value = '';
+                }
+
+            } else if (currentModalType === 'intake') {
+                var returnReasonGroup = document.getElementById('intake_return_reason_group');
+                var returnReasonInput = document.getElementById('intake_return_reason');
+
+                if (type === 'intake_return') {
                     returnReasonGroup.style.display = 'block';
                     setTimeout(() => returnReasonInput.focus(), 100);
                 } else {
