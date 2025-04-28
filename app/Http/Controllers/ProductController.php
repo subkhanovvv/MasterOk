@@ -121,22 +121,16 @@ class ProductController extends Controller
             if ($validated['type'] === 'consume' && $product->qty < $validated['qty']) {
                 return back()->withErrors(['qty' => 'Недостаточно товара на складе для расхода.']);
             }
-    
-            // Обновляем количество товара
             if (in_array($validated['type'], ['return', 'intake'])) {
                 $product->increment('qty', $validated['qty']);
             } else {
                 $product->decrement('qty', $validated['qty']);
             }
-    
-            // После изменения количества обязательно вызываем save(),
-            // чтобы событие "saving" автоматически обновило статус
             $product->save();
     
             // Обеспечиваем, что paid_amount всегда есть
             $validated['paid_amount'] = $validated['paid_amount'] ?? 0;
-    
-            // Создаём запись об операции
+
             ProductActivity::create([
                 'product_id' => $validated['product_id'],
                 'qty' => $validated['qty'],
@@ -170,29 +164,21 @@ class ProductController extends Controller
     
         try {
             $product = Product::findOrFail($validated['product_id']);
-    
-            // Обновляем количество товара
-            if (in_array($validated['type'], ['loan_intake', 'intake'])) {
+  
+            if (in_array($validated['type'], ['intake_loan', 'intake'])) {
                 $product->increment('qty', $validated['qty']);
             } else {
                 $product->decrement('qty', $validated['qty']);
             }
-    
-            // После изменения количества обязательно вызываем save(),
-            // чтобы событие "saving" автоматически обновило статус
             $product->save();
-    
-            // Обеспечиваем, что paid_amount всегда есть
             $validated['paid_amount'] = $validated['paid_amount'] ?? 0;
-    
-            // Создаём запись об операции
+
             ProductActivity::create([
                 'product_id' => $validated['product_id'],
                 'qty' => $validated['qty'],
                 'type' => $validated['type'],
                 'total_price' => $validated['total_price'],
                 'paid_amount' => $validated['paid_amount'],
-                'client_phone' => $validated['client_phone'],
                 'return_reason' => $validated['return_reason'],
             ]);
     

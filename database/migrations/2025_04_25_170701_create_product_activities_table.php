@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
             $table->integer('qty');
-            $table->enum('type', ['consume', 'loan', 'return','intake','loan_intake','return_intake']);
+            $table->enum('type', ['consume', 'loan', 'return','intake','intake_loan','intake_return']);
             $table->string('client_phone')->nullable();
             $table->string('paid_amount')->nullable();
             $table->string('return_reason')->nullable();
