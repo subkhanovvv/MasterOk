@@ -7,18 +7,16 @@
             </div>
             <div class="modal-body">
                 <form action="{{ route('intake') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="product_id" id="product_id" value="">
+                    <input type="hidden" name="quantity" id="quantity" value="1">
+                    <input type="hidden" name="total_price" id="hidden_total_price" value="">
+
                     <div class="row">
                         <!-- Left side: Product image -->
                         <div class="col-md-6 text-center">
-                            @csrf
-                            <input type="hidden" name="product_id" id="product_id" value="">
-
-                            <input type="hidden" name="quantity" id="quantity" value="1">
-
-                            <input type="hidden" name="total_price" id="hidden_total_price" value="">
                             <img src="" id="product_photo" alt="Product photo"
                                 style="width: 250px; height: 250px;" class="border rounded">
-
                             <h5 id="product_name" class="mt-3 text-capitalize"></h5>
                             <p id="product_sale_price" class="text-muted"></p>
                         </div>
@@ -32,7 +30,7 @@
                                 </button>
 
                                 <input type="number" id="qty" class="form-control text-center"
-                                    style="width: 100px;" oninput="updateTotal()" name="qty">
+                                    style="width: 100px;" oninput="updateTotal()" name="qty" min="1" value="1">
 
                                 <button type="button" class="btn btn-outline-secondary text-dark btn-sm"
                                     onclick="increaseQty()">
@@ -46,17 +44,19 @@
                             <div class="mb-3">
                                 <label for="transaction_type" class="form-label">Тип транзакции</label>
                                 <select id="transaction_type" class="form-select" name="type"
-                                    onchange="onTransactionTypeChange()">
+                                    onchange="onTransactionTypeChange('intake')">
                                     <option value="intake">Приход</option>
                                     <option value="intake_loan">В долг</option>
                                     <option value="intake_return">Возврат товара</option>
                                 </select>
                             </div>
+
                             <div id="return_reason_group" class="mb-3" style="display: none;">
                                 <label for="return_reason" class="form-label">Причина возврата</label>
                                 <textarea id="return_reason" name="return_reason" class="form-control" rows="2"
                                     placeholder="Причина возврата товара"></textarea>
                             </div>
+
                             <div class="form-check mt-3">
                                 <input class="form-check-input" type="checkbox" id="print_cheque">
                                 <label class="form-check-label" for="print_cheque">
@@ -64,12 +64,13 @@
                                 </label>
                             </div>
                         </div>
-
                     </div>
             </div>
+
             <div class="modal-footer">
                 <button type="submit" class="btn btn-primary btn-lg text-white">Сохранить</button>
             </div>
+
             </form>
         </div>
     </div>
