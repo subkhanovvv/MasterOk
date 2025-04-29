@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
-    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    {{-- <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script> --}}
 
     <div class="card">
         <div class="card-body">

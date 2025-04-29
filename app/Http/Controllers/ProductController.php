@@ -67,7 +67,7 @@ class ProductController extends Controller
         }
     
         $dns1d = new DNS1D();
-        $barcodeSVG = $dns1d->getBarcodeSVG($barcodeValue, 'C39', 2, 60);
+        $barcodeSVG = $dns1d->getBarcodeSVG($barcodeValue, 'C39', 1, 60);
         $barcodeImagePath = 'barcodes/' . $barcodeValue . '.svg';
         
         // ✅ Save the SVG directly (no base64 decoding)
@@ -216,5 +216,10 @@ class ProductController extends Controller
             DB::rollBack();
             return back()->withErrors(['error' => 'Произошла ошибка: ' . $e->getMessage()]);
         }
+    }
+    public function barcode()
+    {
+        $barcodes = Barcode::orderBy('id', 'desc')->paginate(10);
+        return view('pages.barcodes.barcode', compact('barcodes'));
     }
 }

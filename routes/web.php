@@ -58,7 +58,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('edit-profile.{id}', [AuthController::class, 'edit_profile'])->name('edit-profile');
     Route::post('update-profile', [AuthController::class, 'update_profile'])->name('update-profile');
 
-    Route::get('barcode',[Controller::class, 'barcode'])->name('barcode');
+    Route::get('barcode',[ProductController::class, 'barcode'])->name('barcode');
 
     Route::post('consume', [ProductController::class, 'consume'])->name('consume');
     Route::post('intake', [ProductController::class, 'intake'])->name('intake');
