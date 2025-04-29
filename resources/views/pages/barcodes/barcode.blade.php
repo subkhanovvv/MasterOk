@@ -5,11 +5,7 @@
         <div class="card-body">
             <div class="d-sm-flex justify-content-between align-items-start">
                 <div>
-                    <h4 class="card-title card-title-dash">Products</h4>
-                </div>
-                <div>
-                    <button class="btn btn-primary btn-lg text-white mb-0 me-0" data-bs-toggle="modal"
-                        data-bs-target="#newProductModal" type="button"><i class="mdi mdi-plus"></i>Add new</button>
+                    <h4 class="card-title card-title-dash">Barcodes</h4>
                 </div>
             </div>
             <div class="table-responsive">
@@ -26,11 +22,8 @@
                         @foreach ($barcodes as $b)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ $b->product->name }}</td>
-                                <td>{{ $b->product->qty }}</td>
-                                <td>
+                                    <div>{{$b->product->name}} - {{ $b->product->qty }}</div>
                                     <svg style="height:70px" >{!! file_get_contents(storage_path('app/public/' . $b->barcode_path)) !!}</svg>
-
                                 </td>
                             </tr>
                         @endforeach
