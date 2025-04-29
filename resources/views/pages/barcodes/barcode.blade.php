@@ -33,7 +33,6 @@
             margin-top: 5px;
         }
     </style>
-
     <div class="card">
         <div class="card-body">
             <div class="d-sm-flex justify-content-between align-items-start">
