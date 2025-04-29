@@ -19,6 +19,13 @@ class Product extends Model
     {
         return $this->hasOne(Category::class, 'id', 'category_id');
     }
+
+    public function barcode()
+    {
+        return $this->hasOne(Barcode::class);
+    }
+    
+
     protected static function booted()
     {
         static::saving(function ($product) {

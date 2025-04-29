@@ -24,94 +24,95 @@ class ProductController extends Controller
     }
 
     public function store_product(Request $request)
-    {
-        // Validate incoming request
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'photo' => 'nullable|image',
-            'unit' => 'required|string|max:50',
-            'price_uzs' => 'required|numeric|min:0',
-            'price_usd' => 'required|numeric|min:0',
-            'tax' => 'required|numeric|min:0',
-            'short_description' => 'nullable|string|max:1000',
-            'sale_price' => 'required|numeric|min:0',
-            'category_id' => 'required',
-            'brand_id' => 'required',
-        ]);
-    
-        // Handle product photo upload
-        $photoPath = null;
-        if ($request->hasFile('photo')) {
-            $photoPath = $request->file('photo')->store('products', 'public');
-        }
-    
-        // Create product entry
-        $product = Product::create([
-            'name' => $validated['name'],
-            'photo' => $photoPath,
-            'unit' => $validated['unit'],
-            'price_uzs' => $validated['price_uzs'],
-            'price_usd' => $validated['price_usd'],
-            'tax' => $validated['tax'],
-            'short_description' => $validated['short_description'],
-            'sale_price' => $validated['sale_price'],
-            'category_id' => $validated['category_id'],
-            'brand_id' => $validated['brand_id'],
-        ]);
-    
-        // Generate the barcode for the product (using product ID or another unique value)
-        $barcodeGenerator = new DNS1D();
-        $barcodeValue = $product->id; // You can use a custom value here
-        $barcode = $barcodeGenerator->getBarcode($barcodeValue, 'C39'); // Use 'C39' for Code 39
-    
-        // Optionally, save the barcode as an image file
-        $barcodeImagePath = 'barcodes/' . $product->id . '.png';
-        $barcodeGenerator->save(storage_path('app/public/' . $barcodeImagePath), $barcodeValue);
-    
-        // Store the barcode details in the Barcode table
-        Barcode::create([
-            'barcode' => $barcodeValue,  // Unique barcode value (could be product ID or custom identifier)
-            'product_id' => $product->id,
-            'barcode_path' => $barcodeImagePath,
-        ]);
-    
-        // Prepare message for Telegram notification
-        $message = "🛒 Новый продукт добавлен:\n\n" .
-            "📦 Название: {$product->name}\n" .
-            "💰 Цена: {$product->price_uzs} UZS / {$product->price_usd} USD\n" .
-            "📈 Налог: {$product->tax}%\n" .
-            "📝 Описание: {$product->short_description}\n" .
-            "🔥 Скидочная цена: {$product->sale_price}\n" .
-            "📁 Категория: {$product->category_id}\n" .
-            "🏷️ Бренд: {$product->brand_id}";
-    
-        // Send Telegram notification with product details and photo (if available)
-        $botToken = config('services.telegram.token');
-        $chatIds = config('services.telegram.chat_ids');
-    
-        foreach ($chatIds as $chatId) {
-            if ($photoPath) {
-                Http::attach(
-                    'photo',
-                    file_get_contents(storage_path("app/public/{$photoPath}")),
-                    basename($photoPath)
-                )->post("https://api.telegram.org/bot{$botToken}/sendPhoto", [
-                    'chat_id' => trim($chatId),
-                    'caption' => $message,
-                    'parse_mode' => 'HTML',
-                ]);
-            } else {
-                Http::post("https://api.telegram.org/bot{$botToken}/sendMessage", [
-                    'chat_id' => trim($chatId),
-                    'text' => $message,
-                    'parse_mode' => 'HTML',
-                ]);
-            }
-        }
-    
-        // Return success message
-        return back()->with('success', 'Товар успешно сохранён!');
+{
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'photo' => 'nullable|image',
+        'unit' => 'required|string|max:50',
+        'price_uzs' => 'required|numeric|min:0',
+        'price_usd' => 'required|numeric|min:0',
+        'tax' => 'required|numeric|min:0',
+        'short_description' => 'nullable|string|max:1000',
+        'sale_price' => 'required|numeric|min:0',
+        'category_id' => 'required',
+        'brand_id' => 'required',
+    ]);
+
+    $photoPath = null;
+
+    if ($request->hasFile('photo')) {
+        $photoPath = $request->file('photo')->store('products', 'public');
     }
+
+    $product = Product::create([
+        'name' => $validated['name'],
+        'photo' => $photoPath,
+        'unit' => $validated['unit'],
+        'price_uzs' => $validated['price_uzs'],
+        'price_usd' => $validated['price_usd'],
+        'tax' => $validated['tax'],
+        'short_description' => $validated['short_description'],
+        'sale_price' => $validated['sale_price'],
+        'category_id' => $validated['category_id'],
+        'brand_id' => $validated['brand_id'],
+    ]);
+
+    // ✅ Generate barcode
+    $barcodeValue = str_pad($product->category_id, 2, '0', STR_PAD_LEFT) . str_pad($product->id, 5, '0', STR_PAD_LEFT);
+
+    $barcodeDir = storage_path('app/public/barcodes');
+
+    if (!file_exists($barcodeDir)) {
+        mkdir($barcodeDir, 0755, true);
+    }
+
+    $dns1d = new DNS1D();
+    $barcodePng = $dns1d->getBarcodePNG($barcodeValue, 'C39', 2, 60);
+    $barcodeImagePath = 'barcodes/' . $barcodeValue . '.png';
+    file_put_contents(storage_path('app/public/' . $barcodeImagePath), base64_decode($barcodePng));
+
+    // ✅ Save barcode info to DB
+    Barcode::create([
+        'barcode' => $barcodeValue,
+        'product_id' => $product->id,
+        'barcode_path' => $barcodeImagePath,
+    ]);
+
+    // ✅ Telegram Notification
+    $message = "🛒 Новый продукт добавлен:\n\n" .
+        "📦 Название: {$product->name}\n" .
+        "💰 Цена: {$product->price_uzs} UZS / {$product->price_usd} USD\n" .
+        "📈 Налог: {$product->tax}%\n" .
+        "📝 Описание: {$product->short_description}\n" .
+        "🔥 Скидочная цена: {$product->sale_price}\n" .
+        "📁 Категория: {$product->category_id}\n" .
+        "🏷️ Бренд: {$product->brand_id}";
+
+    $botToken = config('services.telegram.token');
+    $chatIds = config('services.telegram.chat_ids');
+
+    foreach ($chatIds as $chatId) {
+        if ($photoPath) {
+            Http::attach(
+                'photo',
+                file_get_contents(storage_path("app/public/{$photoPath}")),
+                basename($photoPath)
+            )->post("https://api.telegram.org/bot{$botToken}/sendPhoto", [
+                'chat_id' => trim($chatId),
+                'caption' => $message,
+                'parse_mode' => 'HTML',
+            ]);
+        } else {
+            Http::post("https://api.telegram.org/bot{$botToken}/sendMessage", [
+                'chat_id' => trim($chatId),
+                'text' => $message,
+                'parse_mode' => 'HTML',
+            ]);
+        }
+    }
+
+    return back()->with('success', 'Товар и штрихкод успешно сохранены!');
+}
     public function destroy_product($id)
     {
         $product = Product::findOrFail($id);

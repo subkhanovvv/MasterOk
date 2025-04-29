@@ -1,6 +1,8 @@
 @extends('layouts.admin')
 
 @section('content')
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    
     <div class="card">
         <div class="card-body">
             <div class="d-sm-flex justify-content-between align-items-start">
@@ -29,6 +31,12 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @php
+                            use Milon\Barcode\DNS1D;
+                            $d = new DNS1D();
+                            $d->setStorPath(storage_path('framework/barcodes'));
+                        @endphp
+
                         @foreach ($products as $p)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
@@ -62,6 +70,25 @@
                                 </td>
                                 <td>{{ number_format($p->sale_price) }}</td>
                                 <td>{{ $p->qty }} {{ $p->unit }}</td>
+                                <td>
+                                    @php
+                                    $barcode = $p->barcode->barcode ?? '0000000';
+                                @endphp
+                            
+                                <div>
+                                    <svg id="barcode-{{ $p->id }}"></svg>
+                                    <div>{{ $barcode }}</div>
+                                </div>
+                                <script>
+                                    JsBarcode("#barcode-{{ $p->id }}", "{{ $barcode }}", {
+                                        format: "CODE128",
+                                        lineColor: "#000",
+                                        width: 2,
+                                        height: 50,
+                                        displayValue: false
+                                    });
+                                </script>
+                                </td>
                                 <td>
                                     <div class="d-flex justify-content-center gap-1">
                                         <a href="javascript:void(0);" title="Расход товара" data-bs-toggle="modal"
