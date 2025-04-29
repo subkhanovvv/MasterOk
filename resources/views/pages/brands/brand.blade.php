@@ -8,8 +8,12 @@
                         <h4 class="card-title card-title-dash">Products</h4>
                     </div>
                     <div>
-                        <button class="btn btn-primary btn-lg text-white mb-0 me-0" data-bs-toggle="modal"
+                        <button class="btn btn-primary text-white mb-0 me-0" data-bs-toggle="modal"
                             data-bs-target="#newBrandModal" type="button"><i class="mdi mdi-plus"></i>Add new</button>
+                            <button class="btn btn-secondary text-sm" data-bs-toggle="modal" data-bs-target="#newCategoryModal"
+                            type="button"><i class="mdi mdi-printer-outline"></i> Print</button>
+                        <button class="btn btn-primary text-sm" data-bs-toggle="modal" data-bs-target="#newCategoryModal"
+                            type="button"><i class="mdi mdi-download"></i> Export</button>
                     </div>
                 </div>
                 <div class="table-responsive">

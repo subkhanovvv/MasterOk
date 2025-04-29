@@ -1,17 +1,53 @@
 @extends('layouts.admin')
 
 @section('content')
-    {{-- <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script> --}}
-
     <div class="card">
         <div class="card-body">
-            <div class="d-sm-flex justify-content-between align-items-start">
+            <div class="d-sm-flex justify-content-between align-items-start mb-3">
                 <div>
                     <h4 class="card-title card-title-dash">Products</h4>
                 </div>
-                <div>
-                    <button class="btn btn-primary btn-lg text-white mb-0 me-0" data-bs-toggle="modal"
-                        data-bs-target="#newProductModal" type="button"><i class="mdi mdi-plus"></i>Add new</button>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newProductModal" type="button">
+                        <i class="mdi mdi-plus"></i> Add new</button>
+                    <button class="btn btn-secondary" type="button"><i class="mdi mdi-printer"></i> Print</button>
+                    <form method="GET" action="#" class="d-flex flex-wrap gap-2 align-items-center">
+                        <input type="text" name="name" class="form-control" placeholder="Название" value="{{ request('name') }}">
+                    
+                        <select name="category_id" class="form-select">
+                            <option value="">Все категории</option>
+                            @foreach($categories as $cat)
+                                <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>
+                                    {{ $cat->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    
+                        <select name="brand_id" class="form-select">
+                            <option value="">Все бренды</option>
+                            @foreach($brands as $brand)
+                                <option value="{{ $brand->id }}" {{ request('brand_id') == $brand->id ? 'selected' : '' }}>
+                                    {{ $brand->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    
+                        <select name="status" class="form-select">
+                            <option value="">Все статусы</option>
+                            <option value="normal" {{ request('status') === 'normal' ? 'selected' : '' }}>В наличии</option>
+                            <option value="low" {{ request('status') === 'low' ? 'selected' : '' }}>Мало</option>
+                            <option value="out_of_stock" {{ request('status') === 'out_of_stock' ? 'selected' : '' }}>Нет в наличии</option>
+                        </select>
+                    
+                        <button type="submit" class="btn btn-primary">
+                            <i class="mdi mdi-filter"></i> Фильтр
+                        </button>
+                    
+                        <a href="#" class="btn btn-outline-secondary">
+                            ❌ Сброс
+                        </a>
+                    </form>
+                    
                 </div>
             </div>
             <div class="table-responsive">
@@ -21,8 +57,7 @@
                             <th>#</th>
                             <th>Название</th>
                             <th>photo</th>
-                            <th>Цена (UZS)</th>
-                            <th>Цена (USD)</th>
+                            <th>Цена (UZS/USD)</th>
                             <th>Бренд</th>
                             <th>Статус</th>
                             <th>Цена</th>
@@ -32,12 +67,6 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @php
-                            use Milon\Barcode\DNS1D;
-                            $d = new DNS1D();
-                            $d->setStorPath(storage_path('framework/barcodes'));
-                        @endphp
-
                         @foreach ($products as $p)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
@@ -46,8 +75,7 @@
                                     <img src="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
                                         alt="{{ $p->name }}">
                                 </td>
-                                <td>{{ number_format($p->price_uzs) }} uzs</td>
-                                <td>$ {{ $p->price_usd }}</td>
+                                <td>{{ number_format($p->price_uzs) }} sum / ${{ $p->price_usd }}</td>
                                 <td>{{ $p->get_brand->name }}</td>
                                 <td>
                                     @php
@@ -87,8 +115,6 @@
                                             data-unit="{{ $p->unit }}" onclick="openModal(this)">
                                             <i class="mdi mdi-database-minus icon-sm text-primary"></i>
                                         </a>
-
-
                                         <a href="javascript:void(0);" title="Приход товара" data-bs-toggle="modal"
                                             data-bs-target="#intakeProductModal" data-id="{{ $p->id }}"
                                             data-photo="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
@@ -111,7 +137,8 @@
                     </tbody>
                 </table>
             </div>
-            <div class="mt-3">
+            <div class="mt-3 d-flex justify-content-between align-items-center">
+
                 <div class="pagination mb-0">
                     {{ $products->links('pagination::bootstrap-4') }}
                 </div>
@@ -119,7 +146,10 @@
                     Показаны с {{ $products->firstItem() }} по {{ $products->lastItem() }} из
                     {{ $products->total() }} результатов
                 </p>
+                <button class="btn btn-primary" type="button"><i class="mdi mdi-download"></i> Export</button>
+                
             </div>
+            
         </div>
     </div>
 
@@ -245,14 +275,11 @@
         }
     </script>
 
-
-
-
-
     @include('pages.products.modals.new-product')
     @include('pages.products.modals.edit-product')
     @include('pages.products.modals.view-product')
     @include('pages.products.modals.consume-product')
     @include('pages.products.modals.intake-product')
     @include('pages.products.modals.delete-product')
+    
 @endsection
