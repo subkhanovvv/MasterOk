@@ -1,8 +1,8 @@
 @extends('layouts.admin')
 
 @section('content')
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+
     <div class="card">
         <div class="card-body">
             <div class="d-sm-flex justify-content-between align-items-start">
@@ -27,6 +27,7 @@
                             <th>Статус</th>
                             <th>Цена</th>
                             <th>Склад</th>
+                            <th>Штрих-код</th>
                             <th>Действие</th>
                         </tr>
                     </thead>
@@ -71,23 +72,11 @@
                                 <td>{{ number_format($p->sale_price) }}</td>
                                 <td>{{ $p->qty }} {{ $p->unit }}</td>
                                 <td>
-                                    @php
-                                    $barcode = $p->barcode->barcode ?? '0000000';
-                                @endphp
-                            
-                                <div>
-                                    <svg id="barcode-{{ $p->id }}"></svg>
-                                    <div>{{ $barcode }}</div>
-                                </div>
-                                <script>
-                                    JsBarcode("#barcode-{{ $p->id }}", "{{ $barcode }}", {
-                                        format: "CODE128",
-                                        lineColor: "#000",
-                                        width: 2,
-                                        height: 50,
-                                        displayValue: false
-                                    });
-                                </script>
+                                    @if ($p->barcode)
+                                        <p>{{ $p->barcode->barcode }}</p>
+                                    @else
+                                        <p>No barcode</p>
+                                    @endif
                                 </td>
                                 <td>
                                     <div class="d-flex justify-content-center gap-1">
