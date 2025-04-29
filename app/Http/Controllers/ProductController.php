@@ -219,7 +219,7 @@ class ProductController extends Controller
     }
     public function barcode()
     {
-        $barcodes = Barcode::orderBy('id', 'desc')->paginate(10);
+        $barcodes = Barcode::orderBy('id', 'desc')->paginate(12);
         return view('pages.barcodes.barcode', compact('barcodes'));
     }
 }
