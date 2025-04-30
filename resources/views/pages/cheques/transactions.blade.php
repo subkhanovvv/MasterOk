@@ -43,23 +43,23 @@
         @endphp
         {{ $typeRu }}
     </p>
-
+{{-- 
     <table class="table">
         @foreach($transaction->products as $item)
             <tr>
                 <td>{{ $item->name }}</td>
-                <td style="text-align: right;">x{{ $item->pivot->qty }} {{ $item->unit }}</td>
+                <td style="text-align: right;">x{{ $item->qty }} {{ $item->unit }}</td>
             </tr>
         @endforeach
-    </table>
+    </table> --}}
 
     <hr>
 
-    <p><strong>Сумма:</strong> {{ number_format($transaction->total_sum) }} сум</p>
+    <p><strong>Сумма:</strong> {{ number_format($transaction->total_price) }} сум</p>
 
     <div class="barcode">
-        <img src="data:image/png;base64,{{ DNS1D::getBarcodePNG('TXN'.$transaction->id, 'C39') }}" alt="Barcode">
-        <p>TXN{{ $transaction->id }}</p>
+        {!! file_get_contents(storage_path('app/public/' . $transaction->product->barcode_path)) !!}
+        <p class="mt-1">Штрих-код: {{ }}</p>
     </div>
 
     <div class="text-center mt-2">
