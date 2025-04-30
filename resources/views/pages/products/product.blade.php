@@ -1,6 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
+
     <div class="card">
         <div class="card-body">
             <div class="d-sm-flex justify-content-between align-items-center mb-3">
@@ -175,6 +176,7 @@
             </div>
         </div>
     </div>
+
     <script>
         var unitPrice = 0;
         var quantity = 1;
@@ -275,10 +277,12 @@
             }
         }
     </script>
+
     @include('pages.products.modals.new-product')
     @include('pages.products.modals.edit-product')
     @include('pages.products.modals.view-product')
     @include('pages.products.modals.consume-product')
     @include('pages.products.modals.intake-product')
     @include('pages.products.modals.delete-product')
+
 @endsection
