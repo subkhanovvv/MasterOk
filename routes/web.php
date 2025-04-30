@@ -64,8 +64,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('consume', [ProductController::class, 'consume'])->name('consume');
     Route::post('intake', [ProductController::class, 'intake'])->name('intake');
     Route::get('history', [ProductController::class, 'history'])->name('history');
+    Route::post('/scan-transaction', [ProductController::class, 'scanTransaction'])->name('scan.transaction');
 
     Route::get('/transactions/{id}/cheque', [ChequeController::class, 'printCheque'])->name('transactions.cheque');
+    Route::post('/verify-transaction-ajax', [ProductController::class, 'verifyAjax'])->name('verify.transaction.ajax');
 });
 
 Route::middleware(['guest'])->group(function () {

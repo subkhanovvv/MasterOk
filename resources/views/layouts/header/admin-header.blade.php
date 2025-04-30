@@ -69,7 +69,7 @@
             <li class="nav-item">
                 <form class="search-form" action="#">
                     <i class="icon-search"></i>
-                    <input type="search" class="form-control" placeholder="Search Here" title="Search here">
+                    <input type="search" id="qrInput" class="form-control" placeholder="Scan QR code" title="Scan QR code" style="opacity: 0; position: absolute;">
                 </form>
             </li>
             <li class="nav-item">
@@ -245,3 +245,5 @@
     fetchExchangeRates();
     setInterval(fetchExchangeRates, 10000);
 </script>
+
+@include('pages.products.modals.consume-product')

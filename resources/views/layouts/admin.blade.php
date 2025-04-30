@@ -73,15 +73,16 @@
                         @if (Session::has('success'))
                             <div class="alert alert-success alert-dismissible fade show">
                                 {{ Session::get('success') }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                    aria-label="Закрыть"></button>
                             </div>
                         @endif
 
 
-                          
-                                @yield('content')
 
-                          
+                        @yield('content')
+
+
 
 
                     </div>
@@ -95,6 +96,71 @@
         </div>
 
     </div>
+
+    <script>
+        let scannedData = '';
+        let scanTimeout;
+
+        // Listen for keydown events globally (even if input is not focused)
+        document.addEventListener('keydown', function(e) {
+            if (e.key.length === 1) {
+                scannedData += e.key;
+            }
+
+            if (scanTimeout) clearTimeout(scanTimeout);
+
+            // Wait for scanner to finish sending data (timeout)
+            scanTimeout = setTimeout(() => {
+                if (scannedData) {
+                    handleScan(scannedData);
+                    scannedData = ''; // Reset after handling
+                }
+            }, 50); // Adjust timeout based on scanner speed
+        });
+
+        // Handle the scanned data
+        function handleScan(data) {
+            console.log("Scanned:", data);
+
+            // Send the scanned data to the backend
+            fetch('{{ route('scan.transaction') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        scanned_data: data
+                    })
+                })
+                .then(res => res.json())
+                .then(res => {
+                    if (res.success) {
+                        // Update the Consume modal with product details
+                        showConsumeModal(res.product);
+                    } else {
+                        alert(res.message);
+                    }
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    alert('Error verifying scanned data.');
+                });
+        }
+
+        // Function to show the Consume modal with product details
+        function showConsumeModal(product) {
+            // Set product details in the modal
+            document.getElementById('consume_product_id').value = product.id;
+            document.getElementById('consume_product_photo').src = product.photo_url; // Set correct path for image
+            document.getElementById('consume_product_name').innerText = product.name;
+            document.getElementById('consume_product_sale_price').innerText = product.sale_price;
+            document.getElementById('consume_hidden_total_price').value = product.sale_price;
+
+            // Show the modal
+            $('#consumeProductModal').modal('show');
+        }
+    </script>
 
     <script src="{{ asset('admin/assets/vendors/js/vendor.bundle.base.js') }}"></script>
     <script src="{{ asset('admin/assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js') }}"></script>
