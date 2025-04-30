@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Milon\Barcode\DNS1D;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+
 
 class ProductController extends Controller
 {
@@ -37,13 +39,13 @@ class ProductController extends Controller
             'category_id' => 'required',
             'brand_id' => 'required',
         ]);
-    
+
         $photoPath = null;
-    
+
         if ($request->hasFile('photo')) {
             $photoPath = $request->file('photo')->store('products', 'public');
         }
-    
+
         $product = Product::create([
             'name' => $validated['name'],
             'photo' => $photoPath,
@@ -56,30 +58,30 @@ class ProductController extends Controller
             'category_id' => $validated['category_id'],
             'brand_id' => $validated['brand_id'],
         ]);
-    
+
         // ✅ Generate barcode
         $barcodeValue = str_pad($product->category_id, 2, '0', STR_PAD_LEFT) . str_pad($product->id, 5, '0', STR_PAD_LEFT);
-    
+
         $barcodeDir = storage_path('app/public/barcodes');
-    
+
         if (!file_exists($barcodeDir)) {
             mkdir($barcodeDir, 0755, true);
         }
-    
+
         $dns1d = new DNS1D();
         $barcodeSVG = $dns1d->getBarcodeSVG($barcodeValue, 'C39', 1, 60);
         $barcodeImagePath = 'barcodes/' . $barcodeValue . '.svg';
-        
+
         // ✅ Save the SVG directly (no base64 decoding)
         file_put_contents(storage_path('app/public/' . $barcodeImagePath), $barcodeSVG);
-    
+
         // ✅ Save barcode info to DB
         Barcode::create([
             'barcode' => $barcodeValue,
             'product_id' => $product->id,
             'barcode_path' => $barcodeImagePath,
         ]);
-    
+
         // ✅ Telegram Notification
         $message = "🛒 Новый продукт добавлен:\n\n" .
             "📦 Название: {$product->name}\n" .
@@ -89,10 +91,10 @@ class ProductController extends Controller
             "🔥 Скидочная цена: {$product->sale_price}\n" .
             "📁 Категория: {$product->category_id}\n" .
             "🏷️ Бренд: {$product->brand_id}";
-    
+
         $botToken = config('services.telegram.token');
         $chatIds = config('services.telegram.chat_ids');
-    
+
         foreach ($chatIds as $chatId) {
             if ($photoPath) {
                 Http::attach(
@@ -112,10 +114,10 @@ class ProductController extends Controller
                 ]);
             }
         }
-    
+
         return back()->with('success', 'Товар и штрихкод успешно сохранены!');
     }
-    
+
     public function destroy_product($id)
     {
         $product = Product::findOrFail($id);
@@ -129,53 +131,67 @@ class ProductController extends Controller
         ]);
     }
     public function consume(Request $req)
-    {
-        $validated = $req->validate([
-            'product_id' => 'required|exists:products,id',
-            'qty' => 'required|integer|min:1',
-            'type' => 'required|string|max:50',
-            'total_price' => 'required|numeric|min:0',
-            'paid_amount' => 'nullable|numeric|min:0',
-            'client_phone' => 'nullable|string|max:20',
-            'return_reason' => 'nullable|string|max:255',
+{
+    $validated = $req->validate([
+        'product_id' => 'required|exists:products,id',
+        'qty' => 'required|integer|min:1',
+        'type' => 'required|string|max:50',
+        'total_price' => 'required|numeric|min:0',
+        'paid_amount' => 'nullable|numeric|min:0',
+        'client_phone' => 'nullable|string|max:20',
+        'return_reason' => 'nullable|string|max:255',
+    ]);
+
+    DB::beginTransaction();
+
+    try {
+        $product = Product::findOrFail($validated['product_id']);
+
+        if ($validated['type'] === 'consume' && $product->qty < $validated['qty']) {
+            return back()->withErrors(['qty' => 'Недостаточно товара на складе для расхода.']);
+        }
+        if (in_array($validated['type'], ['return', 'intake'])) {
+            $product->increment('qty', $validated['qty']);
+        } else {
+            $product->decrement('qty', $validated['qty']);
+        }
+        $product->save();
+
+        $validated['paid_amount'] = $validated['paid_amount'] ?? 0;
+
+        // Create Product Activity entry
+        $productActivity = ProductActivity::create([
+            'product_id' => $validated['product_id'],
+            'qty' => $validated['qty'],
+            'type' => $validated['type'],
+            'total_price' => $validated['total_price'],
+            'paid_amount' => $validated['paid_amount'],
+            'client_phone' => $validated['client_phone'],
+            'return_reason' => $validated['return_reason'],
         ]);
 
-        DB::beginTransaction();
+        // Generate the QR code content
+        $qrContent = "Transaction ID: {$productActivity->id}\nProduct ID: {$productActivity->product_id}\nAction: {$productActivity->type}\nQty: {$productActivity->qty}\nTotal Price: {$productActivity->total_price}\nPaid Amount: {$productActivity->paid_amount}";
+        
+        // Generate QR code in SVG format
+        $qrCodeSvg = QrCode::format('svg')->size(200)->generate($qrContent);
 
-        try {
-            $product = Product::findOrFail($validated['product_id']);
+        // Save the SVG to the storage folder
+        $qrCodePath = 'qrcodes/transaction_' . $productActivity->id . '.svg';
+        Storage::disk('public')->put($qrCodePath, $qrCodeSvg);
 
-            if ($validated['type'] === 'consume' && $product->qty < $validated['qty']) {
-                return back()->withErrors(['qty' => 'Недостаточно товара на складе для расхода.']);
-            }
-            if (in_array($validated['type'], ['return', 'intake'])) {
-                $product->increment('qty', $validated['qty']);
-            } else {
-                $product->decrement('qty', $validated['qty']);
-            }
-            $product->save();
+        // Save the path of the QR code in the product activity
+        $productActivity->qr_code = $qrCodePath;
+        $productActivity->save();
 
-            // Обеспечиваем, что paid_amount всегда есть
-            $validated['paid_amount'] = $validated['paid_amount'] ?? 0;
+        DB::commit();
 
-            ProductActivity::create([
-                'product_id' => $validated['product_id'],
-                'qty' => $validated['qty'],
-                'type' => $validated['type'],
-                'total_price' => $validated['total_price'],
-                'paid_amount' => $validated['paid_amount'],
-                'client_phone' => $validated['client_phone'],
-                'return_reason' => $validated['return_reason'],
-            ]);
-
-            DB::commit();
-
-            return back()->with('success', 'Операция успешно сохранена!');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->withErrors(['error' => 'Произошла ошибка: ' . $e->getMessage()]);
-        }
+        return back()->with('success', 'Операция успешно сохранена!');
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return back()->withErrors(['error' => 'Произошла ошибка: ' . $e->getMessage()]);
     }
+}
     public function intake(Request $req)
     {
         $validated = $req->validate([
@@ -192,15 +208,19 @@ class ProductController extends Controller
         try {
             $product = Product::findOrFail($validated['product_id']);
 
+            // Adjust product quantity based on type (intake or intake_loan)
             if (in_array($validated['type'], ['intake_loan', 'intake'])) {
                 $product->increment('qty', $validated['qty']);
             } else {
                 $product->decrement('qty', $validated['qty']);
             }
             $product->save();
+
+            // Ensure 'paid_amount' is not null
             $validated['paid_amount'] = $validated['paid_amount'] ?? 0;
 
-            ProductActivity::create([
+            // Create Product Activity entry
+            $productActivity = ProductActivity::create([
                 'product_id' => $validated['product_id'],
                 'qty' => $validated['qty'],
                 'type' => $validated['type'],
@@ -208,6 +228,20 @@ class ProductController extends Controller
                 'paid_amount' => $validated['paid_amount'],
                 'return_reason' => $validated['return_reason'],
             ]);
+
+            // Generate QR code for the transaction
+            $qrContent = "Transaction ID: {$productActivity->id}\nProduct ID: {$productActivity->product_id}\nAction: {$productActivity->type}\nQty: {$productActivity->qty}\nTotal Price: {$productActivity->total_price}\nPaid Amount: {$productActivity->paid_amount}";
+
+            // Generate the QR code
+            $qrCodeImage = QrCode::format('png')->size(200)->generate($qrContent);
+
+            // Save the QR code image to the storage folder
+            $qrCodePath = 'qrcodes/transaction_' . $productActivity->id . '.png';
+            Storage::disk('public')->put($qrCodePath, $qrCodeImage);
+
+            // Save the QR code path to the transaction record
+            $productActivity->qr_code = $qrCodePath;
+            $productActivity->save();
 
             DB::commit();
 
@@ -217,6 +251,7 @@ class ProductController extends Controller
             return back()->withErrors(['error' => 'Произошла ошибка: ' . $e->getMessage()]);
         }
     }
+
     public function barcode()
     {
         $barcodes = Barcode::orderBy('id', 'desc')->paginate(12);
@@ -227,6 +262,6 @@ class ProductController extends Controller
         $brands = Brand::orderBy('id', 'desc')->get();
         $categories = Category::orderBy('id', 'desc')->get();
         $product_act = ProductActivity::orderBy('id', 'desc')->paginate(10);
-        return view('pages.transactions.history', compact('product_act' ,'brands', 'categories'));
+        return view('pages.transactions.history', compact('product_act', 'brands', 'categories'));
     }
 }

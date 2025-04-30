@@ -1,7 +1,6 @@
 @extends('layouts.admin')
 
 @section('content')
-
     <div class="card">
         <div class="card-body">
             <div class="d-sm-flex justify-content-between align-items-center mb-3">
@@ -101,28 +100,24 @@
                                 {{-- <td>{{ $p->get_brand->name }}</td> --}}
                                 <td>
                                     @php
-                                    $typeRu = match($p->type) {
-                                        'consume' => 'Расход',
-                                        'intake' => 'Приход',
-                                        'return' => 'Возврат клиента',
-                                        'loan' => 'Долг клиента',
-                                        'intake_return' => 'Возврат поставщику',
-                                        'intake_loan' => 'Долг поставщику',
-                                        default => $p->type,
-                                    };
-                                @endphp
-                                
-                                <span>{{ $typeRu }}</span>
-                                
+                                        $typeRu = match ($p->type) {
+                                            'consume' => 'Расход',
+                                            'intake' => 'Приход',
+                                            'return' => 'Возврат клиента',
+                                            'loan' => 'Долг клиента',
+                                            'intake_return' => 'Возврат поставщику',
+                                            'intake_loan' => 'Долг поставщику',
+                                            default => $p->type,
+                                        };
+                                    @endphp
+
+                                    <span>{{ $typeRu }}</span>
+
                                 </td>
                                 <td>{{ number_format($p->sale_price) }}</td>
                                 <td>{{ $p->qty }} {{ $p->unit }}</td>
                                 <td>
-                                    @if ($p->barcode)
-                                        <p>{{ $p->barcode->barcode }}</p>
-                                    @else
-                                        <p>No barcode</p>
-                                    @endif
+                                        {!! file_get_contents(storage_path('app/public/' . $p->qr_code)) !!}
                                 </td>
                                 <td>
                                     <div class="d-flex justify-content-center gap-1">

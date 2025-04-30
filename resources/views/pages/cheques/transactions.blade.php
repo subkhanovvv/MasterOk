@@ -58,7 +58,6 @@
         <p>{{ \Carbon\Carbon::parse($transaction->created_at)->format('d.m.Y H:i') }}</p>
         <hr>
     </div>
-
     <p><strong>Тип:</strong>
         @php
             $typeRu = match ($transaction->type) {
@@ -73,26 +72,20 @@
         @endphp
         {{ $typeRu }}
     </p>
-    {{-- 
+    
     <table class="table">
-        @foreach ($transaction->products as $item)
+        {{-- @foreach ($transaction->product as $item) --}}
             <tr>
-                <td>{{ $item->name }}</td>
-                <td style="text-align: right;">x{{ $item->qty }} {{ $item->unit }}</td>
+                <td>{{ $transaction->product->name }}</td>
+                <td style="text-align: right;">x{{ $transaction->qty }} {{ $transaction->product->unit }}</td>
             </tr>
-        @endforeach
-    </table> --}}
-
+        {{-- @endforeach --}}
+    </table>
     <hr>
-
     <p><strong>Сумма:</strong> {{ number_format($transaction->total_price) }} сум</p>
-
     @if ($transaction->product->barcode)
         <div class="barcode">
-            {!! $transaction->product->barcode->svg !!}
-
-
-            <p class="mt-1">Штрих-код: {{ $transaction->product->barcode->barcode }}</p>
+            {!! file_get_contents(storage_path('app/public/' . $transaction->product->barcode->barcode_path)) !!}
         </div>
     @else
         <p>Штрих-код: не найден</p>

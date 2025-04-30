@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('paid_amount')->nullable();
             $table->string('return_reason')->nullable();
             $table->string('total_price');
+            $table->string('qr_code')->nullable();
             $table->timestamps();
         });
     }
