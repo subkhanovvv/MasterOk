@@ -62,6 +62,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('consume', [ProductController::class, 'consume'])->name('consume');
     Route::post('intake', [ProductController::class, 'intake'])->name('intake');
+    Route::get('history', [ProductController::class, 'history'])->name('history');
 
 });
 

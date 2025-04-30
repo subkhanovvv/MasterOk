@@ -38,7 +38,7 @@
         </li>
         <li class="nav-item nav-category">Прочее</li>
         <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{{route('history')}}">
                 <i class="menu-icon mdi mdi-history"></i>
                 <span class="menu-title">История</span>
                 <i class="menu-arrow"></i>
