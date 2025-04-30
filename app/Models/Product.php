@@ -24,7 +24,6 @@ class Product extends Model
     {
         return $this->hasOne(Barcode::class);
     }
-    
 
     protected static function booted()
     {

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <title>Чек - Транзакция #{{ $transaction->id }}</title>
@@ -10,16 +11,45 @@
             margin: auto;
             font-size: 14px;
         }
-        .text-center { text-align: center; }
-        .bold { font-weight: bold; }
-        .mt-1 { margin-top: 10px; }
-        .mt-2 { margin-top: 20px; }
-        .table { width: 100%; border-collapse: collapse; }
-        .table td { padding: 5px 0; }
-        hr { border: none; border-top: 1px dashed #aaa; }
-        .barcode { margin-top: 20px; text-align: center; }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+
+        .mt-1 {
+            margin-top: 10px;
+        }
+
+        .mt-2 {
+            margin-top: 20px;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table td {
+            padding: 5px 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px dashed #aaa;
+        }
+
+        .barcode {
+            margin-top: 20px;
+            text-align: center;
+        }
     </style>
+    
 </head>
+
 <body>
     <div class="text-center">
         <h3>Компания</h3>
@@ -31,7 +61,7 @@
 
     <p><strong>Тип:</strong>
         @php
-            $typeRu = match($transaction->type) {
+            $typeRu = match ($transaction->type) {
                 'consume' => 'Расход',
                 'intake' => 'Приход',
                 'return' => 'Возврат клиента',
@@ -43,9 +73,9 @@
         @endphp
         {{ $typeRu }}
     </p>
-{{-- 
+    {{-- 
     <table class="table">
-        @foreach($transaction->products as $item)
+        @foreach ($transaction->products as $item)
             <tr>
                 <td>{{ $item->name }}</td>
                 <td style="text-align: right;">x{{ $item->qty }} {{ $item->unit }}</td>
@@ -57,13 +87,22 @@
 
     <p><strong>Сумма:</strong> {{ number_format($transaction->total_price) }} сум</p>
 
-    <div class="barcode">
-        {!! file_get_contents(storage_path('app/public/' . $transaction->product->barcode_path)) !!}
-        <p class="mt-1">Штрих-код: {{ }}</p>
-    </div>
+    @if ($transaction->product->barcode)
+        <div class="barcode">
+            {!! $transaction->product->barcode->svg !!}
+
+
+            <p class="mt-1">Штрих-код: {{ $transaction->product->barcode->barcode }}</p>
+        </div>
+    @else
+        <p>Штрих-код: не найден</p>
+    @endif
+
+
 
     <div class="text-center mt-2">
         <p>Спасибо за сотрудничество!</p>
     </div>
 </body>
+
 </html>
