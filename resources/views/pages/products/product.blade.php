@@ -3,55 +3,76 @@
 @section('content')
     <div class="card">
         <div class="card-body">
-            <div class="d-sm-flex justify-content-between align-items-start mb-3">
+            <div class="d-sm-flex justify-content-between align-items-center mb-3">
                 <div>
                     <h4 class="card-title card-title-dash">Products</h4>
                 </div>
-                <div class="d-flex align-items-center gap-2 flex-wrap">
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newProductModal" type="button">
-                        <i class="mdi mdi-plus"></i> Add new</button>
-                    <button class="btn btn-secondary" type="button"><i class="mdi mdi-printer"></i> Print</button>
-                    <form method="GET" action="#" class="d-flex flex-wrap gap-2 align-items-center">
-                        <input type="text" name="name" class="form-control" placeholder="Название" value="{{ request('name') }}">
-                    
-                        <select name="category_id" class="form-select">
-                            <option value="">Все категории</option>
-                            @foreach($categories as $cat)
-                                <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>
-                                    {{ $cat->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    
-                        <select name="brand_id" class="form-select">
-                            <option value="">Все бренды</option>
-                            @foreach($brands as $brand)
-                                <option value="{{ $brand->id }}" {{ request('brand_id') == $brand->id ? 'selected' : '' }}>
-                                    {{ $brand->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    
-                        <select name="status" class="form-select">
-                            <option value="">Все статусы</option>
-                            <option value="normal" {{ request('status') === 'normal' ? 'selected' : '' }}>В наличии</option>
-                            <option value="low" {{ request('status') === 'low' ? 'selected' : '' }}>Мало</option>
-                            <option value="out_of_stock" {{ request('status') === 'out_of_stock' ? 'selected' : '' }}>Нет в наличии</option>
-                        </select>
-                    
-                        <button type="submit" class="btn btn-primary">
-                            <i class="mdi mdi-filter"></i> Фильтр
+                <div class="d-sm-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle text-dark" type="button" id="filterDropdown"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="mdi mdi-filter-outline"></i> Фильтр
+                            </button>
+                            <div class="dropdown-menu p-3 shadow" style="min-width:300px;" aria-labelledby="filterDropdown">
+                                <form method="POST" action="#">
+                                    @csrf
+                                    <div class="mb-2">
+                                        <input type="text" name="name" class="form-control" placeholder="Название"
+                                            value="{{ request('name') }}">
+                                    </div>
+                                    <div class="mb-2">
+                                        <select name="category_id" class="form-select">
+                                            <option value="">Все категории</option>
+                                            @foreach ($categories as $c)
+                                                <option value="{{ $c->id }}"
+                                                    {{ request('category_id') == $c->id ? 'selected' : '' }}>
+                                                    {{ $c->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="mb-2">
+                                        <select name="brand_id" class="form-select">
+                                            <option value="">Все бренды</option>
+                                            @foreach ($brands as $b)
+                                                <option value="{{ $b->id }}"
+                                                    {{ request('brand_id') == $b->id ? 'selected' : '' }}>
+                                                    {{ $b->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="mb-2">
+                                        <select name="status" class="form-select">
+                                            <option value="">Все статусы</option>
+                                            <option value="normal" {{ request('status') === 'normal' ? 'selected' : '' }}>В
+                                                наличии</option>
+                                            <option value="low" {{ request('status') === 'low' ? 'selected' : '' }}>Мало
+                                            </option>
+                                            <option value="out_of_stock"
+                                                {{ request('status') === 'out_of_stock' ? 'selected' : '' }}>Нет в наличии
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="d-grid gap-2">
+                                        <button type="submit" class="btn btn-sm btn-primary">
+                                            <i class="mdi mdi-filter"></i> Применить
+                                        </button>
+                                        <a href="#" class="btn btn-sm btn-outline-secondary">Сброс</a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newProductModal"
+                            type="button">
+                            <i class="mdi mdi-plus"></i> Add new
                         </button>
-                    
-                        <a href="#" class="btn btn-outline-secondary">
-                            ❌ Сброс
-                        </a>
-                    </form>
-                    
+                    </div>
                 </div>
             </div>
             <div class="table-responsive">
-                <table class="table table-hover mb-3">
+                <table class="table table-hover ">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -137,39 +158,36 @@
                     </tbody>
                 </table>
             </div>
-            <div class="mt-3 d-flex justify-content-between align-items-center">
-
-                <div class="pagination mb-0">
+            <div class="mt-3 d-flex justify-content-between align-items-center mb-3">
+                <div class="pagination">
                     {{ $products->links('pagination::bootstrap-4') }}
                 </div>
-                <p class="text-muted mb-0">
+                <p class="text-muted">
                     Показаны с {{ $products->firstItem() }} по {{ $products->lastItem() }} из
                     {{ $products->total() }} результатов
                 </p>
-                <button class="btn btn-primary" type="button"><i class="mdi mdi-download"></i> Export</button>
-                
+                <div class="d-flex justify-content-between gap-3 text-muted">
+                    <a href="#" class="text-decoration-none"><i class="mdi mdi-download"></i> export</a>
+                    <a href="#" class="text-decoration-none">
+                        <i class="mdi mdi-printer"></i> print
+                    </a>
+                </div>
             </div>
-            
         </div>
     </div>
-
     <script>
         var unitPrice = 0;
         var quantity = 1;
-        var currentModalType = 'consume'; // Default
-
+        var currentModalType = 'consume';
         function openModal(element) {
             var id = element.getAttribute('data-id');
             var photo = element.getAttribute('data-photo');
             var name = element.getAttribute('data-name');
             var salePrice = element.getAttribute('data-sale_price').replace(/\s/g, '');
-
             unitPrice = parseFloat(salePrice);
             quantity = 1;
-
             const modalId = element.getAttribute('data-bs-target');
             currentModalType = modalId === '#consumeProductModal' ? 'consume' : 'intake';
-
             if (currentModalType === 'consume') {
                 document.getElementById('consume_product_id').value = id;
                 document.getElementById('consume_product_photo').src = photo;
@@ -185,65 +203,51 @@
                     .toLocaleString() + ' сум';
                 document.getElementById('intake_qty').value = quantity;
             }
-
             updateTotal();
-            onTransactionTypeChange(); // handle default fields
+            onTransactionTypeChange();
         }
-
         function increaseQty() {
             var qtyInputId = currentModalType === 'consume' ? 'consume_qty' : 'intake_qty';
             var qtyInput = document.getElementById(qtyInputId);
-
             var currentQty = parseInt(qtyInput.value);
             if (!isNaN(currentQty)) {
                 qtyInput.value = currentQty + 1;
                 updateTotal();
             }
         }
-
         function decreaseQty() {
             var qtyInputId = currentModalType === 'consume' ? 'consume_qty' : 'intake_qty';
             var qtyInput = document.getElementById(qtyInputId);
-
             var currentQty = parseInt(qtyInput.value);
             if (!isNaN(currentQty) && currentQty > 1) {
                 qtyInput.value = currentQty - 1;
                 updateTotal();
             }
         }
-
         function updateTotal() {
             var qtyInputId = currentModalType === 'consume' ? 'consume_qty' : 'intake_qty';
             var totalPriceId = currentModalType === 'consume' ? 'consume_total_price' : 'intake_total_price';
             var hiddenTotalPriceId = currentModalType === 'consume' ? 'consume_hidden_total_price' :
                 'intake_hidden_total_price';
-
             var quantity = parseInt(document.getElementById(qtyInputId).value);
             if (isNaN(quantity) || quantity < 1) {
                 quantity = 1;
                 document.getElementById(qtyInputId).value = quantity;
             }
-
             var total = unitPrice * quantity;
-
             document.getElementById(totalPriceId).textContent = total.toLocaleString();
             document.getElementById(hiddenTotalPriceId).value = total;
         }
-
         function onTransactionTypeChange() {
             var typeSelectId = currentModalType === 'consume' ? 'consume_transaction_type' : 'intake_transaction_type';
             var selectElement = document.getElementById(typeSelectId);
-
             if (!selectElement) return;
-
             var type = selectElement.value;
-
             if (currentModalType === 'consume') {
                 var clientPhoneGroup = document.getElementById('consume_client_phone_group');
                 var clientPhoneInput = document.getElementById('consume_client_phone');
                 var returnReasonGroup = document.getElementById('consume_return_reason_group');
                 var returnReasonInput = document.getElementById('consume_return_reason');
-
                 if (type === 'loan') {
                     clientPhoneGroup.style.display = 'block';
                     setTimeout(() => clientPhoneInput.focus(), 100);
@@ -251,7 +255,6 @@
                     clientPhoneGroup.style.display = 'none';
                     clientPhoneInput.value = '';
                 }
-
                 if (type === 'return') {
                     returnReasonGroup.style.display = 'block';
                     setTimeout(() => returnReasonInput.focus(), 100);
@@ -259,11 +262,9 @@
                     returnReasonGroup.style.display = 'none';
                     returnReasonInput.value = '';
                 }
-
             } else if (currentModalType === 'intake') {
                 var returnReasonGroup = document.getElementById('intake_return_reason_group');
                 var returnReasonInput = document.getElementById('intake_return_reason');
-
                 if (type === 'intake_return') {
                     returnReasonGroup.style.display = 'block';
                     setTimeout(() => returnReasonInput.focus(), 100);
@@ -274,12 +275,10 @@
             }
         }
     </script>
-
     @include('pages.products.modals.new-product')
     @include('pages.products.modals.edit-product')
     @include('pages.products.modals.view-product')
     @include('pages.products.modals.consume-product')
     @include('pages.products.modals.intake-product')
     @include('pages.products.modals.delete-product')
-    
 @endsection
