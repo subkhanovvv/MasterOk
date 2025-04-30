@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ChequeController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\ProductController;
@@ -58,12 +59,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('edit-profile.{id}', [AuthController::class, 'edit_profile'])->name('edit-profile');
     Route::post('update-profile', [AuthController::class, 'update_profile'])->name('update-profile');
 
-    Route::get('barcode',[ProductController::class, 'barcode'])->name('barcode');
+    Route::get('barcode', [ProductController::class, 'barcode'])->name('barcode');
 
     Route::post('consume', [ProductController::class, 'consume'])->name('consume');
     Route::post('intake', [ProductController::class, 'intake'])->name('intake');
     Route::get('history', [ProductController::class, 'history'])->name('history');
 
+    Route::get('/transactions/{id}/cheque', [ChequeController::class, 'printCheque'])->name('transactions.cheque');
 });
 
 Route::middleware(['guest'])->group(function () {

@@ -15,4 +15,10 @@ class ProductActivity extends Model
     {
         return $this->belongsTo(Product::class);
     }
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'product_activity_product')
+            ->withPivot('qty')
+            ->withTimestamps();
+    }
 }

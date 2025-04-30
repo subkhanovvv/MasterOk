@@ -65,10 +65,10 @@
                                 </form>
                             </div>
                         </div>
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newProductModal"
+                        {{-- <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newProductModal"
                             type="button">
                             <i class="mdi mdi-plus"></i> Add new
-                        </button>
+                        </button> --}}
                     </div>
                 </div>
             </div>
@@ -97,27 +97,23 @@
                                     <img src="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
                                         alt="{{ $p->name }}">
                                 </td>
-                                <td>{{ number_format($p->price_uzs) }} sum / ${{ $p->price_usd }}</td>
+                                <td>{{ number_format($p->total_price) }} sum / ${{ $p->price_usd }}</td>
                                 {{-- <td>{{ $p->get_brand->name }}</td> --}}
                                 <td>
                                     @php
-                                        $color =
-                                            $p->status === 'normal'
-                                                ? 'success'
-                                                : ($p->status === 'low'
-                                                    ? 'warning'
-                                                    : 'danger');
-
-                                        $statusRu = match ($p->status) {
-                                            'normal' => 'В наличии',
-                                            'low' => 'Мало',
-                                            'out_of_stock' => 'Нет в наличии',
-                                            default => $p->status,
-                                        };
-                                    @endphp
-                                    <span class="badge badge-{{ $color }}">
-                                        {{ $statusRu }}
-                                    </span>
+                                    $typeRu = match($p->type) {
+                                        'consume' => 'Расход',
+                                        'intake' => 'Приход',
+                                        'return' => 'Возврат клиента',
+                                        'loan' => 'Долг клиента',
+                                        'intake_return' => 'Возврат поставщику',
+                                        'intake_loan' => 'Долг поставщику',
+                                        default => $p->type,
+                                    };
+                                @endphp
+                                
+                                <span>{{ $typeRu }}</span>
+                                
                                 </td>
                                 <td>{{ number_format($p->sale_price) }}</td>
                                 <td>{{ $p->qty }} {{ $p->unit }}</td>
@@ -130,12 +126,8 @@
                                 </td>
                                 <td>
                                     <div class="d-flex justify-content-center gap-1">
-                                        <a href="javascript:void(0);" title="Расход товара" data-bs-toggle="modal"
-                                            data-bs-target="#consumeProductModal" data-id="{{ $p->id }}"
-                                            data-photo="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
-                                            data-name="{{ $p->name }}" data-sale_price="{{ $p->sale_price }}"
-                                            data-unit="{{ $p->unit }}" onclick="openModal(this)">
-                                            <i class="mdi mdi-database-minus icon-sm text-primary"></i>
+                                        <a href="{{ route('transactions.cheque', $p->id) }}" title="Расход товара">
+                                            <i class="mdi mdi-pencil icon-sm text-primary"></i>
                                         </a>
                                         <a href="javascript:void(0);" title="Приход товара" data-bs-toggle="modal"
                                             data-bs-target="#intakeProductModal" data-id="{{ $p->id }}"
