@@ -97,7 +97,7 @@
 
     </div>
 
-    <script>
+    {{-- <script>
         let scannedData = '';
         let scanTimeout;
 
@@ -160,7 +160,7 @@
             // Show the modal
             $('#consumeProductModal').modal('show');
         }
-    </script>
+    </script> --}}
 
     <script src="{{ asset('admin/assets/vendors/js/vendor.bundle.base.js') }}"></script>
     <script src="{{ asset('admin/assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js') }}"></script>

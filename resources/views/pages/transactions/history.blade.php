@@ -76,14 +76,11 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Название</th>
-                            <th>photo</th>
-                            <th>Цена (UZS/USD)</th>
-                            <th>Бренд</th>
-                            <th>Статус</th>
-                            <th>Цена</th>
-                            <th>Склад</th>
-                            <th>Штрих-код</th>
+                            <th>transaction date</th>
+                            <th>type</th>
+                            <th>total price</th>
+                            <th>product</th>
+                            <th>qty</th>
                             <th>Действие</th>
                         </tr>
                     </thead>
@@ -91,13 +88,11 @@
                         @foreach ($product_act as $p)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ $p->product->name }}</td>
-                                <td>
-                                    <img src="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
-                                        alt="{{ $p->name }}">
+                                <td title="{{ \Carbon\Carbon::parse($p->created_at)->format('H:i') }}">
+                                    {{ \Carbon\Carbon::parse($p->created_at)->format('d-m-Y') }}
                                 </td>
+                                <td>{{ $p->product->name }}</td>
                                 <td>{{ number_format($p->total_price) }} sum / ${{ $p->price_usd }}</td>
-                                {{-- <td>{{ $p->get_brand->name }}</td> --}}
                                 <td>
                                     @php
                                         $typeRu = match ($p->type) {
@@ -114,30 +109,24 @@
                                     <span>{{ $typeRu }}</span>
 
                                 </td>
-                                <td>{{ number_format($p->sale_price) }}</td>
+                                {{-- <td>{{ number_format($p->sale_price) }}</td> --}}
                                 <td>{{ $p->qty }} {{ $p->unit }}</td>
                                 <td>
-                                        {!! file_get_contents(storage_path('app/public/' . $p->qr_code)) !!}
-                                </td>
-                                <td>
                                     <div class="d-flex justify-content-center gap-1">
-                                        <a href="{{ route('transactions.cheque', $p->id) }}" title="Расход товара">
-                                            <i class="mdi mdi-pencil icon-sm text-primary"></i>
+                                        <a onclick='showTransactionDetailsModal(@json($p))'>
+                                            <i class="mdi mdi-eye">
+                                            </i>
                                         </a>
                                         <a href="javascript:void(0);" title="Приход товара" data-bs-toggle="modal"
                                             data-bs-target="#intakeProductModal" data-id="{{ $p->id }}"
                                             data-photo="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
                                             data-name="{{ $p->name }}" data-sale_price="{{ $p->sale_price }}"
                                             data-unit="{{ $p->unit }}" onclick="openModal(this)">
-                                            <i class="mdi mdi-database-plus icon-sm text-success"></i>
+                                            <i class="mdi mdi-printer icon-sm text-success"></i>
                                         </a>
                                         <a href="javascript:void(0);" title="Редактировать" data-bs-toggle="modal"
                                             data-bs-target="#editProductModal">
-                                            <i class="mdi mdi-pencil icon-sm text-primary"></i>
-                                        </a>
-                                        <a href="javascript:void(0);" title="Удалить" data-bs-toggle="modal"
-                                            data-bs-target="#deleteProductModal">
-                                            <i class="mdi mdi-delete icon-sm text-danger"></i>
+                                            <i class="mdi mdi-download icon-sm text-primary"></i>
                                         </a>
                                     </div>
                                 </td>
@@ -163,4 +152,37 @@
             </div>
         </div>
     </div>
+    @include('pages.transactions.modals.cheque')
+    <script>
+        function showTransactionDetailsModal(transaction) {
+            document.getElementById('td_id').textContent = transaction.id;
+            document.getElementById('td_product_id').textContent = transaction.product_id;
+            document.getElementById('td_type').textContent = transaction.type;
+            document.getElementById('td_qty').textContent = transaction.qty;
+            document.getElementById('td_total_price').textContent = transaction.total_price;
+            document.getElementById('td_paid_amount').textContent = transaction.paid_amount;
+            document.getElementById('td_return_reason').textContent = transaction.return_reason ?? '-';
+            document.getElementById('td_number').textContent = transaction.client_phone ?? '-';
+
+            if (transaction.qr_code) {
+                fetch(`/storage/${transaction.qr_code}`)
+                    .then(res => res.text())
+                    .then(svg => {
+                        document.getElementById('qrCodePreview').innerHTML = svg;
+                    });
+            }
+            if (transaction.return_reason) {
+                document.getElementById('td_return_reason_row').style.display = 'block';
+            } else {
+                document.getElementById('td_return_reason_row').style.display = 'none';
+            }
+            if (transaction.client_phone) {
+                document.getElementById('td_number_row').style.display = 'block';
+            } else {
+                document.getElementById('td_number_row').style.display = 'none';
+            }
+            const modal = new bootstrap.Modal(document.getElementById('transactionDetailsModal'));
+            modal.show();
+        }
+    </script>
 @endsection

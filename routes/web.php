@@ -7,6 +7,7 @@ use App\Http\Controllers\ChequeController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Milon\Barcode\DNS1D as BarcodeDNS1D;
@@ -61,8 +62,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('barcode', [ProductController::class, 'barcode'])->name('barcode');
 
-    Route::post('consume', [ProductController::class, 'consume'])->name('consume');
-    Route::post('intake', [ProductController::class, 'intake'])->name('intake');
+    Route::post('consume', [TransactionController::class, 'consume'])->name('consume');
+    Route::post('intake', [TransactionController::class, 'intake'])->name('intake');
     Route::get('history', [ProductController::class, 'history'])->name('history');
     Route::post('/scan-transaction', [ProductController::class, 'scanTransaction'])->name('scan.transaction');
 
