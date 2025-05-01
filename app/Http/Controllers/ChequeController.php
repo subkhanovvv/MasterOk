@@ -12,4 +12,5 @@ class ChequeController extends Controller
         $transaction = ProductActivity::with('products')->findOrFail($id);
         return view('pages.cheques.transactions', compact('transaction'));
     }
+    
 }

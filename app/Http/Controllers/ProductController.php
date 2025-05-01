@@ -127,13 +127,7 @@ class ProductController extends Controller
         $barcodes = Product::orderBy('id', 'desc')->paginate(12);
         return view('pages.barcodes.barcode', compact('barcodes'));
     }
-    public function history()
-    {
-        $brands = Brand::orderBy('id', 'desc')->get();
-        $categories = Category::orderBy('id', 'desc')->get();
-        $product_act = ProductActivity::orderBy('id', 'desc')->paginate(10);
-        return view('pages.transactions.history', compact('product_act', 'brands', 'categories'));
-    }
+    
     public function verifyAjax(Request $request)
     {
         $text = $request->input('scanned_data');

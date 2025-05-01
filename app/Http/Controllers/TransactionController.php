@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Brand;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductActivity;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
@@ -139,5 +141,12 @@ class TransactionController extends Controller
             DB::rollBack();
             return back()->withErrors(['error' => 'Произошла ошибка: ' . $e->getMessage()]);
         }
+    }
+    public function transactions()
+    {
+        $brands = Brand::orderBy('id', 'desc')->get();
+        $categories = Category::orderBy('id', 'desc')->get();
+        $transaction = ProductActivity::orderBy('id', 'desc')->paginate(10);
+        return view('pages.transaction.transactions', compact('transaction', 'brands', 'categories'));
     }
 }
