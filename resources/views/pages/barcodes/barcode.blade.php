@@ -51,9 +51,9 @@
             <div class="barcode-grid">
                 @foreach ($barcodes as $b)
                     <div class="barcode-item">
-                        <strong>{{ $b->product->name }} ({{ $b->product->qty }} {{ $b->product->unit }})</strong>
-                        {!! file_get_contents(storage_path('app/public/' . $b->barcode_path)) !!}
-                        <p>{{ $b->barcode }}</p>
+                        <strong>{{ $b->name }} ({{ $b->qty }} {{ $b->unit }})</strong>
+                        {!! file_get_contents(storage_path('app/public/' . $b->barcode)) !!}
+                        <p>{{ $b->barcode_value }}</p>
                     </div>
                 @endforeach
             </div>

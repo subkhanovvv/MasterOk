@@ -77,9 +77,9 @@
                         <tr>
                             <th>#</th>
                             <th>transaction date</th>
-                            <th>type</th>
-                            <th>total price</th>
                             <th>product</th>
+                            <th>total price</th>
+                            <th>type</th>
                             <th>qty</th>
                             <th>Действие</th>
                         </tr>
@@ -92,7 +92,7 @@
                                     {{ \Carbon\Carbon::parse($p->created_at)->format('d-m-Y') }}
                                 </td>
                                 <td>{{ $p->product->name }}</td>
-                                <td>{{ number_format($p->total_price) }} sum / ${{ $p->price_usd }}</td>
+                                <td>{{ number_format($p->total_price) }}uzs</td>
                                 <td>
                                     @php
                                         $typeRu = match ($p->type) {
@@ -114,7 +114,7 @@
                                 <td>
                                     <div class="d-flex justify-content-center gap-1">
                                         <a onclick='showTransactionDetailsModal(@json($p))'>
-                                            <i class="mdi mdi-eye">
+                                            <i class="mdi mdi-eye text-primary">
                                             </i>
                                         </a>
                                         <a href="javascript:void(0);" title="Приход товара" data-bs-toggle="modal"
@@ -154,6 +154,7 @@
     </div>
     @include('pages.transactions.modals.cheque')
     <script>
+        const createdat = '{{ \Carbon\Carbon::parse($p->created_at)->format('d-m-Y') }}';
         function showTransactionDetailsModal(transaction) {
             document.getElementById('td_id').textContent = transaction.id;
             document.getElementById('td_product_id').textContent = transaction.product_id;
@@ -162,7 +163,10 @@
             document.getElementById('td_total_price').textContent = transaction.total_price;
             document.getElementById('td_paid_amount').textContent = transaction.paid_amount;
             document.getElementById('td_return_reason').textContent = transaction.return_reason ?? '-';
-            document.getElementById('td_number').textContent = transaction.client_phone ?? '-';
+            document.getElementById('td_number').textContent = transaction.client_phone;
+            // document.getElementById('td_created_at').textContent = transaction.created_at;
+            document.getElementById('td_created_at').textContent = createdat;
+
 
             if (transaction.qr_code) {
                 fetch(`/storage/${transaction.qr_code}`)

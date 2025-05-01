@@ -40,7 +40,6 @@ class ProductController extends Controller
         ]);
 
         $photoPath = null;
-
         if ($request->hasFile('photo')) {
             $photoPath = $request->file('photo')->store('products', 'public');
         }
@@ -58,11 +57,9 @@ class ProductController extends Controller
             'brand_id' => $validated['brand_id'],
         ]);
 
-        // ✅ Generate barcode
-        $barcodeValue = str_pad($product->category_id, 2, '0', STR_PAD_LEFT) . str_pad($product->id, 5, '0', STR_PAD_LEFT);
+        $barcodeValue = str_pad($product->category_id, 2, STR_PAD_LEFT) . str_pad($product->id, 5, '0', STR_PAD_LEFT);
 
         $barcodeDir = storage_path('app/public/barcodes');
-
         if (!file_exists($barcodeDir)) {
             mkdir($barcodeDir, 0755, true);
         }
@@ -70,15 +67,11 @@ class ProductController extends Controller
         $dns1d = new DNS1D();
         $barcodeSVG = $dns1d->getBarcodeSVG($barcodeValue, 'C39', 1, 60);
         $barcodeImagePath = 'barcodes/' . $barcodeValue . '.svg';
-
-        // ✅ Save the SVG directly (no base64 decoding)
         file_put_contents(storage_path('app/public/' . $barcodeImagePath), $barcodeSVG);
 
-        // ✅ Save barcode info to DB
-        Barcode::create([
-            'barcode' => $barcodeValue,
-            'product_id' => $product->id,
-            'barcode_path' => $barcodeImagePath,
+        $product->update([
+            'barcode_value' => $barcodeValue,
+            'barcode' => $barcodeImagePath,
         ]);
 
         // ✅ Telegram Notification
@@ -128,10 +121,10 @@ class ProductController extends Controller
             'id' => $id,
         ]);
     }
- 
+
     public function barcode()
     {
-        $barcodes = Barcode::orderBy('id', 'desc')->paginate(12);
+        $barcodes = Product::orderBy('id', 'desc')->paginate(12);
         return view('pages.barcodes.barcode', compact('barcodes'));
     }
     public function history()

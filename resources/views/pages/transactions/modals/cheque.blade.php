@@ -1,6 +1,7 @@
 <!-- Transaction Details Modal -->
-<div class="modal fade" id="transactionDetailsModal" tabindex="-1" aria-labelledby="transactionDetailsLabel" aria-hidden="true">
-    <div class="modal-dialog modal-md">
+<div class="modal fade" id="transactionDetailsModal" tabindex="-1" aria-labelledby="transactionDetailsLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
         <div class="modal-content border">
             <div class="modal-header">
                 <h5 class="modal-title" id="transactionDetailsLabel">Чек транзакции</h5>
@@ -11,12 +12,12 @@
                 <div class="text-center">
                     <h4 class="mb-1">MasterOK</h4>
                     <p class="fw-bold mb-0">Транзакция №<span id="td_id"></span></p>
-                    <small class="text-muted" id="td_created_at"></small>
+                        <small class="text-muted" id="td_created_at"></small>
+                        {{-- {{ \Carbon\Carbon::parse($p->created_at)->format('d-m-Y') }} --}}
+
                     <hr>
                 </div>
-
                 <!-- QR code + table -->
-               
 
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item"><strong>Тип:</strong> <span id="td_type"></span></li>

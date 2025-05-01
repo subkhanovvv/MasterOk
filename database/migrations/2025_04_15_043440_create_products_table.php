@@ -25,6 +25,8 @@ return new class extends Migration
             $table->foreignId('category_id')->constrained()->onDelete('restrict');
             $table->decimal('tax')->default(0);
             $table->foreignId('brand_id')->constrained()->onDelete('restrict');
+            $table->string('barcode')->nullable();
+            $table->integer('barcode_value')->nullable();
             $table->timestamps();
             $table->index('status');
         });

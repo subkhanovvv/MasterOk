@@ -123,7 +123,7 @@
                                 <td>{{ $p->qty }} {{ $p->unit }}</td>
                                 <td>
                                     @if ($p->barcode)
-                                        <p>{{ $p->barcode->barcode }}</p>
+                                        <p>{{ $p->barcode_value }}</p>
                                     @else
                                         <p>No barcode</p>
                                     @endif
