@@ -66,6 +66,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('intake', [TransactionController::class, 'intake'])->name('intake');
     Route::get('transactions', [TransactionController::class, 'transactions'])->name('transactions');
 
+    Route::post('products.byCategory/{id}', [ProductController::class, 'productsByCategory'])->name('products.byCategory');
+
     Route::get('/transactions/{id}/cheque', [ChequeController::class, 'printCheque'])->name('transactions.cheque');
 });
 

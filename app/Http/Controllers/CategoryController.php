@@ -13,9 +13,12 @@ class CategoryController extends Controller
 {
     public function category()
     {
-        $categories = Category::orderBy('id', 'desc')->paginate(10);
+        $categories = Category::withCount('products')
+            ->orderBy('id', 'desc')
+            ->paginate(10);
         return view('pages.categories.category', compact('categories'));
     }
+
 
     public function new_category()
     {
@@ -32,29 +35,49 @@ class CategoryController extends Controller
     {
         $validated = $request->validate([
             'name'  => 'required|string|max:255',
+            'photo' => 'nullable|image',
         ]);
-
-        $photoPath = $request->file('photo')->store('categories', 'public');
-
-        Category::create([
+    
+        $photoPath = null;
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('categories', 'public');
+        }
+    
+        $category = Category::create([
             'name'  => $validated['name'],
             'photo' => $photoPath,
         ]);
-
-        $message = "🛒 Новый продукт добавлен:\n\nНазвание: {$request->name}\n\nФото: {$request->file('photo')->getClientOriginalName()}\n\n";
+    
+        // ✅ Telegram Notification
+        $message = "📂 <b>Новая категория добавлена</b>\n\n" .
+                   "📝 Название: <b>{$category->name}</b>";
+    
         $botToken = config('services.telegram.token');
         $chatIds = config('services.telegram.chat_ids');
-
+    
         foreach ($chatIds as $chatId) {
-            Http::post("https://api.telegram.org/bot{$botToken}/sendMessage", [
-                'chat_id' => trim($chatId),
-                'text' => $message
-            ]);
+            if ($photoPath) {
+                Http::attach(
+                    'photo',
+                    file_get_contents(storage_path("app/public/{$photoPath}")),
+                    basename($photoPath)
+                )->post("https://api.telegram.org/bot{$botToken}/sendPhoto", [
+                    'chat_id' => trim($chatId),
+                    'caption' => $message,
+                    'parse_mode' => 'HTML',
+                ]);
+            } else {
+                Http::post("https://api.telegram.org/bot{$botToken}/sendMessage", [
+                    'chat_id' => trim($chatId),
+                    'text' => $message,
+                    'parse_mode' => 'HTML',
+                ]);
+            }
         }
-
-
-        return redirect()->route('category')->with('success', 'Категория успешно сохранён!');
+    
+        return redirect()->route('category')->with('success', 'Категория успешно сохранена!');
     }
+    
 
     public function update_category(Request $request)
     {
