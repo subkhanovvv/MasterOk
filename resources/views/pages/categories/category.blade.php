@@ -66,7 +66,7 @@
     </div>
     {{-- </div> --}}
     <br>
-
+    
     @include('pages.categories.modals.new-category')
     @include('pages.categories.modals.edit-category')
     {{-- @include('pages.categories.modals.view-product') --}}

@@ -37,47 +37,16 @@ class CategoryController extends Controller
             'name'  => 'required|string|max:255',
             'photo' => 'nullable|image',
         ]);
-    
-        $photoPath = null;
-        if ($request->hasFile('photo')) {
-            $photoPath = $request->file('photo')->store('categories', 'public');
-        }
-    
-        $category = Category::create([
+
+        $photoPath = $request->hasFile('photo') ? $request->file('photo')->store('categories', 'public') : null;
+
+        Category::create([
             'name'  => $validated['name'],
             'photo' => $photoPath,
         ]);
-    
-        // ✅ Telegram Notification
-        $message = "📂 <b>Новая категория добавлена</b>\n\n" .
-                   "📝 Название: <b>{$category->name}</b>";
-    
-        $botToken = config('services.telegram.token');
-        $chatIds = config('services.telegram.chat_ids');
-    
-        foreach ($chatIds as $chatId) {
-            if ($photoPath) {
-                Http::attach(
-                    'photo',
-                    file_get_contents(storage_path("app/public/{$photoPath}")),
-                    basename($photoPath)
-                )->post("https://api.telegram.org/bot{$botToken}/sendPhoto", [
-                    'chat_id' => trim($chatId),
-                    'caption' => $message,
-                    'parse_mode' => 'HTML',
-                ]);
-            } else {
-                Http::post("https://api.telegram.org/bot{$botToken}/sendMessage", [
-                    'chat_id' => trim($chatId),
-                    'text' => $message,
-                    'parse_mode' => 'HTML',
-                ]);
-            }
-        }
-    
-        return redirect()->route('category')->with('success', 'Категория успешно сохранена!');
+
+        return redirect()->route('category')->with('success', 'Категория успешно добавлена!');
     }
-    
 
     public function update_category(Request $request)
     {
@@ -125,4 +94,35 @@ class CategoryController extends Controller
             return redirect()->route('brand')->with('error', 'Невозможно удалить бренд, так как он используется в продуктах.');
         }
     }
+    // public function notifyCategory(Request $request)
+    // {
+    //     $name = $request->name;
+    //     $photoPath = $request->photo;
+
+    //     $message = "📂 <b>Новая категория добавлена</b>\n\n📝 Название: <b>{$name}</b>";
+
+    //     $botToken = config('services.telegram.token');
+    //     $chatIds = config('services.telegram.chat_ids');
+
+    //     foreach ($chatIds as $chatId) {
+    //         if ($photoPath) {
+    //             \Illuminate\Support\Facades\Http::attach(
+    //                 fopen(storage_path( $photoPath), 'r'),
+    //                 basename($photoPath)
+    //             )->post("https://api.telegram.org/bot{$botToken}/sendPhoto", [
+    //                 'chat_id' => trim($chatId),
+    //                 'caption' => $message,
+    //                 'parse_mode' => 'HTML',
+    //             ]);
+    //         } else {
+    //             \Illuminate\Support\Facades\Http::post("https://api.telegram.org/bot{$botToken}/sendMessage", [
+    //                 'chat_id' => trim($chatId),
+    //                 'text' => $message,
+    //                 'parse_mode' => 'HTML',
+    //             ]);
+    //         }
+    //     }
+
+    //     return response()->json(['sent' => true]);
+    // }
 }

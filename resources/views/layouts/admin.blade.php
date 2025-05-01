@@ -179,7 +179,10 @@
     <!-- Custom js for this page-->
     <script src="{{ asset('admin/assets/js/jquery.cookie.js') }}" type="text/javascript"></script>
     <script src="{{ asset('admin/assets/js/dashboard.js') }}"></script>
-    <script src="{{ asset('admin/assets/js/proBanner.js') }}"></script>
+    <!-- ✅ Load jQuery first -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
 </body>
 
 </html>

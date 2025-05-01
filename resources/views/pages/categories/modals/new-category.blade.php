@@ -6,7 +6,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form method="POST" action="{{ route('store-category') }}" enctype="multipart/form-data">
+                <form method="POST" action="{{route('store-category')}}" enctype="multipart/form-data">
                     @csrf
                     <div class="form-group">
                         <label for="categoryName">Название товара</label>
@@ -18,7 +18,7 @@
                         <div class=" row g-4">
                             <div class="col-12 col-md-6">
                                 <input class="form-control form-control-sm mb-3" type="file" name="photo"
-                                    id="photo" required accept="image/*" onchange="previewImage(event)">
+                                    id="photo" accept="image/*" onchange="previewImage(event)">
                             </div>
                             <div class="col-12 col-md-6">
                                 <div class="preview mb-3" id="imagePreview" style="display: none;">
@@ -38,6 +38,8 @@
         </div>
     </div>
     <script>
+   
+
         function previewImage(event) {
             const input = event.target;
             const preview = document.getElementById('imagePreview');

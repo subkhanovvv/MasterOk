@@ -68,6 +68,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('products.byCategory/{id}', [ProductController::class, 'productsByCategory'])->name('products.byCategory');
 
+    Route::post('/telegram/category-notify', [CategoryController::class, 'notifyCategory'])->name('telegram.category.notify');
+
+
     Route::get('/transactions/{id}/cheque', [ChequeController::class, 'printCheque'])->name('transactions.cheque');
 });
 
