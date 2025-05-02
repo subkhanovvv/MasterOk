@@ -71,8 +71,13 @@
                                             data-brand="{{ json_encode($brand) }}" onclick="viewBrand(this)">
                                             <i class="mdi mdi-eye icon-sm text-info"></i>
                                         </a>
-                                        <a href="#" data-bs-toggle="modal" data-bs-target="#editBrandModal"
-                                            data-brand="{{ json_encode($brand) }}" onclick="editBrand(this)">
+                                        <a href="javascript:void(0);" title="Редактировать" data-bs-toggle="modal"
+                                            data-bs-target="#editBrandModal" data-id="{{ $brand->id }}"
+                                            data-name="{{ $brand->name }}"
+                                            data-description="{{ $brand->description }}"
+                                            data-phone="{{ $brand->phone }}"
+                                            data-photo="{{ $brand->photo ? Storage::url($brand->photo) : asset('admin/assets/images/default_product.png') }}"
+                                            onclick="openModal(this)">
                                             <i class="mdi mdi-pencil icon-sm text-primary"></i>
                                         </a>
                                         <a href="javascript:void(0);" title="Удалить" data-bs-toggle="modal"
@@ -106,10 +111,10 @@
         </div>
     </div>
 
-    
+
     @include('pages.brands.modals.delete-brand')
-    @include('pages.brands.modals.new-brand')
     @include('pages.brands.modals.edit-brand')
+    @include('pages.brands.modals.new-brand')
     {{-- @include('pages.brands.modals.view-brand') --}}
 
 
@@ -120,9 +125,18 @@
             var name = element.getAttribute('data-name');
             const modalId = element.getAttribute('data-bs-target');
 
-           
+
             if (modalId === '#deleteBrandModal') {
                 document.getElementById('delete-brand-form').action = `/brands/${id}`;
+            } else if (modalId === '#editBrandModal') {
+                currentModalType = 'edit';
+                document.getElementById('edit_brand_id').value = id;
+                document.getElementById('edit_brand_name').value = name;
+                document.getElementById('edit_brand_description').value = element.getAttribute(
+                    'data-description') || '';
+                document.getElementById('edit_brand_price').value = salePrice;
+                document.getElementById('edit_brand_photo').src = photo;
+                document.getElementById('editBrandForm').action = `/brands/${id}`;
             }
         }
     </script>

@@ -62,48 +62,42 @@ class BrandController extends Controller
       return redirect()->route('brand')->with('success', 'Бренд успешно сохранён!');
    }
 
-   public function update(Request $request)
+   public function update(Request $request, Brand $brand)
    {
       $validated = $request->validate([
-         'name'  => 'required|string|max:255',
-         'phone'  => 'required|string|max:20|unique:brands,phone,' . $request->id,
-         'description'  => 'required|string|max:255,',
+         'name' => 'required|string|max:255',
+         'description' => 'nullable|string',
+         'phone' => 'required|numeric|min:0',
+         'photo' => 'nullable|image|max:2048',
       ]);
 
-      $brand = Brand::findOrFail($request->id);
+      $brand->name = $validated['name'];
+      $brand->description = $validated['description'] ?? '';
+      $brand->phone = $validated['phone']; // Updated to sale_price
 
       if ($request->hasFile('photo')) {
+         // Delete the old photo if it exists
          if ($brand->photo) {
-            Storage::delete('public/' . $brand->photo);
+            Storage::delete($brand->photo);
          }
-
-         $photoPath = $request->file('photo')->store('brands', 'public');
-
-         $validated['photo'] = $photoPath;
-      } else {
-         $validated['photo'] = $brand->photo;
+         // Store the new photo and update the file path
+         $brand->photo = $request->file('photo')->store('brands');
       }
 
-      $brand->update([
-         'name' => $validated['name'],
-         'phone' => $validated['phone'],
-         'photo'  => $validated['photo'],
-         'description'  => $validated['description'],
-      ]);
+      $brand->save();
 
-      return redirect()->route('brand')->with('success', 'Бренд успешно обновлён!');
+      return redirect()->back()->with('success', 'Товар успешно обновлен.');
    }
 
    public function destroy($id)
    {
-       try {
-           $brand = Brand::findOrFail($id);
-           $brand->delete();
+      try {
+         $brand = Brand::findOrFail($id);
+         $brand->delete();
 
-           return redirect()->back()->with('success', 'Brand успешно удален');
-       } catch (\Exception $e) {
-           return redirect()->back()->with('error', 'Ошибка при удалении brandа');
-       }
+         return redirect()->back()->with('success', 'Brand успешно удален');
+      } catch (\Exception $e) {
+         return redirect()->back()->with('error', 'Ошибка при удалении brandа');
+      }
    }
-
 }
