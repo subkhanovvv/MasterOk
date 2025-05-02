@@ -76,11 +76,9 @@ class BrandController extends Controller
       $brand->phone = $validated['phone']; // Updated to sale_price
 
       if ($request->hasFile('photo')) {
-         // Delete the old photo if it exists
          if ($brand->photo) {
             Storage::delete($brand->photo);
          }
-         // Store the new photo and update the file path
          $brand->photo = $request->file('photo')->store('brands');
       }
 
