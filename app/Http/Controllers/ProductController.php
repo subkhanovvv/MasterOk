@@ -19,7 +19,7 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ProductController extends Controller
 {
-    public function product(Request $request)
+    public function index(Request $request)
     {
         $products = Product::query()
             ->with('get_brand')
@@ -43,7 +43,7 @@ class ProductController extends Controller
 
         return view('pages.products.product', compact('products', 'categories', 'brands'));
     }
-    public function store_product(Request $request)
+    public function store(Request $request)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -160,73 +160,6 @@ class ProductController extends Controller
 
         $categories = \App\Models\Category::all(); // For filter dropdown
         return view('pages.barcodes.barcode', compact('barcodes', 'categories'));
-    }
-
-    // public function export(Request $request)
-    // {
-    //     return Excel::download(new BarcodesExport($request->all()), 'barcodes.xlsx');
-    // }
-
-
-    public function verifyAjax(Request $request)
-    {
-        $text = $request->input('scanned_data');
-
-        $lines = preg_split('/\r\n|\r|\n/', $text);
-        $data = [];
-
-        foreach ($lines as $line) {
-            if (strpos($line, ':') !== false) {
-                [$key, $value] = explode(':', $line, 2);
-                $data[trim(strtolower(str_replace(' ', '_', $key)))] = trim($value);
-            }
-        }
-
-        if (!isset($data['signature'])) {
-            return response()->json(['success' => false, 'message' => 'Signature missing']);
-        }
-
-        try {
-            $secret = env('QR_SECRET', 'default-key');
-            $expectedSignature = hash('sha256', "{$data['transaction_id']}|{$data['product_id']}|{$data['qty']}|{$data['total_price']}|{$data['paid_amount']}|{$secret}");
-
-            if ($expectedSignature !== $data['signature']) {
-                return response()->json(['success' => false, 'message' => 'Invalid signature']);
-            }
-
-            return response()->json(['success' => true, 'message' => 'Valid transaction']);
-        } catch (\Throwable $e) {
-            return response()->json(['success' => false, 'message' => 'Error processing']);
-        }
-    }
-    public function scanTransaction(Request $request)
-    {
-        $validated = $request->validate([
-            'scanned_data' => 'required|string',
-        ]);
-
-        $scannedData = $validated['scanned_data'];
-
-        $product = Product::where('barcode', $scannedData)->first();
-
-        if ($product) {
-            // Log the response before returning it
-            Log::info('Product found:', $product->toArray());
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Product found.',
-                'product' => $product
-            ]);
-        } else {
-            // Log the error
-            Log::info('Product not found:', ['scanned_data' => $scannedData]);
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Product not found or invalid QR code.'
-            ]);
-        }
     }
 
     public function update(Request $request, Product $product)

@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Storage;
 
 class BrandController extends Controller
 {
-   public function brand()
+   public function index()
    {
       $brands = Brand::withCount('products') // add this line
          ->orderBy('id', 'desc')
@@ -21,18 +21,18 @@ class BrandController extends Controller
       return view('pages.brands.brand', compact('brands'));
    }
 
-   public function new_brand()
+   public function create()
    {
       return view('pages.brands.new-brand');
    }
 
-   public function edit_brand($id)
+   public function edit($id)
    {
       $brands = Brand::find($id);
       return view('pages.brands.edit-brand', compact('brands'));
    }
 
-   public function store_brand(Request $request)
+   public function store(Request $request)
    {
       $validated = $request->validate([
          'name'  => 'required|string|max:255',
@@ -62,7 +62,7 @@ class BrandController extends Controller
       return redirect()->route('brand')->with('success', 'Бренд успешно сохранён!');
    }
 
-   public function update_brand(Request $request)
+   public function update(Request $request)
    {
       $validated = $request->validate([
          'name'  => 'required|string|max:255',
@@ -94,7 +94,7 @@ class BrandController extends Controller
       return redirect()->route('brand')->with('success', 'Бренд успешно обновлён!');
    }
 
-   public function destroy_brand($id)
+   public function destroy($id)
    {
       try {
          $brand = Brand::findOrFail($id);

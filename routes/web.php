@@ -3,15 +3,10 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\ChequeController;
-use App\Http\Controllers\Controller;
-use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use Milon\Barcode\DNS1D as BarcodeDNS1D;
-use Milon\Barcode\Facades\DNS1D;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,61 +19,35 @@ use Milon\Barcode\Facades\DNS1D;
 |
 */
 
-Route::get('/', function () {
-    if (Auth::user()) {
-        return view('pages.index');
-    } else {
-        return view('auth.login');
-    }
-});
+Route::redirect('/', '/index');
 
 Route::middleware(['auth'])->group(function () {
 
-    Route::view('index', 'pages.index')->name('index');
-
-    Route::get('brand', [BrandController::class, 'brand'])->name('brand');
-    Route::get('new-brand', [BrandController::class, 'new_brand'])->name('new-brand');
-    Route::get('edit-brand/{id}', [BrandController::class, 'edit_brand'])->name('edit-brand');
-    Route::post('update-brand', [BrandController::class, 'update_brand'])->name('update-brand');
-    Route::post('store-brand', [BrandController::class, 'store_brand'])->name('store-brand');
-    Route::delete('destroy-brand/{id}', [BrandController::class, 'destroy_brand'])->name('destroy-brand');
-
-    Route::resource('categories', CategoryController::class);
-
-
-    Route::get('/products', [ProductController::class, 'product'])->name('products.index');
-    Route::get('new-product', [ProductController::class, 'new_product'])->name('new-product');
-    Route::post('store-product', [ProductController::class, 'store_product'])->name('store-product');
-    // routes/web.php
-    Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('products.delete');
-    Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
-
-
-    Route::get('logout', [AuthController::class, 'logout'])->name('logout');
-    Route::get('profile', [AuthController::class, 'profile'])->name('profile');
-    Route::get('edit-profile.{id}', [AuthController::class, 'edit_profile'])->name('edit-profile');
-    Route::post('update-profile', [AuthController::class, 'update_profile'])->name('update-profile');
-
+    Route::view('/index', 'pages.index')->name('index');
     Route::get('barcode', [ProductController::class, 'barcode'])->name('barcode');
 
-    Route::post('consume', [TransactionController::class, 'consume'])->name('consume');
-    Route::post('intake', [TransactionController::class, 'intake'])->name('intake');
-    Route::get('transactions', [TransactionController::class, 'transactions'])->name('transactions');
+    Route::resources([
+        'brands' => BrandController::class,
+        'categories' => CategoryController::class,
+        'products' => ProductController::class,
+    ]);
 
-    Route::post('products.byCategory/{id}', [ProductController::class, 'productsByCategory'])->name('products.byCategory');
+    Route::controller(AuthController::class)->group(function () {
+        Route::get('logout', 'logout')->name('logout');
+        Route::get('profile', 'profile')->name('profile');
+        Route::get('edit/{id}', 'edit')->name('edit');
+        Route::post('update', 'update')->name('update');
+    });
 
-    Route::post('/telegram/category-notify', [CategoryController::class, 'notifyCategory'])->name('telegram.category.notify');
-
-    Route::get('report', [TransactionController::class, 'report'])->name('admin.reports.index');
-    // Report Dashboard
-    // Route::get('/reports', [TransactionController::class, 'index'])->name('admin.reports.index');
-
-    // Export Reports
-    Route::get('/reports/export', [TransactionController::class, 'export'])->name('admin.reports.export');
-    Route::get('/transactions/{id}/cheque', [ChequeController::class, 'printCheque'])->name('transactions.cheque');
+    Route::controller(TransactionController::class)->group(function () {
+        Route::post('consume', 'consume')->name('consume');
+        Route::post('intake', 'intake')->name('intake');
+        Route::get('transactions', 'transactions')->name('transactions');
+        Route::get('report', 'report')->name('admin.reports.index');
+    });
 });
 
-Route::middleware(['guest'])->group(function () {
-    Route::get('login', [AuthController::class, 'login'])->name('login');
-    Route::post('ProcessLogin', [AuthController::class, 'ProcessLogin'])->name('ProcessLogin');
+Route::middleware(['guest'])->prefix('auth')->name('auth.')->controller(AuthController::class)->group(function () {
+    Route::get('login', 'login')->name('login');
+    Route::post('ProcessLogin', 'ProcessLogin')->name('ProcessLogin');
 });
