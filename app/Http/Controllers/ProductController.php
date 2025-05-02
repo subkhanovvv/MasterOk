@@ -17,12 +17,29 @@ use Milon\Barcode\DNS1D;
 
 class ProductController extends Controller
 {
-    public function product()
+    public function product(Request $request)
     {
-        $products = Product::orderBy('id', 'desc')->paginate(10);
-        $brands = Brand::orderBy('id', 'desc')->get();
-        $categories = Category::orderBy('id', 'desc')->get();
-        return view('pages.products.product', compact('products', 'brands', 'categories'));
+        $products = Product::query()
+            ->with('get_brand')
+            ->when($request->name, function($query) use ($request) {
+                $query->where('name', 'like', '%'.$request->name.'%');
+            })
+            ->when($request->category_id, function($query) use ($request) {
+                $query->where('category_id', $request->category_id);
+            })
+            ->when($request->brand_id, function($query) use ($request) {
+                $query->where('brand_id', $request->brand_id);
+            })
+            ->when($request->status, function($query) use ($request) {
+                $query->where('status', $request->status);
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+    
+        $categories = Category::all();
+        $brands = Brand::all();
+    
+        return view('pages.products.product', compact('products', 'categories', 'brands'));
     }
     public function store_product(Request $request)
     {
@@ -109,25 +126,25 @@ class ProductController extends Controller
 
         return back()->with('success', 'Товар и штрихкод успешно сохранены!');
     }
-    public function destroy_product($id)
-    {
+  // ProductController.php
+public function destroy($id)
+{
+    try {
         $product = Product::findOrFail($id);
-        if ($product->photo) {
-            Storage::disk('public')->delete($product->photo);
-        }
         $product->delete();
-        return response()->json([
-            'message' => 'Товар успешно удален!',
-            'id' => $id,
-        ]);
+        
+        return redirect()->back()->with('success', 'Продукт успешно удален');
+    } catch (\Exception $e) {
+        return redirect()->back()->with('error', 'Ошибка при удалении продукта');
     }
+}   
 
     public function barcode()
     {
         $barcodes = Product::orderBy('id', 'desc')->paginate(12);
         return view('pages.barcodes.barcode', compact('barcodes'));
     }
-    
+
     public function verifyAjax(Request $request)
     {
         $text = $request->input('scanned_data');
@@ -187,5 +204,32 @@ class ProductController extends Controller
                 'message' => 'Product not found or invalid QR code.'
             ]);
         }
+    }
+
+    public function update(Request $request, Product $product)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            // 'description' => 'nullable|string',
+            'sale_price' => 'required|numeric|min:0',
+            'photo' => 'nullable|image|max:2048',
+        ]);
+
+        $product->name = $validated['name'];
+        // $product->description = $validated['description'] ?? '';
+        $product->sale_price = $validated['sale_price']; // Updated to sale_price
+
+        if ($request->hasFile('photo')) {
+            // Delete the old photo if it exists
+            if ($product->photo) {
+                Storage::delete($product->photo);
+            }
+            // Store the new photo and update the file path
+            $product->photo = $request->file('photo')->store('products');
+        }
+
+        $product->save();
+
+        return redirect()->back()->with('success', 'Товар успешно обновлен.');
     }
 }

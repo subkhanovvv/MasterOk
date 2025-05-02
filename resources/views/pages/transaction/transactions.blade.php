@@ -85,7 +85,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($product_act as $p)
+                        @foreach ($transaction as $p)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td title="{{ \Carbon\Carbon::parse($p->created_at)->format('H:i') }}">
@@ -137,11 +137,11 @@
             </div>
             <div class="mt-3 d-flex justify-content-between align-items-center mb-3">
                 <div class="pagination">
-                    {{ $product_act->links('pagination::bootstrap-4') }}
+                    {{ $transaction->links('pagination::bootstrap-4') }}
                 </div>
                 <p class="text-muted">
-                    Показаны с {{ $product_act->firstItem() }} по {{ $product_act->lastItem() }} из
-                    {{ $product_act->total() }} результатов
+                    Показаны с {{ $transaction->firstItem() }} по {{ $transaction->lastItem() }} из
+                    {{ $transaction->total() }} результатов
                 </p>
                 <div class="d-flex justify-content-between gap-3 text-muted">
                     <a href="#" class="text-decoration-none"><i class="mdi mdi-download"></i> export</a>
@@ -152,9 +152,9 @@
             </div>
         </div>
     </div>
-    @include('pages.transactions.modals.cheque')
+    @include('pages.transaction.modals.cheque')
     <script>
-        const createdat = '{{ \Carbon\Carbon::parse($p->created_at)->format('d-m-Y') }}';
+
         function showTransactionDetailsModal(transaction) {
             document.getElementById('td_id').textContent = transaction.id;
             document.getElementById('td_product_id').textContent = transaction.product_id;
@@ -164,8 +164,8 @@
             document.getElementById('td_paid_amount').textContent = transaction.paid_amount;
             document.getElementById('td_return_reason').textContent = transaction.return_reason ?? '-';
             document.getElementById('td_number').textContent = transaction.client_phone;
-            // document.getElementById('td_created_at').textContent = transaction.created_at;
-            document.getElementById('td_created_at').textContent = createdat;
+            document.getElementById('td_created_at').textContent = transaction.created_at;
+            // document.getElementById('td_created_at').textContent = createdat;
 
 
             if (transaction.qr_code) {

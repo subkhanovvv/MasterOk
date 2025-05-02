@@ -50,10 +50,13 @@ Route::middleware(['auth'])->group(function () {
     Route::post('store-category', [CategoryController::class, 'store_category'])->name('store-category');
     Route::delete('destroy-category/{id}', [CategoryController::class, 'destroy_category'])->name('destroy-category');
 
-    Route::get('product', [ProductController::class, 'product'])->name('product');
+    Route::get('/products', [ProductController::class, 'product'])->name('products.index');
     Route::get('new-product', [ProductController::class, 'new_product'])->name('new-product');
     Route::post('store-product', [ProductController::class, 'store_product'])->name('store-product');
-    Route::delete('destroy-product/{id}', [ProductController::class, 'destroy_product'])->name('destroy-product');
+// routes/web.php
+Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('products.delete');
+    Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
+
 
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('profile', [AuthController::class, 'profile'])->name('profile');

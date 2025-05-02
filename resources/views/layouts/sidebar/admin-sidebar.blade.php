@@ -8,7 +8,7 @@
         </li>
         <li class="nav-item nav-category">Товар</li>
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('product') }}">
+            <a class="nav-link" href="{{ route('products.index') }}">
                 <i class="menu-icon mdi mdi-arrange-send-backward"></i>
                 <span class="menu-title">Товары</span>
                 <i class="menu-arrow"></i>

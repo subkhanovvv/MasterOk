@@ -1,6 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <div class="card">
         <div class="card-body">
@@ -16,8 +17,7 @@
                                 <i class="mdi mdi-filter-outline"></i> Фильтр
                             </button>
                             <div class="dropdown-menu p-3 shadow" style="min-width:300px;" aria-labelledby="filterDropdown">
-                                <form method="POST" action="#">
-                                    @csrf
+                                <form method="GET" action="{{ route('products.index') }}">
                                     <div class="mb-2">
                                         <input type="text" name="name" class="form-control" placeholder="Название"
                                             value="{{ request('name') }}">
@@ -60,7 +60,8 @@
                                         <button type="submit" class="btn btn-sm btn-primary">
                                             <i class="mdi mdi-filter"></i> Применить
                                         </button>
-                                        <a href="#" class="btn btn-sm btn-outline-secondary">Сброс</a>
+                                        <a href="{{ route('products.index') }}"
+                                            class="btn btn-sm btn-outline-secondary">Сброс</a>
                                     </div>
                                 </form>
                             </div>
@@ -145,13 +146,22 @@
                                             <i class="mdi mdi-database-plus icon-sm text-success"></i>
                                         </a>
                                         <a href="javascript:void(0);" title="Редактировать" data-bs-toggle="modal"
-                                            data-bs-target="#editProductModal">
+                                            data-bs-target="#editProductModal" data-id="{{ $p->id }}"
+                                            data-name="{{ $p->name }}"
+                                            data-short_description="{{ $p->short_description }}"
+                                            data-sale_price="{{ $p->sale_price }}"
+                                            data-photo="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
+                                            onclick="openModal(this)">
                                             <i class="mdi mdi-pencil icon-sm text-primary"></i>
                                         </a>
+
                                         <a href="javascript:void(0);" title="Удалить" data-bs-toggle="modal"
-                                            data-bs-target="#deleteProductModal">
+                                            data-bs-target="#deleteProductModal" data-id="{{ $p->id }}"
+                                            onclick="openModal(this)">
                                             <i class="mdi mdi-delete icon-sm text-danger"></i>
                                         </a>
+
+
                                     </div>
                                 </td>
                             </tr>
@@ -181,33 +191,49 @@
         var unitPrice = 0;
         var quantity = 1;
         var currentModalType = 'consume';
+
         function openModal(element) {
             var id = element.getAttribute('data-id');
             var photo = element.getAttribute('data-photo');
             var name = element.getAttribute('data-name');
-            var salePrice = element.getAttribute('data-sale_price').replace(/\s/g, '');
+            var salePrice = element.getAttribute('data-sale_price')?.replace(/\s/g, '') || 0;
             unitPrice = parseFloat(salePrice);
             quantity = 1;
             const modalId = element.getAttribute('data-bs-target');
-            currentModalType = modalId === '#consumeProductModal' ? 'consume' : 'intake';
-            if (currentModalType === 'consume') {
+
+            if (modalId === '#consumeProductModal') {
+                currentModalType = 'consume';
                 document.getElementById('consume_product_id').value = id;
                 document.getElementById('consume_product_photo').src = photo;
                 document.getElementById('consume_product_name').textContent = name;
                 document.getElementById('consume_product_sale_price').textContent = 'Цена за единицу: ' + unitPrice
                     .toLocaleString() + ' сум';
                 document.getElementById('consume_qty').value = quantity;
-            } else if (currentModalType === 'intake') {
+            } else if (modalId === '#intakeProductModal') {
+                currentModalType = 'intake';
                 document.getElementById('intake_product_id').value = id;
                 document.getElementById('intake_product_photo').src = photo;
                 document.getElementById('intake_product_name').textContent = name;
                 document.getElementById('intake_product_sale_price').textContent = 'Цена за единицу: ' + unitPrice
                     .toLocaleString() + ' сум';
                 document.getElementById('intake_qty').value = quantity;
+            } else if (modalId === '#editProductModal') {
+                currentModalType = 'edit';
+                document.getElementById('edit_product_id').value = id;
+                document.getElementById('edit_product_name').value = name;
+                document.getElementById('edit_product_description').value = element.getAttribute(
+                    'data-short_description') || '';
+                document.getElementById('edit_product_price').value = salePrice;
+                document.getElementById('edit_product_photo').src = photo;
+                document.getElementById('editProductForm').action = `/products/${id}`;
+            } else if (modalId === '#deleteProductModal') {
+                document.getElementById('delete-product-form').action = `/products/${id}`;
             }
+
             updateTotal();
             onTransactionTypeChange();
         }
+
         function increaseQty() {
             var qtyInputId = currentModalType === 'consume' ? 'consume_qty' : 'intake_qty';
             var qtyInput = document.getElementById(qtyInputId);
@@ -217,6 +243,7 @@
                 updateTotal();
             }
         }
+
         function decreaseQty() {
             var qtyInputId = currentModalType === 'consume' ? 'consume_qty' : 'intake_qty';
             var qtyInput = document.getElementById(qtyInputId);
@@ -226,30 +253,39 @@
                 updateTotal();
             }
         }
+
         function updateTotal() {
+            if (currentModalType === 'edit') return; // Skip total update for edit modal
+
             var qtyInputId = currentModalType === 'consume' ? 'consume_qty' : 'intake_qty';
             var totalPriceId = currentModalType === 'consume' ? 'consume_total_price' : 'intake_total_price';
             var hiddenTotalPriceId = currentModalType === 'consume' ? 'consume_hidden_total_price' :
                 'intake_hidden_total_price';
             var quantity = parseInt(document.getElementById(qtyInputId).value);
+
             if (isNaN(quantity) || quantity < 1) {
                 quantity = 1;
                 document.getElementById(qtyInputId).value = quantity;
             }
+
             var total = unitPrice * quantity;
             document.getElementById(totalPriceId).textContent = total.toLocaleString();
             document.getElementById(hiddenTotalPriceId).value = total;
         }
+
         function onTransactionTypeChange() {
             var typeSelectId = currentModalType === 'consume' ? 'consume_transaction_type' : 'intake_transaction_type';
             var selectElement = document.getElementById(typeSelectId);
             if (!selectElement) return;
+
             var type = selectElement.value;
+
             if (currentModalType === 'consume') {
                 var clientPhoneGroup = document.getElementById('consume_client_phone_group');
                 var clientPhoneInput = document.getElementById('consume_client_phone');
                 var returnReasonGroup = document.getElementById('consume_return_reason_group');
                 var returnReasonInput = document.getElementById('consume_return_reason');
+
                 if (type === 'loan') {
                     clientPhoneGroup.style.display = 'block';
                     setTimeout(() => clientPhoneInput.focus(), 100);
@@ -257,6 +293,7 @@
                     clientPhoneGroup.style.display = 'none';
                     clientPhoneInput.value = '';
                 }
+
                 if (type === 'return') {
                     returnReasonGroup.style.display = 'block';
                     setTimeout(() => returnReasonInput.focus(), 100);
@@ -264,9 +301,11 @@
                     returnReasonGroup.style.display = 'none';
                     returnReasonInput.value = '';
                 }
+
             } else if (currentModalType === 'intake') {
                 var returnReasonGroup = document.getElementById('intake_return_reason_group');
                 var returnReasonInput = document.getElementById('intake_return_reason');
+
                 if (type === 'intake_return') {
                     returnReasonGroup.style.display = 'block';
                     setTimeout(() => returnReasonInput.focus(), 100);
@@ -284,5 +323,4 @@
     @include('pages.products.modals.consume-product')
     @include('pages.products.modals.intake-product')
     @include('pages.products.modals.delete-product')
-
 @endsection
