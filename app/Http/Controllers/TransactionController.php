@@ -6,10 +6,12 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductActivity;
+use Carbon\Carbon;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 
 class TransactionController extends Controller
 {
@@ -148,5 +150,150 @@ class TransactionController extends Controller
         $categories = Category::orderBy('id', 'desc')->get();
         $transaction = ProductActivity::orderBy('id', 'desc')->paginate(10);
         return view('pages.transaction.transactions', compact('transaction', 'brands', 'categories'));
+    }
+    public function report(Request $request)
+    {
+        // Date filters (default to current month)
+        $startDate = $request->input('start_date', now()->startOfMonth()->format('Y-m-d'));
+        $endDate = $request->input('end_date', now()->endOfMonth()->format('Y-m-d'));
+
+        // Transaction type filter
+        $type = $request->input('type', 'all');
+
+        // Previous period for comparison
+        $daysDiff = Carbon::parse($startDate)->diffInDays($endDate);
+        $previousStartDate = Carbon::parse($startDate)->subDays($daysDiff)->format('Y-m-d');
+        $previousEndDate = Carbon::parse($startDate)->subDay()->format('Y-m-d');
+
+        // Get totals for current period
+        $currentTotals = $this->getTotals($startDate, $endDate, $type);
+        $previousTotals = $this->getTotals($previousStartDate, $previousEndDate, $type);
+
+        // Calculate percentage changes
+        $revenueChange = $this->calculateChange($currentTotals->total_revenue, $previousTotals->total_revenue);
+        $costChange = $this->calculateChange($currentTotals->total_cost, $previousTotals->total_cost);
+        $profitChange = $this->calculateChange($currentTotals->total_profit, $previousTotals->total_profit);
+
+        // Get chart data
+        $chartData = $this->getChartData($startDate, $endDate, $type);
+
+        // Get transactions with calculated profit
+        $transactions = ProductActivity::with('product')
+            ->when($type !== 'all', function ($query) use ($type) {
+                $query->where('type', $type);
+            })
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->orderBy('created_at', 'desc')
+            ->paginate(10)
+            ->through(function ($transaction) {
+                $transaction->profit = $this->calculateTransactionProfit($transaction);
+                return $transaction;
+            });
+
+        return view('pages.report', [
+            'totalRevenue' => $currentTotals->total_revenue ?? 0,
+            'totalCost' => $currentTotals->total_cost ?? 0,
+            'totalProfit' => $currentTotals->total_profit ?? 0,
+            'revenueChange' => $revenueChange,
+            'costChange' => $costChange,
+            'profitChange' => $profitChange,
+            'chartData' => $chartData,
+            'transactions' => $transactions,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'selectedType' => $type,
+            'transactionTypes' => [
+                'all' => 'All Types',
+                'consume' => 'Sales',
+                'intake' => 'Purchases',
+                'return' => 'Customer Returns',
+                'loan' => 'Customer Credits',
+                'intake_return' => 'Supplier Returns',
+                'intake_loan' => 'Supplier Credits'
+            ]
+        ]);
+    }
+
+    protected function getTotals($startDate, $endDate, $type = 'all')
+    {
+        return ProductActivity::query()
+            ->when($type !== 'all', function ($query) use ($type) {
+                $query->where('type', $type);
+            })
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('
+         SUM(total_price) as total_revenue,
+         SUM(CASE 
+             WHEN type IN ("consume", "return") THEN 
+                 (SELECT price_uzs FROM products WHERE products.id = product_activities.product_id) * qty 
+             ELSE 0 
+         END) as total_cost,
+         SUM(total_price) - SUM(CASE 
+             WHEN type IN ("consume", "return") THEN 
+                 (SELECT price_uzs FROM products WHERE products.id = product_activities.product_id) * qty 
+             ELSE 0 
+         END) as total_profit
+     ')
+            ->first();
+    }
+
+    protected function calculateChange($current, $previous)
+    {
+        if ($previous == 0) {
+            return $current == 0 ? 0 : 100;
+        }
+        return (($current - $previous) / $previous) * 100;
+    }
+
+    protected function calculateTransactionProfit($transaction)
+    {
+        if (!$transaction->product) {
+            return 0;
+        }
+
+        // For sales and returns, profit = total_price - (product cost * quantity)
+        if (in_array($transaction->type, ['consume', 'return'])) {
+            return $transaction->total_price - ($transaction->product->price_uzs * $transaction->qty);
+        }
+
+        // For other transaction types, profit is just the total price
+        return $transaction->total_price;
+    }
+
+    protected function getChartData($startDate, $endDate, $type = 'all')
+    {
+        $data = ProductActivity::query()
+            ->when($type !== 'all', function ($query) use ($type) {
+                $query->where('type', $type);
+            })
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('
+         DATE(created_at) as date,
+         SUM(total_price) as revenue,
+         SUM(CASE 
+             WHEN type IN ("consume", "return") THEN 
+                 (SELECT price_uzs FROM products WHERE products.id = product_activities.product_id) * qty 
+             ELSE 0 
+         END) as cost,
+         SUM(total_price) - SUM(CASE 
+             WHEN type IN ("consume", "return") THEN 
+                 (SELECT price_uzs FROM products WHERE products.id = product_activities.product_id) * qty 
+             ELSE 0 
+         END) as profit,
+         COUNT(*) as transaction_count
+     ')
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
+
+        return [
+            'labels' => $data->pluck('date')->map(function ($date) {
+                return Carbon::parse($date)->format('M d');
+            }),
+            'revenue' => $data->pluck('revenue'),
+            'cost' => $data->pluck('cost'),
+            'profit' => $data->pluck('profit'),
+            'transaction_count' => $data->pluck('transaction_count')
+        ];
     }
 }

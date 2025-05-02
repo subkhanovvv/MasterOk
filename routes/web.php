@@ -53,8 +53,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/products', [ProductController::class, 'product'])->name('products.index');
     Route::get('new-product', [ProductController::class, 'new_product'])->name('new-product');
     Route::post('store-product', [ProductController::class, 'store_product'])->name('store-product');
-// routes/web.php
-Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('products.delete');
+    // routes/web.php
+    Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('products.delete');
     Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
 
 
@@ -73,7 +73,12 @@ Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('pr
 
     Route::post('/telegram/category-notify', [CategoryController::class, 'notifyCategory'])->name('telegram.category.notify');
 
+    Route::get('report', [TransactionController::class, 'report'])->name('admin.reports.index');
+    // Report Dashboard
+    // Route::get('/reports', [TransactionController::class, 'index'])->name('admin.reports.index');
 
+    // Export Reports
+    Route::get('/reports/export', [TransactionController::class, 'export'])->name('admin.reports.export');
     Route::get('/transactions/{id}/cheque', [ChequeController::class, 'printCheque'])->name('transactions.cheque');
 });
 
