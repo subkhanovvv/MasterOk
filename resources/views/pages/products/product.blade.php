@@ -11,13 +11,17 @@
                 </div>
                 <div class="d-sm-flex justify-content-between align-items-center">
                     <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <div>
+                            <input type="text" class="form-control" id="liveSearch" placeholder="Поиск"
+                                value="{{ request('search') }}" name="search">
+                        </div>
                         <div class="dropdown">
                             <button class="btn btn-secondary dropdown-toggle text-dark" type="button" id="filterDropdown"
                                 data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="mdi mdi-filter-outline"></i> Фильтр
                             </button>
                             <div class="dropdown-menu p-3 shadow" style="min-width:300px;" aria-labelledby="filterDropdown">
-                                <form method="GET" action="{{ route('products.index') }}">
+                                <form method="GET" action="{{ route('products.index') }}" id="filterForm">
                                     <div class="mb-2">
                                         <input type="text" name="name" class="form-control" placeholder="Название"
                                             value="{{ request('name') }}">
@@ -73,121 +77,30 @@
                     </div>
                 </div>
             </div>
-            <div class="table-responsive">
-                <table class="table table-hover ">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Название</th>
-                            <th>photo</th>
-                            <th>Цена (UZS/USD)</th>
-                            <th>Бренд</th>
-                            <th>Статус</th>
-                            <th>Цена</th>
-                            <th>Склад</th>
-                            <th>Штрих-код</th>
-                            <th>Действие</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($products as $p)
-                            <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $p->name }}</td>
-                                <td>
-                                    <img src="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
-                                        alt="{{ $p->name }}">
-                                </td>
-                                <td>{{ number_format($p->price_uzs) }} sum / ${{ $p->price_usd }}</td>
-                                <td>{{ $p->get_brand->name }}</td>
-                                <td>
-                                    @php
-                                        $color =
-                                            $p->status === 'normal'
-                                                ? 'success'
-                                                : ($p->status === 'low'
-                                                    ? 'warning'
-                                                    : 'danger');
 
-                                        $statusRu = match ($p->status) {
-                                            'normal' => 'В наличии',
-                                            'low' => 'Мало',
-                                            'out_of_stock' => 'Нет в наличии',
-                                            default => $p->status,
-                                        };
-                                    @endphp
-                                    <span class="badge badge-{{ $color }}">
-                                        {{ $statusRu }}
-                                    </span>
-                                </td>
-                                <td>{{ number_format($p->sale_price) }}</td>
-                                <td>{{ $p->qty }} {{ $p->unit }}</td>
-                                <td>
-                                    @if ($p->barcode)
-                                        <p>{{ $p->barcode_value }}</p>
-                                    @else
-                                        <p>No barcode</p>
-                                    @endif
-                                </td>
-                                <td>
-                                    <div class="d-flex justify-content-center gap-1">
-                                        <a href="javascript:void(0);" title="Расход товара" data-bs-toggle="modal"
-                                            data-bs-target="#consumeProductModal" data-id="{{ $p->id }}"
-                                            data-photo="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
-                                            data-name="{{ $p->name }}" data-sale_price="{{ $p->sale_price }}"
-                                            data-unit="{{ $p->unit }}" onclick="openModal(this)">
-                                            <i class="mdi mdi-database-minus icon-sm text-primary"></i>
-                                        </a>
-                                        <a href="javascript:void(0);" title="Приход товара" data-bs-toggle="modal"
-                                            data-bs-target="#intakeProductModal" data-id="{{ $p->id }}"
-                                            data-photo="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
-                                            data-name="{{ $p->name }}" data-sale_price="{{ $p->sale_price }}"
-                                            data-unit="{{ $p->unit }}" onclick="openModal(this)">
-                                            <i class="mdi mdi-database-plus icon-sm text-success"></i>
-                                        </a>
-                                        <a href="javascript:void(0);" title="Редактировать" data-bs-toggle="modal"
-                                            data-bs-target="#editProductModal" data-id="{{ $p->id }}"
-                                            data-name="{{ $p->name }}"
-                                            data-short_description="{{ $p->short_description }}"
-                                            data-sale_price="{{ $p->sale_price }}"
-                                            data-photo="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
-                                            onclick="openModal(this)">
-                                            <i class="mdi mdi-pencil icon-sm text-primary"></i>
-                                        </a>
-
-                                        <a href="javascript:void(0);" title="Удалить" data-bs-toggle="modal"
-                                            data-bs-target="#deleteProductModal" data-id="{{ $p->id }}"
-                                            onclick="openModal(this)">
-                                            <i class="mdi mdi-delete icon-sm text-danger"></i>
-                                        </a>
-
-
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+            <!-- Add a loading indicator -->
+            <div id="loadingIndicator" class="text-center" style="display: none;">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
             </div>
-            <div class="mt-3 d-flex justify-content-between align-items-center mb-3">
-                <div class="pagination">
-                    {{ $products->links('pagination::bootstrap-4') }}
-                </div>
-                <p class="text-muted">
-                    Показаны с {{ $products->firstItem() }} по {{ $products->lastItem() }} из
-                    {{ $products->total() }} результатов
-                </p>
-                <div class="d-flex justify-content-between gap-3 text-muted">
-                    <a href="#" class="text-decoration-none"><i class="mdi mdi-download"></i> export</a>
-                    <a href="#" class="text-decoration-none">
-                        <i class="mdi mdi-printer"></i> print
-                    </a>
-                </div>
+
+            <!-- Wrap the table in a div for AJAX updates -->
+            <div id="productsTableContainer">
+                @include('pages.products.partials.products_table', ['products' => $products])
             </div>
         </div>
     </div>
 
+    @include('pages.products.modals.new-product')
+    @include('pages.products.modals.edit-product')
+    @include('pages.products.modals.view-product')
+    @include('pages.products.modals.consume-product')
+    @include('pages.products.modals.intake-product')
+    @include('pages.products.modals.delete-product')
+
     <script>
+        // Your existing modal functions remain the same
         var unitPrice = 0;
         var quantity = 1;
         var currentModalType = 'consume';
@@ -315,12 +228,76 @@
                 }
             }
         }
-    </script>
 
-    @include('pages.products.modals.new-product')
-    @include('pages.products.modals.edit-product')
-    @include('pages.products.modals.view-product')
-    @include('pages.products.modals.consume-product')
-    @include('pages.products.modals.intake-product')
-    @include('pages.products.modals.delete-product')
+        // Add live search functionality
+        $(document).ready(function() {
+            // Debounce function to limit how often the search executes
+            function debounce(func, wait) {
+                let timeout;
+                return function() {
+                    const context = this,
+                        args = arguments;
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => {
+                        func.apply(context, args);
+                    }, wait);
+                };
+            }
+
+            $('#liveSearch').on('input', debounce(function() {
+                const searchTerm = $(this).val();
+                if (searchTerm.length >= 2 || searchTerm.length === 0) {
+                    performSearch(searchTerm);
+                }
+            }, 300));
+
+            // Also trigger search when filter form is submitted
+            $('#filterForm').on('submit', function(e) {
+                e.preventDefault();
+                performSearch($('#liveSearch').val());
+                return false;
+            });
+
+            function performSearch(searchTerm) {
+                $('#loadingIndicator').show();
+                $('#productsTableContainer').hide();
+
+                // Get all form data including filters
+                const formData = $('#filterForm').serializeArray();
+                const data = {};
+
+                // Convert form data to object
+                $.each(formData, function(i, field) {
+                    data[field.name] = field.value;
+                });
+
+                // Add search term if it exists
+                if (searchTerm) {
+                    data.search = searchTerm;
+                }
+
+                $.ajax({
+                    url: '{{ route('products.search') }}',
+                    type: 'GET',
+                    data: data,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        $('#productsTableContainer').html(response);
+                        $('#productsTableContainer').show();
+                    },
+                    error: function(xhr) {
+                        console.error('Search error:', xhr.responseText);
+                        $('#productsTableContainer').show();
+                        alert('An error occurred during search. Please try again.');
+                    },
+                    complete: function() {
+                        $('#loadingIndicator').hide();
+                    }
+                });
+            }
+        });
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 @endsection

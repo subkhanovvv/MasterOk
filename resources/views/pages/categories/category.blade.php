@@ -35,14 +35,16 @@
                                 <td>
                                     {{ $c->products_count }} товаров
                                 </td>
-                                <td>    
+                                <td>
                                     <a href="#" class="text-decoration-none">
                                         <i class="mdi mdi-eye icon-sm text-success"></i>
                                     </a>
                                     <a href="javascript:void(0)" class="text-decoration-none">
                                         <i class="mdi mdi-pencil icon-sm text-primary"></i>
                                     </a>
-                                    <a href="javascript:void(0);" class="text-decoration-none">
+                                    <a href="javascript:void(0);" title="Удалить" data-bs-toggle="modal"
+                                        data-bs-target="#deleteCategoryModal" data-id="{{ $c->id }}"
+                                        onclick="openModal(this)">
                                         <i class="mdi mdi-delete icon-sm text-danger"></i>
                                     </a>
                                 </td>
@@ -64,11 +66,24 @@
             @endif
         </div>
     </div>
-    {{-- </div> --}}
     <br>
-    
+
+
+    <script>
+        function openModal(element) {
+            var id = element.getAttribute('data-id');
+            var photo = element.getAttribute('data-photo');
+            var name = element.getAttribute('data-name');
+            const modalId = element.getAttribute('data-bs-target');
+
+
+            if (modalId === '#deleteCategoryModal') {
+                document.getElementById('delete-category-form').action = `/categories/${id}`;
+            }
+        }
+    </script>
+
+    @include('pages.categories.modals.delete-category')
     @include('pages.categories.modals.new-category')
     @include('pages.categories.modals.edit-category')
-    {{-- @include('pages.categories.modals.view-product') --}}
-    {{-- @include('pages.products.modals.delete-product') --}}
 @endsection

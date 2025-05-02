@@ -96,18 +96,14 @@ class BrandController extends Controller
 
    public function destroy($id)
    {
-      try {
-         $brand = Brand::findOrFail($id);
-         if ($brand->photo) {
-            Storage::delete($brand->photo);
-         }
-         $brand->delete();
+       try {
+           $brand = Brand::findOrFail($id);
+           $brand->delete();
 
-         return redirect()->route('brand')->with('success', 'Бренд успешно удален.');
-      } catch (QueryException $e) {
-         Log::error($e);
-
-         return redirect()->route('brand')->with('error', 'Невозможно удалить бренд, так как он используется в продуктах.');
-      }
+           return redirect()->back()->with('success', 'Brand успешно удален');
+       } catch (\Exception $e) {
+           return redirect()->back()->with('error', 'Ошибка при удалении brandа');
+       }
    }
+
 }

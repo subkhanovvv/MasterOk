@@ -25,6 +25,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::view('/index', 'pages.index')->name('index');
     Route::get('barcode', [ProductController::class, 'barcode'])->name('barcode');
+    Route::get('/products/search', [ProductController::class, 'search'])->name('products.search');
 
     Route::resources([
         'brands' => BrandController::class,

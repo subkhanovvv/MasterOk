@@ -188,4 +188,37 @@ class ProductController extends Controller
 
         return redirect()->back()->with('success', 'Товар успешно обновлен.');
     }
+    public function search(Request $request)
+    {
+        $query = Product::query()->with('get_brand');
+
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('name', 'like', "%{$searchTerm}%")
+                    ->orWhere('barcode_value', 'like', "%{$searchTerm}%");
+            });
+        }
+
+        // Apply other filters if they exist
+        if ($request->has('name') && !empty($request->name)) {
+            $query->where('name', 'like', "%{$request->name}%");
+        }
+
+        if ($request->has('category_id') && !empty($request->category_id)) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        if ($request->has('brand_id') && !empty($request->brand_id)) {
+            $query->where('brand_id', $request->brand_id);
+        }
+
+        if ($request->has('status') && !empty($request->status)) {
+            $query->where('status', $request->status);
+        }
+
+        $products = $query->paginate(10)->appends($request->query());
+
+        return view('products.partials.products_table', compact('products'));
+    }
 }
