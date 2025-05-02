@@ -1,61 +1,35 @@
-<div class="modal fade" id="editCategoryModal" aria-hidden="true">
-    <div class="modal-dialog" style="max-width:800px">
+<div class="modal fade" id="editCategoryModal">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Новый товар</h4>
+                <h4 class="modal-title">Редактировать товар</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form method="POST" action="#" enctype="multipart/form-data">
+                <form id="editCategoryForm" method="POST" action="#" enctype="multipart/form-data">
                     @csrf
-                    <div class="form-group">
-                        <label for="categoryName">Название товара</label>
-                        <input type="text" class="form-control" placeholder="Название товара" name="name" required
-                            id="categoryName">
-                    </div>
-                    <div class="form-group">
-                        <label for="photo">Загрузить изображения</label>
-                        <div class=" row g-4">
-                            <div class="col-12 col-md-6">
-                                <input class="form-control form-control-sm mb-3" type="file" name="photo"
-                                    id="photo" accept="image/*" onchange="previewImage(event)">
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <div class="preview mb-3" id="imagePreview" style="display: none;">
-                                    <img id="preview" src="" alt="Image Preview" class="img-thumbnail"
-                                        style="max-width: 50%;">
-                                </div>
+                    @method('PUT')
 
-                            </div>
-                        </div>
+                    <input type="hidden" name="id" id="edit_category_id">
 
+                    <div class="mb-3">
+                        <label class="form-label">Название товара</label>
+                        <input type="text" class="form-control" id="edit_category_name" name="name" required>
                     </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary btn-lg text-white">Сохранить</button>
+
+                    <div class="mb-3">
+                        <label class="form-label">Текущее изображение</label><br>
+                        <img id="edit_category_photo" src="" alt="Фото товара" width="100">
                     </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Новое изображение</label>
+                        <input type="file" class="form-control" name="photo">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
                 </form>
             </div>
         </div>
     </div>
-    <script>
-   
-
-        function previewImage(event) {
-            const input = event.target;
-            const preview = document.getElementById('imagePreview');
-            const previewImg = document.getElementById('preview');
-
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-
-                reader.onload = function(e) {
-                    previewImg.src = e.target.result;
-                    preview.style.display = 'block';
-                };
-
-                reader.readAsDataURL(input.files[0]);
-            } else {
-                preview.style.display = 'none';
-            }
-        }
-    </script>
+</div>

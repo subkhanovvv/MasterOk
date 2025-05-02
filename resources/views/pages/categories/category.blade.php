@@ -39,7 +39,11 @@
                                     <a href="#" class="text-decoration-none">
                                         <i class="mdi mdi-eye icon-sm text-success"></i>
                                     </a>
-                                    <a href="javascript:void(0)" class="text-decoration-none">
+                                    <a href="javascript:void(0);" title="Редактировать" data-bs-toggle="modal"
+                                        data-bs-target="#editCategoryModal" data-id="{{ $c->id }}"
+                                        data-name="{{ $c->name }}"
+                                        data-photo="{{ $c->photo ? Storage::url($c->photo) : asset('admin/assets/images/default_product.png') }}"
+                                        onclick="openModal(this)">
                                         <i class="mdi mdi-pencil icon-sm text-primary"></i>
                                     </a>
                                     <a href="javascript:void(0);" title="Удалить" data-bs-toggle="modal"
@@ -69,6 +73,11 @@
     <br>
 
 
+
+
+    @include('pages.categories.modals.delete-category')
+    @include('pages.categories.modals.edit-category')
+    @include('pages.categories.modals.new-category')
     <script>
         function openModal(element) {
             var id = element.getAttribute('data-id');
@@ -79,11 +88,13 @@
 
             if (modalId === '#deleteCategoryModal') {
                 document.getElementById('delete-category-form').action = `/categories/${id}`;
+            } else if (modalId === '#editCategoryModal') {
+                currentModalType = 'edit';
+                document.getElementById('edit_category_id').value = id;
+                document.getElementById('edit_category_name').value = name;
+                document.getElementById('edit_category_photo').src = photo;
+                document.getElementById('editCategoryForm').action = `/categories/${id}`;
             }
         }
     </script>
-
-    @include('pages.categories.modals.delete-category')
-    @include('pages.categories.modals.new-category')
-    @include('pages.categories.modals.edit-category')
 @endsection
