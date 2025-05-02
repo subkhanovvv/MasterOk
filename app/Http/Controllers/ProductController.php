@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Milon\Barcode\DNS1D;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
 
 
 
@@ -21,24 +23,24 @@ class ProductController extends Controller
     {
         $products = Product::query()
             ->with('get_brand')
-            ->when($request->name, function($query) use ($request) {
-                $query->where('name', 'like', '%'.$request->name.'%');
+            ->when($request->name, function ($query) use ($request) {
+                $query->where('name', 'like', '%' . $request->name . '%');
             })
-            ->when($request->category_id, function($query) use ($request) {
+            ->when($request->category_id, function ($query) use ($request) {
                 $query->where('category_id', $request->category_id);
             })
-            ->when($request->brand_id, function($query) use ($request) {
+            ->when($request->brand_id, function ($query) use ($request) {
                 $query->where('brand_id', $request->brand_id);
             })
-            ->when($request->status, function($query) use ($request) {
+            ->when($request->status, function ($query) use ($request) {
                 $query->where('status', $request->status);
             })
             ->orderBy('created_at', 'desc')
             ->paginate(10);
-    
+
         $categories = Category::all();
         $brands = Brand::all();
-    
+
         return view('pages.products.product', compact('products', 'categories', 'brands'));
     }
     public function store_product(Request $request)
@@ -126,24 +128,45 @@ class ProductController extends Controller
 
         return back()->with('success', 'Товар и штрихкод успешно сохранены!');
     }
-  // ProductController.php
-public function destroy($id)
-{
-    try {
-        $product = Product::findOrFail($id);
-        $product->delete();
-        
-        return redirect()->back()->with('success', 'Продукт успешно удален');
-    } catch (\Exception $e) {
-        return redirect()->back()->with('error', 'Ошибка при удалении продукта');
-    }
-}   
-
-    public function barcode()
+    // ProductController.php
+    public function destroy($id)
     {
-        $barcodes = Product::orderBy('id', 'desc')->paginate(12);
-        return view('pages.barcodes.barcode', compact('barcodes'));
+        try {
+            $product = Product::findOrFail($id);
+            $product->delete();
+
+            return redirect()->back()->with('success', 'Продукт успешно удален');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Ошибка при удалении продукта');
+        }
     }
+
+    public function barcode(Request $request)
+    {
+
+        $barcodes = Product::query()
+            ->when($request->filled('search'), function ($query) use ($request) {
+                $query->where('name', 'like', '%' . $request->search . '%')
+                    ->orWhere('barcode_value', 'like', '%' . $request->search . '%');
+            })
+            ->when($request->filled('category_id'), function ($query) use ($request) {
+                $query->where('category_id', $request->category_id);
+            })
+            ->when($request->filled('status'), function ($query) use ($request) {
+                $query->where('status', $request->status);
+            })
+            ->whereNotNull('barcode')
+            ->paginate(9);
+
+        $categories = \App\Models\Category::all(); // For filter dropdown
+        return view('pages.barcodes.barcode', compact('barcodes', 'categories'));
+    }
+
+    // public function export(Request $request)
+    // {
+    //     return Excel::download(new BarcodesExport($request->all()), 'barcodes.xlsx');
+    // }
+
 
     public function verifyAjax(Request $request)
     {
