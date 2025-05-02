@@ -86,7 +86,7 @@ class BrandController extends Controller
 
       $brand->save();
 
-      return redirect()->back()->with('success', 'Товар успешно обновлен.');
+      return redirect()->back()->with('success', 'brand успешно обновлен.');
    }
 
    public function destroy($id)
