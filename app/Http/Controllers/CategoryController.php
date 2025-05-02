@@ -91,7 +91,7 @@ class CategoryController extends Controller
         } catch (QueryException $e) {
             Log::error($e);
 
-            return redirect()->route('brand')->with('error', 'Невозможно удалить бренд, так как он используется в продуктах.');
+            return redirect()->route('category')->with('error', 'Невозможно удалить Категория, так как он используется в продуктах.');
         }
     }
     // public function notifyCategory(Request $request)
