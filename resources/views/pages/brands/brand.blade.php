@@ -1,140 +1,194 @@
 @extends('layouts.admin')
 
 @section('content')
-        <div class="card">
-            <div class="card-body">
-                <div class="d-sm-flex justify-content-between align-items-start">
-                    <div>
-                        <h4 class="card-title card-title-dash">Products</h4>
-                    </div>
-                    <div>
-                        <button class="btn btn-primary text-white mb-0 me-0" data-bs-toggle="modal"
-                            data-bs-target="#newBrandModal" type="button"><i class="mdi mdi-plus"></i>Add new</button>
-                            <button class="btn btn-secondary text-sm" data-bs-toggle="modal" data-bs-target="#newCategoryModal"
-                            type="button"><i class="mdi mdi-printer-outline"></i> Print</button>
-                        <button class="btn btn-primary text-sm" data-bs-toggle="modal" data-bs-target="#newCategoryModal"
-                            type="button"><i class="mdi mdi-download"></i> Export</button>
-                    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="d-sm-flex justify-content-between align-items-start mb-4">
+                <div>
+                    <h4 class="card-title card-title-dash">Brand Management</h4>
                 </div>
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Название</th>
-                                <th>photo</th>
-                                <th>phone</th>
-                                <th>desc</th>
-                                <th>Действие</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($brands as $b)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $b->name }}</td>
-                                    <td>
-                                        <img src="{{ $b->photo ? Storage::url($b->photo) : asset('admin/assets/images/default_product.png') }}"
-                                            alt="{{ $b->name }}" class="image">
-                                    </td>
-
-                                    <td>{{ $b->phone }}</td>
-                                    <td>{{ $b->description }}</td>
-
-                                    <td>
-                                        <div class="list-icon-function d-flex justify-content-center gap-2">
-                                            <a data-bs-toggle="modal" data-bs-target="#viewProductModal"
-                                                data-product="{{ $b->toJson() }}" onclick="viewProductModal(this)"
-                                                href="javascript:void(0)">
-                                                <i class="mdi mdi-eye icon-sm text-warning"></i>
-                                            </a>
-                                            <a href="">
-                                                <i class="mdi mdi-pencil icon-sm"></i>
-                                            </a>
-                                            <a href="javascript:void(0);" class="deleteProduct" data-bs-toggle="modal"
-                                                data-bs-target="#deleteProductModal" data-id="{{ $b->id }}"
-                                                data-token="{{ csrf_token() }}">
-                                                <i class="mdi mdi-delete icon-sm text-danger"></i>
-                                            </a>
-
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table><br>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <button class="btn btn-primary text-white mb-0 me-0" data-bs-toggle="modal"
+                        data-bs-target="#newBrandModal" type="button">
+                        <i class="mdi mdi-plus"></i> Add New
+                    </button>
+                    <a href="#" class="btn btn-primary text-sm">
+                        <i class="mdi mdi-download"></i> Export
+                    </a>
+                    <a href="#" class="btn btn-secondary text-sm">
+                        <i class="mdi mdi-printer-outline"></i> Print
+                    </a>
                 </div>
-                @if ($brands->count())
-                    <div class="d-flex justify-content-between align-items-center mt-4">
-                        <p class="text-muted mb-0">
-                            Показаны с {{ $brands->firstItem() }} по {{ $brands->lastItem() }} из
-                            {{ $brands->total() }} результатов
-                        </p>
-
-                        <div class="pagination mb-0">
-                            {{ $brands->links('pagination::bootstrap-4') }}
-                        </div>
-                    </div>
-                @endif
             </div>
-        </div>
-    {{-- </div> --}}
-    <br>
 
-    <div class="modal fade" id="deleteProductModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
-        aria-hidden="true">
+            <!-- Filter Section -->
+            <div class="mb-4">
+                <form method="GET" action="{{ route('brand') }}">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <input type="text" name="search" class="form-control" 
+                                   placeholder="Search by name or phone" value="{{ request('search') }}">
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary w-100">Filter</button>
+                        </div>
+                        @if(request()->filled('search'))
+                        <div class="col-md-2">
+                            <a href="{{ route('brand') }}" class="btn btn-outline-secondary w-100">Reset</a>
+                        </div>
+                        @endif
+                    </div>
+                </form>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Photo</th>
+                            <th>Phone</th>
+                            <th>Description</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($brands as $brand)
+                            <tr>
+                                <td>{{ $loop->iteration + ($brands->currentPage() - 1) * $brands->perPage() }}</td>
+                                <td>{{ $brand->name }}</td>
+                                <td>
+                                    <img src="{{ $brand->photo ? Storage::url($brand->photo) : asset('admin/assets/images/default_product.png') }}"
+                                        alt="{{ $brand->name }}" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;">
+                                </td>
+                                <td>{{ $brand->phone ?? '-' }}</td>
+                                <td>{{ Str::limit($brand->description, 50) }}</td>
+                                <td>
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#viewBrandModal"
+                                           data-brand="{{ json_encode($brand) }}" onclick="viewBrand(this)">
+                                            <i class="mdi mdi-eye icon-sm text-info"></i>
+                                        </a>
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#editBrandModal"
+                                           data-brand="{{ json_encode($brand) }}" onclick="editBrand(this)">
+                                            <i class="mdi mdi-pencil icon-sm text-primary"></i>
+                                        </a>
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#deleteBrandModal"
+                                           data-brand-id="{{ $brand->id }}">
+                                            <i class="mdi mdi-delete icon-sm text-danger"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center py-4">No brands found</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            @if ($brands->hasPages())
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <p class="text-muted mb-0">
+                        Showing {{ $brands->firstItem() }} to {{ $brands->lastItem() }} of
+                        {{ $brands->total() }} results
+                    </p>
+                    <div class="pagination mb-0">
+                        {{ $brands->appends(request()->query())->links('pagination::bootstrap-4') }}
+                    </div>
+                </div>
+            @endif
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteBrandModal" tabindex="-1" aria-labelledby="deleteBrandModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="deleteModalLabel">Подтверждение удаления</h5>
+                    <h5 class="modal-title" id="deleteBrandModalLabel">Confirm Deletion</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Вы уверены, что хотите удалить этот товар?
+                    Are you sure you want to delete this brand? This action cannot be undone.
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                    <button type="button" class="btn btn-danger text-white" id="confirmDeleteBtn">Удалить</button>
+                    <form id="deleteBrandForm" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
+
     @include('pages.brands.modals.new-brand')
     @include('pages.brands.modals.edit-brand')
-    {{-- @include('pages.brands.modals.view-product') --}}
-    {{-- @include('pages.products.modals.delete-product') --}}
+    {{-- @include('pages.brands.modals.view-brand') --}}
+
+    @push('scripts')
     <script>
-        // When the delete button is clicked
-        $(".deleteProduct").click(function() {
-            // Capture the product ID and CSRF token from the clicked link
-            var productId = $(this).data("id");
-            var token = $(this).data("token");
+        // Delete Brand Modal Setup
+        $('#deleteBrandModal').on('show.bs.modal', function (event) {
+            const button = $(event.relatedTarget);
+            const brandId = button.data('brand-id');
+            const form = $('#deleteBrandForm');
+            form.attr('action', `/admin/brands/${brandId}`);
+        });
 
-            // Set up the confirmation button click to actually delete the product
-            $("#confirmDeleteBtn").off("click").on("click", function() {
-                // Send the AJAX DELETE request to delete the product
-                $.ajax({
-                    url: "/destroy-product/" + productId, // Use the correct endpoint
-                    type: 'DELETE',
-                    dataType: "JSON",
-                    data: {
-                        "_token": token, // Send the CSRF token
-                    },
-                    success: function(response) {
-                        // Close the modal
-                        $("#deleteProductModal").modal('hide');
+        // View Brand Modal
+        function viewBrand(element) {
+            const brand = JSON.parse(element.dataset.brand);
+            const modal = document.getElementById('viewBrandModal');
+            
+            modal.querySelector('#brandName').textContent = brand.name;
+            modal.querySelector('#brandPhone').textContent = brand.phone || '-';
+            modal.querySelector('#brandDescription').textContent = brand.description || '-';
+            
+            const img = modal.querySelector('#brandPhoto');
+            img.src = brand.photo 
+                ? `/storage/${brand.photo}` 
+                : '{{ asset("admin/assets/images/default_product.png") }}';
+            img.alt = brand.name;
+        }
 
-                        // Optionally, show a success message
-                        alert(response.message || "Товар успешно удалён!");
+        // Edit Brand Modal
+        function editBrand(element) {
+            const brand = JSON.parse(element.dataset.brand);
+            const form = document.getElementById('editBrandForm');
+            
+            form.action = `/admin/brands/${brand.id}`;
+            form.querySelector('[name="name"]').value = brand.name;
+            form.querySelector('[name="phone"]').value = brand.phone || '';
+            form.querySelector('[name="description"]').value = brand.description || '';
+            
+            const imgPreview = form.querySelector('#editPhotoPreview');
+            imgPreview.src = brand.photo 
+                ? `/storage/${brand.photo}` 
+                : '{{ asset("admin/assets/images/default_product.png") }}';
+            imgPreview.alt = brand.name;
+        }
 
-                        // Remove the deleted row from the table (assuming you have a table with the corresponding ID)
-                        $("button[data-id='" + productId + "']").closest("tr").remove();
-                    },
-                    error: function(xhr, status, error) {
-                        alert("Ошибка при удалении товара");
-                    }
-                });
-            });
+        // Image Preview for New Brand
+        document.getElementById('photo').addEventListener('change', function(e) {
+            const [file] = e.target.files;
+            if (file) {
+                document.getElementById('photoPreview').src = URL.createObjectURL(file);
+            }
+        });
+
+        // Image Preview for Edit Brand
+        document.getElementById('editPhoto').addEventListener('change', function(e) {
+            const [file] = e.target.files;
+            if (file) {
+                document.getElementById('editPhotoPreview').src = URL.createObjectURL(file);
+            }
         });
     </script>
+    @endpush
 @endsection

@@ -15,7 +15,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('category') }}">
+            <a class="nav-link" href="{{ route('categories.index') }}">
                 <i class="menu-icon mdi mdi-shape-outline"></i>
                 <span class="menu-title">Категории</span>
                 <i class="menu-arrow"></i>

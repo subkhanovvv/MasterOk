@@ -43,12 +43,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('store-brand', [BrandController::class, 'store_brand'])->name('store-brand');
     Route::delete('destroy-brand/{id}', [BrandController::class, 'destroy_brand'])->name('destroy-brand');
 
-    Route::get('category', [CategoryController::class, 'category'])->name('category');
-    Route::get('new-category', [CategoryController::class, 'new_category'])->name('new-category');
-    Route::get('edit-category/{id}', [CategoryController::class, 'edit_category'])->name('edit-category');
-    Route::post('update-category', [CategoryController::class, 'update_category'])->name('update-category');
-    Route::post('store-category', [CategoryController::class, 'store_category'])->name('store-category');
-    Route::delete('destroy-category/{id}', [CategoryController::class, 'destroy_category'])->name('destroy-category');
+    Route::resource('categories', CategoryController::class);
+
 
     Route::get('/products', [ProductController::class, 'product'])->name('products.index');
     Route::get('new-product', [ProductController::class, 'new_product'])->name('new-product');

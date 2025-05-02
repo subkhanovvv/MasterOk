@@ -35,7 +35,7 @@
                                 <td>
                                     {{ $c->products_count }} товаров
                                 </td>
-                                <td>
+                                <td>    
                                     <a href="{{ route('products.byCategory', $c->id) }}" class="text-decoration-none">
                                         <i class="mdi mdi-eye icon-sm text-success"></i>
                                     </a>
