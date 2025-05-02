@@ -179,7 +179,7 @@
                                 {{ $transactions->total() }} entries
                             </p>
                             <div class="d-flex justify-content-between gap-3 text-muted">
-                                <a href="{{ route('admin.reports.export', request()->query()) }}" class="text-decoration-none">
+                                <a href="#" class="text-decoration-none">
                                     <i class="mdi mdi-download"></i> Export
                                 </a>
                                 <a href="javascript:window.print()" class="text-decoration-none">

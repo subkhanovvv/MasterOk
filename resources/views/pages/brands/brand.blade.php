@@ -23,7 +23,7 @@
 
             <!-- Filter Section -->
             <div class="mb-4">
-                <form method="GET" action="{{ route('brand') }}">
+                <form method="GET" action="{{ route('brands.index') }}">
                     <div class="row">
                         <div class="col-md-6">
                             <input type="text" name="search" class="form-control" 
@@ -34,7 +34,7 @@
                         </div>
                         @if(request()->filled('search'))
                         <div class="col-md-2">
-                            <a href="{{ route('brand') }}" class="btn btn-outline-secondary w-100">Reset</a>
+                            <a href="{{ route('brands.index') }}" class="btn btn-outline-secondary w-100">Reset</a>
                         </div>
                         @endif
                     </div>

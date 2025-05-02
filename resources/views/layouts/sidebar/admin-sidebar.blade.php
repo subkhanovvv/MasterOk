@@ -30,7 +30,7 @@
         </li>
         <li class="nav-item nav-category">Бренд</li>
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('brand') }}">
+            <a class="nav-link" href="{{ route('brands.index') }}">
                 <i class="menu-icon mdi mdi-tag"></i>
                 <span class="menu-title">Бренды</span>
                 <i class="menu-arrow"></i>
