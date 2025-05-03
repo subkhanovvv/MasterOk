@@ -12,8 +12,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Milon\Barcode\DNS1D;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Validator;
 
 
 
@@ -188,37 +187,23 @@ class ProductController extends Controller
 
         return redirect()->back()->with('success', 'Товар успешно обновлен.');
     }
-    public function search(Request $request)
+
+    public function getByBarcode($barcode)
     {
-        $query = Product::query()->with('get_brand');
+        // Search in both columns
+        $product = Product::where('barcode', $barcode)
+            ->orWhere('barcode_value', $barcode)
+            ->first();
 
-        if ($request->has('search') && !empty($request->search)) {
-            $searchTerm = $request->search;
-            $query->where(function ($q) use ($searchTerm) {
-                $q->where('name', 'like', "%{$searchTerm}%")
-                    ->orWhere('barcode_value', 'like', "%{$searchTerm}%");
-            });
+        if (!$product) {
+            return response()->json(['message' => 'Product not found'], 404);
         }
 
-        // Apply other filters if they exist
-        if ($request->has('name') && !empty($request->name)) {
-            $query->where('name', 'like', "%{$request->name}%");
-        }
-
-        if ($request->has('category_id') && !empty($request->category_id)) {
-            $query->where('category_id', $request->category_id);
-        }
-
-        if ($request->has('brand_id') && !empty($request->brand_id)) {
-            $query->where('brand_id', $request->brand_id);
-        }
-
-        if ($request->has('status') && !empty($request->status)) {
-            $query->where('status', $request->status);
-        }
-
-        $products = $query->paginate(10)->appends($request->query());
-
-        return view('products.partials.products_table', compact('products'));
+        return response()->json([
+            'id' => $product->id,
+            'name' => $product->name,
+            'sale_price' => $product->sale_price,
+            'photo_url' => asset('storage/' . $product->photo),
+        ]);
     }
 }

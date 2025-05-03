@@ -15,16 +15,16 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class TransactionController extends Controller
 {
-    public function consume(Request $req)
+    public function consume(Request $request)
     {
-        $validated = $req->validate([
+        $validated = $request->validate([
             'product_id' => 'required|exists:products,id',
             'qty' => 'required|integer|min:1',
-            'type' => 'required|string|max:50',
+            'type' => 'required|in:consume,loan,return,intake,intake_loan,intake_return',
             'total_price' => 'required|numeric|min:0',
-            'paid_amount' => 'nullable|numeric|min:0',
-            'client_phone' => 'nullable|string|max:20',
-            'return_reason' => 'nullable|string|max:255',
+            'paid_amount' => 'nullable|numeric|min:0|lte:total_price',
+            'client_phone' => 'nullable|string|max:20|required_if:type,loan,intake_loan',
+            'return_reason' => 'nullable|string|max:500|required_if:type,return,intake_return',
         ]);
 
         DB::beginTransaction();
@@ -32,49 +32,60 @@ class TransactionController extends Controller
         try {
             $product = Product::findOrFail($validated['product_id']);
 
-            if ($validated['type'] === 'consume' && $product->qty < $validated['qty']) {
-                return back()->withErrors(['qty' => 'Недостаточно товара на складе для расхода.']);
+            // Validate stock for consumption types
+            if (in_array($validated['type'], ['consume', 'loan']) && $product->qty < $validated['qty']) {
+                return back()->withErrors(['qty' => 'Недостаточно товара на складе. Доступно: ' . $product->qty]);
             }
-            if (in_array($validated['type'], ['return', 'intake'])) {
+
+            // Update product quantity
+            if (in_array($validated['type'], ['return', 'intake', 'intake_return'])) {
                 $product->increment('qty', $validated['qty']);
-            } else {
+            } elseif (in_array($validated['type'], ['consume', 'loan', 'intake_loan'])) {
                 $product->decrement('qty', $validated['qty']);
             }
-            $product->save();
 
-            $validated['paid_amount'] = $validated['paid_amount'] ?? 0;
-
-            // Create Product Activity entry
-            $productActivity = ProductActivity::create([
+            // Create product activity
+            $activityData = [
                 'product_id' => $validated['product_id'],
+                'user_id' => auth()->id(),
                 'qty' => $validated['qty'],
                 'type' => $validated['type'],
                 'total_price' => $validated['total_price'],
-                'paid_amount' => $validated['paid_amount'],
-                'client_phone' => $validated['client_phone'],
-                'return_reason' => $validated['return_reason'],
+                'paid_amount' => $validated['paid_amount'] ?? 0,
+                'client_phone' => $validated['client_phone'] ?? null,
+                'return_reason' => $validated['return_reason'] ?? null,
+            ];
+
+            $productActivity = ProductActivity::create($activityData);
+
+            // Generate QR code
+            $qrContent = json_encode([
+                'transaction_id' => $productActivity->id,
+                'product_id' => $product->id,
+                'product_name' => $product->name,
+                'action' => $validated['type'],
+                'quantity' => $validated['qty'],
+                'total_price' => $validated['total_price'],
+                'date' => now()->toDateTimeString(),
             ]);
 
-            // Generate the QR code content
-            $qrContent = "Transaction ID: {$productActivity->id}\nProduct ID: {$productActivity->product_id}\nAction: {$productActivity->type}\nQty: {$productActivity->qty}\nTotal Price: {$productActivity->total_price}\nPaid Amount: {$productActivity->paid_amount}\nDate : {$productActivity->created_at}";
-
-            // Generate QR code in SVG format
-            $qrCodeSvg = QrCode::format('svg')->size(150)->generate($qrContent);
-
-            // Save the SVG to the storage folder
             $qrCodePath = 'qrcodes/transaction_' . $productActivity->id . '.svg';
-            Storage::disk('public')->put($qrCodePath, $qrCodeSvg);
+            Storage::disk('public')->put(
+                $qrCodePath,
+                QrCode::format('svg')->size(150)->generate($qrContent)
+            );
 
-            // Save the path of the QR code in the product activity
-            $productActivity->qr_code = $qrCodePath;
-            $productActivity->save();
+            $productActivity->update(['qr_code' => $qrCodePath]);
 
             DB::commit();
 
-            return back()->with('success', 'Операция успешно сохранена!');
+            return back()->with([
+                'success' => 'Операция успешно сохранена!',
+                'qr_code' => Storage::url($qrCodePath)
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error' => 'Произошла ошибка: ' . $e->getMessage()]);
+            return back()->withErrors(['error' => 'Ошибка: ' . $e->getMessage()]);
         }
     }
     public function intake(Request $req)

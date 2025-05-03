@@ -25,13 +25,17 @@ Route::middleware(['auth'])->group(function () {
 
     Route::view('/index', 'pages.index')->name('index');
     Route::get('barcode', [ProductController::class, 'barcode'])->name('barcode');
-    Route::get('/products/search', [ProductController::class, 'search'])->name('products.search');
+    // Route::get('/products/search', [ProductController::class, 'search'])->name('products.search');
 
     Route::resources([
         'brands' => BrandController::class,
         'categories' => CategoryController::class,
         'products' => ProductController::class,
     ]);
+
+    Route::get('/products/by-barcode/{barcode}', [ProductController::class, 'getByBarcode']);
+
+
 
     Route::controller(AuthController::class)->group(function () {
         Route::get('logout', 'logout')->name('logout');

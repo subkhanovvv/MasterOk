@@ -12,8 +12,9 @@
                 <div class="d-sm-flex justify-content-between align-items-center">
                     <div class="d-flex align-items-center gap-2 flex-wrap">
                         <div>
-                            <input type="text" class="form-control" id="liveSearch" placeholder="Поиск"
-                                value="{{ request('search') }}" name="search">
+                            <input type="text" id="barcodeInput" class="form-control" placeholder="Сканируйте штрихкод..."
+                                autofocus />
+
                         </div>
                         <div class="dropdown">
                             <button class="btn btn-secondary dropdown-toggle text-dark" type="button" id="filterDropdown"
@@ -228,74 +229,40 @@
                 }
             }
         }
-
-        // Add live search functionality
-        $(document).ready(function() {
-            // Debounce function to limit how often the search executes
-            function debounce(func, wait) {
-                let timeout;
-                return function() {
-                    const context = this,
-                        args = arguments;
-                    clearTimeout(timeout);
-                    timeout = setTimeout(() => {
-                        func.apply(context, args);
-                    }, wait);
-                };
-            }
-
-            $('#liveSearch').on('input', debounce(function() {
-                const searchTerm = $(this).val();
-                if (searchTerm.length >= 2 || searchTerm.length === 0) {
-                    performSearch(searchTerm);
-                }
-            }, 300));
-
-            // Also trigger search when filter form is submitted
-            $('#filterForm').on('submit', function(e) {
+        document.getElementById('barcodeInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
                 e.preventDefault();
-                performSearch($('#liveSearch').val());
-                return false;
-            });
+                const barcode = this.value.trim();
+                if (!barcode) return;
+                console.log('Barcode entered:', barcode);
 
-            function performSearch(searchTerm) {
-                $('#loadingIndicator').show();
-                $('#productsTableContainer').hide();
-
-                // Get all form data including filters
-                const formData = $('#filterForm').serializeArray();
-                const data = {};
-
-                // Convert form data to object
-                $.each(formData, function(i, field) {
-                    data[field.name] = field.value;
-                });
-
-                // Add search term if it exists
-                if (searchTerm) {
-                    data.search = searchTerm;
-                }
-
-                $.ajax({
-                    url: '{{ route('products.search') }}',
-                    type: 'GET',
-                    data: data,
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(response) {
-                        $('#productsTableContainer').html(response);
-                        $('#productsTableContainer').show();
-                    },
-                    error: function(xhr) {
-                        console.error('Search error:', xhr.responseText);
-                        $('#productsTableContainer').show();
-                        alert('An error occurred during search. Please try again.');
-                    },
-                    complete: function() {
-                        $('#loadingIndicator').hide();
+                // Send AJAX request to find product by barcode
+                $.get(`/products/by-barcode/${barcode}`, function(product) {
+                    if (!product || !product.id) {
+                        alert('Товар с таким штрихкодом не найден');
+                        return;
                     }
+
+                    // Create a temporary invisible element with data- attributes
+                    const temp = document.createElement('div');
+                    temp.setAttribute('data-id', product.id);
+                    temp.setAttribute('data-name', product.name);
+                    temp.setAttribute('data-photo', product.photo_url);
+                    temp.setAttribute('data-sale_price', product.sale_price);
+                    temp.setAttribute('data-bs-target', '#consumeProductModal');
+
+                    // Call your existing openModal
+                    openModal(temp);
+
+                    // Show modal manually (Bootstrap)
+                    const modal = new bootstrap.Modal(document.getElementById('consumeProductModal'));
+                    modal.show();
+                }).fail((jqXHR, textStatus, errorThrown) => {
+                    console.error('AJAX error:', textStatus, errorThrown);
+                    alert('Ошибка при получении товара');
                 });
+
+                this.value = ''; // Clear input
             }
         });
     </script>
