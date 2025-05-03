@@ -4,6 +4,8 @@
         var photo = element.getAttribute('data-photo');
         var phone = element.getAttribute('data-phone');
         var name = element.getAttribute('data-name');
+        var product = element.getAttribute('data-product');
+        var intake = element.getAttribute('data-intake');
         const modalId = element.getAttribute('data-bs-target');
 
 
@@ -17,7 +19,16 @@
             document.getElementById('edit_brand_photo').src = photo;
             document.getElementById('edit_brand_phone').value = phone;
             document.getElementById('editBrandForm').action = `/brands/${id}`;
+        } else if (modalId === '#viewBrandModal') {
+            currentModalType = 'view';
+            document.getElementById('view_brand_name').textContent = name;
+            document.getElementById('view_brand_description').textContent = element.getAttribute('data-description') || '';
+            document.getElementById('view_brand_phone').textContent = phone;
+            document.getElementById('view_brand_photo').src = photo;
+            document.getElementById('view_brand_intake').textContent = intake;
+            document.getElementById('view_brand_product').textContent = product;
         }
+
     }
 
     function previewImage(event) {
@@ -63,6 +74,6 @@
             });
         }
     }
-    applyPhoneMaskOnModal('newBrandModal', 'categoryPhone');
+    applyPhoneMaskOnModal('newBrandModal', 'brandPhone');
     applyPhoneMaskOnModal('editBrandModal', 'edit_brand_phone');
 </script>

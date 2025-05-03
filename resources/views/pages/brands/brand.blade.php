@@ -18,6 +18,7 @@
     @include('pages.brands.modals.delete-brand')
     @include('pages.brands.modals.edit-brand')
     @include('pages.brands.modals.new-brand')
+    @include('pages.brands.modals.view-brand')
     @include('pages.brands.js.script')
     <script src="{{ asset('admin/assets/js/phone-number-format.js') }}"></script>
 
