@@ -66,26 +66,36 @@ class BrandController extends Controller
    public function update(Request $request, Brand $brand)
    {
       $validated = $request->validate([
-         'name' => 'required|string|max:255',
-         'description' => 'nullable|string',
-         'phone' => 'required|numeric|min:0',
-         'photo' => 'nullable|image|max:2048',
+         'name'  => 'required|string|max:255',
+         'photo' => 'nullable|max:2048',
+         'phone' => 'required|string|max:20',
+         'description' => 'required|string|max:255',
       ]);
 
-      $brand->name = $validated['name'];
-      $brand->description = $validated['description'] ?? '';
-      $brand->phone = $validated['phone']; // Updated to sale_price
-
-      if ($request->hasFile('photo')) {
-         if ($brand->photo) {
-            Storage::delete($brand->photo);
+      try {
+         if ($request->hasFile('photo')) {
+            // Delete old photo if exists
+            if ($brand->photo) {
+               Storage::delete('public/' . $brand->photo);
+            }
+            // Store new photo
+            $validated['photo'] = $request->file('photo')->store('brands', 'public');
+         } else {
+            // Keep existing photo if no new one uploaded
+            $validated['photo'] = $brand->photo;
          }
-         $brand->photo = $request->file('photo')->store('brands');
+
+         $brand->update($validated);
+
+         return redirect()
+            ->route('brands.index')
+            ->with('success', 'Категория успешно обновлена!');
+      } catch (\Exception $e) {
+         Log::error('Category update error: ' . $e->getMessage());
+         return back()
+            ->withInput()
+            ->with('error', 'Ошибка при обновлении категории');
       }
-
-      $brand->save();
-
-      return redirect()->back()->with('success', 'brand успешно обновлен.');
    }
 
    public function destroy(Brand $brand)
