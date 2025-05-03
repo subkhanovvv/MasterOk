@@ -17,8 +17,7 @@
                     <td>{{ $loop->iteration + ($brands->currentPage() - 1) * $brands->perPage() }}</td>
                     <td>{{ $brand->name }}</td>
                     <td>
-                        <img src="{{ $brand->photo ? Storage::url($brand->photo) : asset('admin/assets/images/default_product.png') }}"
-                            alt="{{ $brand->name }}">
+                        <img src="{{ $brand->photo ? Storage::url($brand->photo) : asset('admin/assets/images/default_product.png') }}">
                     </td>
                     <td>{{ $brand->phone ?? '-' }}</td>
                     <td>
@@ -41,8 +40,8 @@
                             <i class="mdi mdi-pencil icon-sm text-primary"></i>
                         </a>
                         <a href="javascript:void(0);" title="Удалить" data-bs-toggle="modal"
-                            data-bs-target="#deleteBrandModal" data-id="{{ $brand->id }}" onclick="openModal(this)"
-                            class="text-decoration-none">
+                            data-bs-target="#deleteBrandModal" data-id="{{ $brand->id }}"
+                             onclick="openModal(this)" class="text-decoration-none">
                             <i class="mdi mdi-delete icon-sm text-danger"></i>
                         </a>
 

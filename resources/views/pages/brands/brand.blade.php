@@ -20,4 +20,5 @@
     @include('pages.brands.modals.new-brand')
     @include('pages.brands.js.script')
     <script src="{{ asset('admin/assets/js/phone-number-format.js') }}"></script>
+
 @endsection

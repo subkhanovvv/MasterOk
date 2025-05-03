@@ -43,28 +43,24 @@ class BrandController extends Controller
          'name'  => 'required|string|max:255',
          'phone' => 'required|string|max:20',
          'description' => 'required|string|max:255',
+         'photo' => 'nullable|image|max:2048',
       ]);
 
-      $photoPath = $request->file('photo')->store('brands', 'public');
+      // $photoPath = $request->file('photo')->store('brands', 'public');
+      if ($request->hasFile('photo')) {
+         $validated['photo'] = $request->file('photo')->store('brands', 'public');
+      } else {
+         $validated['photo'] = null;
+      }
 
       Brand::create([
          'name'  => $validated['name'],
          'phone' => $validated['phone'],
          'description' => $validated['description'],
-         'photo' => $photoPath,
+         'photo' => $validated['photo'],
       ]);
-      $message = "🛒 Новый brand добавлен:\n\nНазвание: {$request->name}\n\nФото: {$request->file('photo')->getClientOriginalName()}\n\n telefon: {$request->phone}";
-      $botToken = config('services.telegram.token');
-      $chatIds = config('services.telegram.chat_ids');
 
-      foreach ($chatIds as $chatId) {
-         Http::post("https://api.telegram.org/bot{$botToken}/sendMessage", [
-            'chat_id' => trim($chatId),
-            'text' => $message
-         ]);
-      }
-
-      return redirect()->route('brand')->with('success', 'Бренд успешно сохранён!');
+      return redirect()->route('brands.index')->with('success', 'Бренд успешно сохранён!');
    }
 
    public function update(Request $request, Brand $brand)
@@ -92,15 +88,27 @@ class BrandController extends Controller
       return redirect()->back()->with('success', 'brand успешно обновлен.');
    }
 
-   public function destroy($id)
+   public function destroy(Brand $brand)
    {
       try {
-         $brand = Brand::findOrFail($id);
+         if ($brand->products_count > 0) {
+            return redirect()
+               ->route('brands.index')
+               ->with('error', 'Невозможно удалить категорию, так как она используется в продуктах.');
+         }
+         if ($brand->photo) {
+            Storage::delete('public/' . $brand->photo);
+         }
          $brand->delete();
 
-         return redirect()->back()->with('success', 'Brand успешно удален');
-      } catch (\Exception $e) {
-         return redirect()->back()->with('error', 'Ошибка при удалении brandа');
+         return redirect()
+            ->route('brands.index')
+            ->with('success', 'Категория успешно удалена!');
+      } catch (QueryException $e) {
+         Log::error('Category deletion error: ' . $e->getMessage());
+         return redirect()
+            ->route('brands.index')
+            ->with('error', 'Ошибка при удалении категории: ' . $e->getMessage());
       }
    }
 }
