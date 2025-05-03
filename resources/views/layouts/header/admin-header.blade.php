@@ -45,6 +45,19 @@
         /* margin-top: 10px; */
         color: #554a68;
     }
+
+    #fullscreenBtn {
+        position: fixed;
+        top: 15px;
+        right: 15px;
+        z-index: 999;
+        border-radius: 50%;
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 </style>
 
 <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
@@ -55,22 +68,19 @@
             </button>
         </div>
         <div>
-            <a class="navbar-brand brand-logo" href="../index.html">
-                <img src="{{asset('../admin/assets/images/logo.png')}}" alt="logo" />
+            <a class="navbar-brand brand-logo" href="/">
+                <img src="{{ asset('../admin/assets/images/logo.png') }}" alt="logo" />
             </a>
-            <a class="navbar-brand brand-logo-mini" href="../index.html">
-                <img src="{{asset('../admin../assets/images/logo-mini.svg')}}" alt="logo" />
+            <a class="navbar-brand brand-logo-mini" href="/">
+                <img src="{{ asset('../admin../assets/images/logo-mini.svg') }}" alt="logo" />
             </a>
         </div>
     </div>
     <div class="navbar-menu-wrapper d-flex align-items-top">
-        
+
         <ul class="navbar-nav ms-auto">
             <li class="nav-item">
-                <form class="search-form" action="#">
-                    <i class="icon-search"></i>
-                    <input type="search" id="qrInput" class="form-control" placeholder="Scan QR code" title="Scan QR code" style="opacity: 0; position: absolute;">
-                </form>
+                <i class="mdi mdi-fullscreen icon-sm" id="fullscreenIcon" onclick="toggleFullscreen()"></i>
             </li>
             <li class="nav-item">
                 <div class="currency-container ">
@@ -90,51 +100,8 @@
                     </div>
                 </div>
             </li>
-            {{-- <li class="nav-item dropdown d-none d-lg-block">
-                <a class="nav-link dropdown-bordered dropdown-toggle dropdown-toggle-split" id="messageDropdown"
-                    href="#" data-bs-toggle="dropdown" aria-expanded="false"> Select Category </a>
-                <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0"
-                    aria-labelledby="messageDropdown">
-                    <a class="dropdown-item py-3">
-                        <p class="mb-0 font-weight-medium float-left">Select category</p>
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item preview-item">
-                        <div class="preview-item-content flex-grow py-2">
-                            <p class="preview-subject ellipsis font-weight-medium text-dark">Bootstrap Bundle </p>
-                            <p class="fw-light small-text mb-0">This is a Bundle featuring 16 unique dashboards</p>
-                        </div>
-                    </a>
-                    <a class="dropdown-item preview-item">
-                        <div class="preview-item-content flex-grow py-2">
-                            <p class="preview-subject ellipsis font-weight-medium text-dark">Angular Bundle</p>
-                            <p class="fw-light small-text mb-0">Everything you’ll ever need for your Angular projects
-                            </p>
-                        </div>
-                    </a>
-                    <a class="dropdown-item preview-item">
-                        <div class="preview-item-content flex-grow py-2">
-                            <p class="preview-subject ellipsis font-weight-medium text-dark">VUE Bundle</p>
-                            <p class="fw-light small-text mb-0">Bundle of 6 Premium Vue Admin Dashboard</p>
-                        </div>
-                    </a>
-                    <a class="dropdown-item preview-item">
-                        <div class="preview-item-content flex-grow py-2">
-                            <p class="preview-subject ellipsis font-weight-medium text-dark">React Bundle</p>
-                            <p class="fw-light small-text mb-0">Bundle of 8 Premium React Admin Dashboard</p>
-                        </div>
-                    </a>
-                </div>
-            </li>
-            <li class="nav-item d-none d-lg-block">
-                <div id="datepicker-popup" class="input-group date datepicker navbar-date-picker">
-                    <span class="input-group-addon input-group-prepend border-right">
-                        <span class="icon-calendar input-group-text calendar-icon"></span>
-                    </span>
-                    <input type="text" class="form-control">
-                </div>
-            </li> --}}
-           
+
+
             <li class="nav-item dropdown">
                 <a class="nav-link count-indicator" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
                     <i class="icon-bell"></i>
@@ -176,8 +143,7 @@
                 </div>
             </li>
             <li class="nav-item dropdown d-none d-lg-block user-dropdown">
-                <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown"
-                    aria-expanded="false">
+                <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                     <img class="img-xs rounded-circle"
                         src="https://yt3.googleusercontent.com/ytc/AIdro_npbXKiyqfpTdsCz8ODcBzVrkK0keEAI6D54mnYAIvZzw=s900-c-k-c0x00ffffff-no-rj"
                         alt="Profile image">
@@ -245,5 +211,29 @@
     fetchExchangeRates();
     setInterval(fetchExchangeRates, 10000);
 </script>
+
+<script>
+    function toggleFullscreen() {
+        const elem = document.documentElement;
+        const icon = document.getElementById("fullscreenIcon");
+
+        if (!document.fullscreenElement) {
+            elem.requestFullscreen().then(() => {
+                icon.classList.remove("mdi-fullscreen");
+                icon.classList.add("mdi-fullscreen-exit");
+            }).catch(err => {
+                console.error("Failed to enter fullscreen:", err);
+            });
+        } else {
+            document.exitFullscreen().then(() => {
+                icon.classList.remove("mdi-fullscreen-exit");
+                icon.classList.add("mdi-fullscreen");
+            }).catch(err => {
+                console.error("Failed to exit fullscreen:", err);
+            });
+        }
+    }
+</script>
+
 
 @include('pages.products.modals.consume-product')

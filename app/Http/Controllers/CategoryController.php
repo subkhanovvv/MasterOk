@@ -11,15 +11,17 @@ use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $categories = Category::withCount('products')
+            ->when($request->filled('search'), function ($query) use ($request) {
+                $query->where('name', 'like', '%' . $request->search . '%');
+            })
             ->orderBy('id', 'desc')
             ->paginate(10);
 
         return view('pages.categories.category', compact('categories'));
     }
-
 
     public function create()
     {
