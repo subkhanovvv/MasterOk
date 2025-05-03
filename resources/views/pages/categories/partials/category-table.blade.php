@@ -10,13 +10,13 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($categories as $c)
+            @forelse ($categories as $c)
                 <tr>
-                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ $loop->iteration + ($categories->currentPage() - 1) * $categories->perPage() }}</td>
                     <td>{{ $c->name }}</td>
                     <td>
-                        <img src="{{ $c->photo ? Storage::url($c->photo) : asset('admin/assets/images/default_product.png') }}"
-                            alt="{{ $c->name }}">
+                        <img
+                            src="{{ $c->photo ? Storage::url($c->photo) : asset('admin/assets/images/default_product.png') }}">
                     </td>
                     <td>
                         <a href="{{ route('products.index', array_merge(request()->except('page'), ['category_id' => $c->id])) }}"
@@ -38,7 +38,11 @@
                         </a>
                     </td>
                 </tr>
-            @endforeach
+            @empty
+                <tr>
+                    <td colspan="5" class="text-center py-4">Нет категории</td>
+                </tr>
+            @endforelse
         </tbody>
     </table>
 </div>

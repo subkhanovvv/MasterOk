@@ -12,15 +12,20 @@ use Illuminate\Support\Facades\Storage;
 
 class BrandController extends Controller
 {
-   public function index()
+   public function index(Request $request)
    {
-      $brands = Brand::withCount('products') // add this line
-         ->orderBy('id', 'desc')
-         ->paginate(10);
+      $sortOrder = $request->get('sort', 'desc');
+
+      $brands = Brand::withCount('products')
+         ->when($request->filled('search'), function ($query) use ($request) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+         })
+         ->orderBy('id', $sortOrder)
+         ->paginate(10)
+         ->appends(['sort' => $sortOrder]);
 
       return view('pages.brands.brand', compact('brands'));
    }
-
    public function create()
    {
       return view('pages.brands.new-brand');

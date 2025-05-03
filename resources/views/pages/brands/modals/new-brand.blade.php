@@ -16,7 +16,7 @@
                     <div class="form-group">
                         <label for="categoryPhone">Телефон </label>
                         <input type="text" class="form-control" placeholder="Телефон " name="phone" required
-                            id="categoryPhone"value="+998">
+                            id="categoryPhone">
                     </div>
                     <div class="form-group">
                         <label for="categoryDescription">Описание </label>
@@ -65,15 +65,5 @@
             } else {
                 preview.style.display = 'none';
             }
-        }
-
-        function StringTophone(text) {
-            let digits = text.replace(/\D/g, ""); // Remove non-digit characters
-
-            if (digits.startsWith("998")) {
-                return "+" + digits;
-            }
-
-            return "+998" + digits;
         }
     </script>
