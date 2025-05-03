@@ -35,4 +35,14 @@
             preview.style.display = 'none';
         }
     }
+    function updatePreviewImage(event) {
+        const input = event.target;
+        const previewImg = document.getElementById('edit_category_photo');
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => previewImg.src = e.target.result;
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
 </script>
