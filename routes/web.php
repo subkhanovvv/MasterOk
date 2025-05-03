@@ -48,7 +48,7 @@ Route::middleware(['auth'])->group(function () {
     });
 });
 
-Route::middleware(['guest'])->prefix('auth')->name('auth.')->controller(AuthController::class)->group(function () {
-    Route::get('login', 'login')->name('login');
+Route::middleware(['guest'])->controller(AuthController::class)->group(function () {
+    Route::get('/login', 'login')->name('login');
     Route::post('ProcessLogin', 'ProcessLogin')->name('ProcessLogin');
 });
