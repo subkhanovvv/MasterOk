@@ -13,15 +13,19 @@ class CategoryController extends Controller
 {
     public function index(Request $request)
     {
+        $sortOrder = $request->get('sort', 'desc');
+
         $categories = Category::withCount('products')
             ->when($request->filled('search'), function ($query) use ($request) {
                 $query->where('name', 'like', '%' . $request->search . '%');
             })
-            ->orderBy('id', 'desc')
-            ->paginate(10);
+            ->orderBy('id', $sortOrder)
+            ->paginate(10)
+            ->appends(['sort' => $sortOrder]);
 
         return view('pages.categories.category', compact('categories'));
     }
+
 
     public function create()
     {
