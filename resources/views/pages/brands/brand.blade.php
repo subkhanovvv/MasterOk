@@ -67,9 +67,9 @@
                                 <td>{{ Str::limit($brand->description, 50) }}</td>
                                 <td>
                                     <div class="d-flex justify-content-center gap-2">
-                                        <a href="#" data-bs-toggle="modal" data-bs-target="#viewBrandModal"
-                                            data-brand="{{ json_encode($brand) }}" onclick="viewBrand(this)">
-                                            <i class="mdi mdi-eye icon-sm text-info"></i>
+                                        <a href="{{ route('products.index', array_merge(request()->except('page'), ['brand_id' => $brand->id])) }}"
+                                            class="text-decoration-none">
+                                            <i class="mdi mdi-eye icon-sm text-success"></i>
                                         </a>
                                         <a href="javascript:void(0);" title="Редактировать" data-bs-toggle="modal"
                                             data-bs-target="#editBrandModal" data-id="{{ $brand->id }}"
