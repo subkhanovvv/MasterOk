@@ -47,14 +47,15 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'photo' => 'nullable|image',
+            'stock_unit' => 'nullable|string|max:50',
+            'units_per_stock' => 'nullable|integer|min:1',
             'unit' => 'required|string|max:50',
             'price_uzs' => 'required|numeric|min:0',
             'price_usd' => 'required|numeric|min:0',
-            'tax' => 'required|numeric|min:0',
             'short_description' => 'nullable|string|max:1000',
-            'sale_price' => 'required|numeric|min:0',
-            'category_id' => 'required',
-            'brand_id' => 'required',
+            'sale_price' => 'nullable|numeric|min:0',
+            'category_id' => 'required|exists:categories,id',
+            'brand_id' => 'required|exists:brands,id',
         ]);
 
         $photoPath = null;
@@ -65,24 +66,26 @@ class ProductController extends Controller
         $product = Product::create([
             'name' => $validated['name'],
             'photo' => $photoPath,
+            'units_per_stock' => $validated['units_per_stock'],
+            'stock_unit' => $validated['stock_unit'] ?? null, // Use null if stock_unit is not present
             'unit' => $validated['unit'],
             'price_uzs' => $validated['price_uzs'],
             'price_usd' => $validated['price_usd'],
-            'tax' => $validated['tax'],
-            'short_description' => $validated['short_description'],
-            'sale_price' => $validated['sale_price'],
+            'short_description' => $validated['short_description'] ?? null,
+            'sale_price' => $validated['sale_price'] ?? null,
             'category_id' => $validated['category_id'],
             'brand_id' => $validated['brand_id'],
         ]);
 
-        $barcodeValue = str_pad($product->category_id, 2, STR_PAD_LEFT) . str_pad($product->id, 5, '0', STR_PAD_LEFT);
+        // Generate barcode based on category_id and product id
+        $barcodeValue = str_pad($product->category_id, 2, '0', STR_PAD_LEFT) . str_pad($product->id, 5, '0', STR_PAD_LEFT);
 
         $barcodeDir = storage_path('app/public/barcodes');
         if (!file_exists($barcodeDir)) {
             mkdir($barcodeDir, 0755, true);
         }
 
-        $dns1d = new DNS1D();
+        $dns1d = new \Milon\Barcode\DNS1D();
         $barcodeSVG = $dns1d->getBarcodeSVG($barcodeValue, 'C39', 1, 60);
         $barcodeImagePath = 'barcodes/' . $barcodeValue . '.svg';
         file_put_contents(storage_path('app/public/' . $barcodeImagePath), $barcodeSVG);
@@ -91,43 +94,9 @@ class ProductController extends Controller
             'barcode_value' => $barcodeValue,
             'barcode' => $barcodeImagePath,
         ]);
-
-        // ✅ Telegram Notification
-        $message = "🛒 Новый продукт добавлен:\n\n" .
-            "📦 Название: {$product->name}\n" .
-            "💰 Цена: {$product->price_uzs} UZS / {$product->price_usd} USD\n" .
-            "📈 Налог: {$product->tax}%\n" .
-            "📝 Описание: {$product->short_description}\n" .
-            "🔥 Скидочная цена: {$product->sale_price}\n" .
-            "📁 Категория: {$product->category_id}\n" .
-            "🏷️ Бренд: {$product->brand_id}";
-
-        $botToken = config('services.telegram.token');
-        $chatIds = config('services.telegram.chat_ids');
-
-        foreach ($chatIds as $chatId) {
-            if ($photoPath) {
-                Http::attach(
-                    'photo',
-                    file_get_contents(storage_path("app/public/{$photoPath}")),
-                    basename($photoPath)
-                )->post("https://api.telegram.org/bot{$botToken}/sendPhoto", [
-                    'chat_id' => trim($chatId),
-                    'caption' => $message,
-                    'parse_mode' => 'HTML',
-                ]);
-            } else {
-                Http::post("https://api.telegram.org/bot{$botToken}/sendMessage", [
-                    'chat_id' => trim($chatId),
-                    'text' => $message,
-                    'parse_mode' => 'HTML',
-                ]);
-            }
-        }
-
         return back()->with('success', 'Товар и штрихкод успешно сохранены!');
     }
-    // ProductController.php
+
     public function destroy($id)
     {
         try {

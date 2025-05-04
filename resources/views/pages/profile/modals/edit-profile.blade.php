@@ -6,7 +6,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form method="POST" action="{{ route('store-brand') }}" enctype="multipart/form-data">
+                <form method="POST" action="#" enctype="multipart/form-data">
                     @csrf
                     <div class="form-group">
                         <label for="categoryName">Название товара</label>
