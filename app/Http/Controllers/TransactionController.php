@@ -11,7 +11,6 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Maatwebsite\Excel\Facades\Excel;
 
 class TransactionController extends Controller
 {
@@ -24,6 +23,7 @@ class TransactionController extends Controller
             'total_price' => 'required|numeric|min:0',
             'paid_amount' => 'nullable|numeric|min:0|lte:total_price',
             'client_phone' => 'nullable|string|max:20|required_if:type,loan,intake_loan',
+            'units_per_stock' => 'nullable|string|max:20',
             'return_reason' => 'nullable|string|max:500|required_if:type,return,intake_return',
         ]);
 
@@ -32,19 +32,22 @@ class TransactionController extends Controller
         try {
             $product = Product::findOrFail($validated['product_id']);
 
-            // Validate stock for consumption types
             if (in_array($validated['type'], ['consume', 'loan']) && $product->qty < $validated['qty']) {
                 return back()->withErrors(['qty' => 'Недостаточно товара на складе. Доступно: ' . $product->qty]);
             }
 
-            // Update product quantity
             if (in_array($validated['type'], ['return', 'intake', 'intake_return'])) {
                 $product->increment('qty', $validated['qty']);
             } elseif (in_array($validated['type'], ['consume', 'loan', 'intake_loan'])) {
                 $product->decrement('qty', $validated['qty']);
             }
 
-            // Create product activity
+            if ($product->qty > 10) {
+                $product->decrement('units_per_stock', $validated['units_per_stock']);
+            } else {
+               
+            }
+
             $activityData = [
                 'product_id' => $validated['product_id'],
                 'user_id' => auth()->id(),
@@ -58,7 +61,6 @@ class TransactionController extends Controller
 
             $productActivity = ProductActivity::create($activityData);
 
-            // Generate QR code
             $qrContent = json_encode([
                 'transaction_id' => $productActivity->id,
                 'product_id' => $product->id,
