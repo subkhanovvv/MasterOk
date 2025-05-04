@@ -18,19 +18,6 @@
                                 <form method="POST" action="#">
                                     @csrf
                                     <div class="mb-2">
-                                        <input type="text" name="name" class="form-control" placeholder="Название"
-                                            value="{{ request('name') }}">
-                                    </div>
-                                    <div class="mb-2">
-                                        <select name="category_id" class="form-select">
-                                            <option value="">Все категории</option>
-                                            @foreach ($categories as $c)
-                                                <option value="{{ $c->id }}"
-                                                    {{ request('category_id') == $c->id ? 'selected' : '' }}>
-                                                    {{ $c->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
                                     </div>
                                     <div class="mb-2">
                                         <select name="brand_id" class="form-select">
@@ -45,13 +32,13 @@
                                     </div>
                                     <div class="mb-2">
                                         <select name="status" class="form-select">
-                                            <option value="">Все статусы</option>
-                                            <option value="normal" {{ request('status') === 'normal' ? 'selected' : '' }}>В
+                                            <option value="">Все типы</option>
+                                            <option value="normal" {{ request('type') === 'normal' ? 'selected' : '' }}>В
                                                 наличии</option>
-                                            <option value="low" {{ request('status') === 'low' ? 'selected' : '' }}>Мало
+                                            <option value="low" {{ request('type') === 'low' ? 'selected' : '' }}>Мало
                                             </option>
-                                            <option value="out_of_stock"
-                                                {{ request('status') === 'out_of_stock' ? 'selected' : '' }}>Нет в наличии
+                                            <option value="intake"
+                                                {{ request('type') === 'out_of_stock' ? 'selected' : '' }}>Нет в наличии
                                             </option>
                                         </select>
                                     </div>
@@ -64,10 +51,6 @@
                                 </form>
                             </div>
                         </div>
-                        {{-- <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newProductModal"
-                            type="button">
-                            <i class="mdi mdi-plus"></i> Add new
-                        </button> --}}
                     </div>
                 </div>
             </div>
