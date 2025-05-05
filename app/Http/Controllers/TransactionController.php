@@ -313,4 +313,8 @@ class TransactionController extends Controller
             'transaction_count' => $data->pluck('transaction_count')
         ];
     }
+    public function consumption()
+    {
+        return view('pages.consumption');    
+    }
 }

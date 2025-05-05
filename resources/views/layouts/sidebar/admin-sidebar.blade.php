@@ -28,6 +28,13 @@
                 <i class="menu-arrow"></i>
             </a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('consumption') }}">
+                <i class="menu-icon mdi mdi-database-minus"></i>
+                <span class="menu-title">Расходы</span>
+                <i class="menu-arrow"></i>
+            </a>
+        </li>
         <li class="nav-item nav-category">Бренд</li>
         <li class="nav-item">
             <a class="nav-link" href="{{ route('brands.index') }}">
@@ -38,14 +45,14 @@
         </li>
         <li class="nav-item nav-category">Прочее</li>
         <li class="nav-item">
-            <a class="nav-link" href="{{route('transactions')}}">
+            <a class="nav-link" href="{{ route('transactions') }}">
                 <i class="menu-icon mdi mdi-history"></i>
                 <span class="menu-title">История</span>
                 <i class="menu-arrow"></i>
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{{route('admin.reports.index')}}">
+            <a class="nav-link" href="{{ route('admin.reports.index') }}">
                 <i class="menu-icon mdi mdi-file-chart"></i>
                 <span class="menu-title">Отчёт</span>
                 <i class="menu-arrow"></i>

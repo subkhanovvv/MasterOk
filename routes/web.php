@@ -5,6 +5,7 @@ use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TransactionController;
+use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -45,9 +46,10 @@ Route::middleware(['auth'])->group(function () {
         Route::post('consume', 'consume')->name('consume');
         Route::post('intake', 'intake')->name('intake');
         Route::get('transactions', 'transactions')->name('transactions');
+        Route::get('consumption', 'consumption')->name('consumption');
         Route::get('report', 'report')->name('admin.reports.index');
     });
-    Route::view('/consumption' , 'pages.consumption')->name('consumption');
+  
 });
 
 Route::middleware(['guest'])->controller(AuthController::class)->group(function () {
