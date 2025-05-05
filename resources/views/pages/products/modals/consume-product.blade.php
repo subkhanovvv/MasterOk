@@ -1,90 +1,170 @@
-<div class="modal fade" id="consumeProductModal">
-    <div class="modal-dialog modal-xl">
+<div class="modal fade" id="consumeProductModal" tabindex="-1" aria-labelledby="consumeProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Расход товара</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="consumeProductModalLabel">Оформление продажи</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-
+            
             <div class="modal-body">
-                <form action="{{ route('consume') }}" method="POST">
+                <form id="consumeForm" method="POST" action="{{ route('consume') }}">
                     @csrf
-                    <div class="row">
-                        <!-- Left side: Product image -->
-                        <div class="col-md-6 text-center">
-                            <input type="hidden" name="product_id" id="consume_product_id" value="">
-                            <input type="hidden" name="quantity" id="consume_quantity" value="1">
-                            <input type="hidden" name="total_price" id="consume_hidden_total_price" value="">
-
-                            <img src="" id="consume_product_photo" alt="Product photo"
-                                style="width: 250px; height: 250px;" class="border rounded">
-
-                            <h5 id="consume_product_name" class="mt-3 text-capitalize"></h5>
-                            <p id="consume_product_sale_price" class="text-muted"></p>
-                        </div>
-
-                        <!-- Right side: Quantity, Transaction, etc -->
+                    
+                    <!-- Transaction Type Selector -->
+                    <div class="row mb-4">
                         <div class="col-md-6">
-                            <div class="d-flex justify-content-center align-items-center my-3 gap-3">
-                                <button type="button" class="btn btn-outline-secondary text-dark btn-sm"
-                                    onclick="decreaseQty('consume')">
-                                    <i class="mdi mdi-minus"></i>
-                                </button>
-
-                                <input type="number" id="consume_qty" class="form-control text-center" style="width: 100px;"
-                                    oninput="updateTotal('consume')" name="qty" min="1" value="1">
-
-                                <button type="button" class="btn btn-outline-secondary text-dark btn-sm"
-                                    onclick="increaseQty('consume')">
-                                    <i class="mdi mdi-plus"></i>
-                                </button>
-                            </div>
-
-                            <h5 class="text-center my-3">Итого: <span id="consume_total_price" name="total_price"></span> сум</h5>
-
-                            <div class="mb-3">
-                                <label for="consume_transaction_type" class="form-label">Тип транзакции</label>
-                                <select id="consume_transaction_type" class="form-select" name="type"
-                                    onchange="onTransactionTypeChange('consume')">
-                                    <option value="consume">Продажа (расход)</option>
-                                    <option value="loan">В долг (клиент берет)</option>
-                                    <option value="return">Возврат товара</option>
+                            <label for="transactionType" class="form-label">Тип операции</label>
+                            <select class="form-select" id="transactionType" name="type" required>
+                                <option value="sale" selected>Продажа</option>
+                                <option value="loan">Продажа в долг</option>
+                                <option value="return">Возврат товара</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="paymentMethod" class="form-label">Способ оплаты</label>
+                            <select class="form-select" id="paymentMethod" name="payment_type" required>
+                                <option value="cash" selected>Наличные</option>
+                                <option value="card">Безналичные</option>
+                                <option value="mixed">Смешанная оплата</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Mixed Payment Fields (hidden by default) -->
+                    <div id="mixedPaymentFields" class="row mb-3" style="display: none;">
+                        <div class="col-md-6">
+                            <label for="cashAmount" class="form-label">Сумма наличными</label>
+                            <input type="number" class="form-control" id="cashAmount" name="cash_amount" value="0" min="0">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="cardAmount" class="form-label">Сумма картой</label>
+                            <input type="number" class="form-control" id="cardAmount" name="card_amount" value="0" min="0">
+                        </div>
+                    </div>
+                    
+                    <!-- Client Info Fields (hidden by default) -->
+                    <div id="clientInfoFields" class="row mb-3" style="display: none;">
+                        <div class="col-md-6">
+                            <label for="clientName" class="form-label">Имя клиента</label>
+                            <input type="text" class="form-control" id="clientName" name="client_name" placeholder="Введите имя">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="clientPhone" class="form-label">Телефон клиента</label>
+                            <input type="tel" class="form-control" id="clientPhone" name="client_phone" placeholder="+998 __ ___ __ __">
+                        </div>
+                    </div>
+                    
+                    <!-- Return Reason Field (hidden by default) -->
+                    <div id="returnReasonField" class="mb-3" style="display: none;">
+                        <label for="returnReason" class="form-label">Причина возврата</label>
+                        <textarea class="form-control" id="returnReason" name="return_reason" rows="2" placeholder="Укажите причину возврата"></textarea>
+                    </div>
+                    
+                    <!-- Product Search and Selection -->
+                    <div class="mb-3">
+                        <label for="productSearch" class="form-label">Добавить товар</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="productSearch" placeholder="Поиск по названию или штрихкоду">
+                            <button class="btn btn-outline-secondary" type="button" id="scanBarcodeBtn">
+                                <i class="mdi mdi-barcode-scan"></i>
+                            </button>
+                        </div>
+                        <div id="searchResults" class="mt-2" style="display: none;">
+                            <div class="list-group" id="searchResultsList"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Selected Products Table -->
+                    <div class="table-responsive mb-3">
+                        <table class="table table-hover" id="selectedProductsTable">
+                            <thead>
+                                <tr>
+                                    <th width="40%">Товар</th>
+                                    <th width="20%">Цена</th>
+                                    <th width="20%">Кол-во</th>
+                                    <th width="15%">Сумма</th>
+                                    <th width="5%"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="selectedProductsBody">
+                                <!-- Products will be added here dynamically -->
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="3" class="text-end">Итого:</th>
+                                    <th id="subtotalAmount">0</th>
+                                    <th></th>
+                                </tr>
+                                <tr id="discountRow" style="display: none;">
+                                    <th colspan="3" class="text-end">Скидка:</th>
+                                    <th id="discountAmount">0</th>
+                                    <th></th>
+                                </tr>
+                                <tr>
+                                    <th colspan="3" class="text-end">К оплате:</th>
+                                    <th id="totalAmount">0</th>
+                                    <th></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    
+                    <!-- Discount and Notes -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="discountInput" class="form-label">Скидка</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="discountInput" min="0" value="0">
+                                <select class="form-select" id="discountType" style="max-width: 80px;">
+                                    <option value="fixed">сум</option>
+                                    <option value="percent">%</option>
                                 </select>
-                            </div>
-
-                            <div id="consume_client_phone_group" class="mb-3" style="display: none;">
-                                <label for="consume_client_phone" class="form-label">Номер клиента</label>
-                                <input type="text" id="consume_client_phone" name="client_phone" class="form-control"
-                                    placeholder="+998901234567">
-                            </div>
-
-                            <div id="consume_return_reason_group" class="mb-3" style="display: none;">
-                                <label for="consume_return_reason" class="form-label">Причина возврата</label>
-                                <textarea id="consume_return_reason" name="return_reason" class="form-control" rows="2"
-                                    placeholder="Причина возврата товара"></textarea>
-                            </div>
-
-                            <div class="form-check mt-3">
-                                <input class="form-check-input" type="checkbox" id="consume_print_cheque">
-                                <label class="form-check-label" for="consume_print_cheque">
-                                    Печать чека
-                                </label>
+                                <button class="btn btn-outline-secondary" type="button" id="applyDiscountBtn">Применить</button>
                             </div>
                         </div>
-
+                        <div class="col-md-6">
+                            <label for="saleNotes" class="form-label">Примечание</label>
+                            <input type="text" class="form-control" id="saleNotes" name="notes" placeholder="Дополнительная информация">
+                        </div>
                     </div>
+                    
+                    <!-- Print Options -->
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="printReceipt" name="print_receipt" checked>
+                        <label class="form-check-label" for="printReceipt">Печатать чек</label>
+                    </div>
+                    
+                    <!-- Hidden inputs for form submission -->
+                    <input type="hidden" id="discountValue" name="discount" value="0">
+                    <input type="hidden" id="discountValueType" name="discount_type" value="fixed">
+                </form>
             </div>
-
+            
             <div class="modal-footer">
-                <button type="submit" class="btn btn-primary btn-lg text-white">Подтвердить</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-primary" id="confirmSaleBtn">Подтвердить продажу</button>
             </div>
-            </form>
         </div>
     </div>
 </div>
 
-<script src="{{ asset('admin/assets/js/phone-number-format.js') }}"></script>
-<script>
-    const clientPhoneInput = document.getElementById('consume_client_phone');
-    maskUzPhoneInput(clientPhoneInput);
-</script>
+<!-- Barcode Scanner Modal -->
+<div class="modal fade" id="barcodeScannerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Сканирование штрихкода</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <video id="barcodeScanner" width="100%" height="200" style="border: 1px solid #ddd;"></video>
+                <p class="mt-2 text-muted">Наведите камеру на штрихкод товара</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/quagga/dist/quagga.min.js"></script>

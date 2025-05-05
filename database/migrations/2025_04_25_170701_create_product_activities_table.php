@@ -17,7 +17,9 @@ return new class extends Migration
             $table->integer('qty');
             $table->enum('type', ['consume', 'loan', 'return','intake','intake_loan','intake_return']);
             $table->string('client_phone')->nullable();
+            $table->string('client_name')->nullable();
             $table->string('paid_amount')->nullable();
+            $table->enum('payment_type' ,['cash','card'])->default('cash');
             $table->string('return_reason')->nullable();
             $table->string('total_price');
             $table->string('qr_code')->nullable();

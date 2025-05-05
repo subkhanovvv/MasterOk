@@ -47,6 +47,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('transactions', 'transactions')->name('transactions');
         Route::get('report', 'report')->name('admin.reports.index');
     });
+    Route::view('/consumption' , 'pages.consumption')->name('consumption');
 });
 
 Route::middleware(['guest'])->controller(AuthController::class)->group(function () {

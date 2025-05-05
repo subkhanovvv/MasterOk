@@ -21,8 +21,10 @@ class TransactionController extends Controller
             'qty' => 'required|integer|min:1',
             'type' => 'required|in:consume,loan,return,intake,intake_loan,intake_return',
             'total_price' => 'required|numeric|min:0',
+            'payment_type' => 'required',
             'paid_amount' => 'nullable|numeric|min:0|lte:total_price',
-            'client_phone' => 'nullable|string|max:20|required_if:type,loan,intake_loan',
+            'client_phone' => 'nullable|string|max:20|required_if:type,loan',
+            'client_name' => 'nullable|string|max:20|required_if:type,loan',
             'units_per_stock' => 'nullable|string|max:20',
             'return_reason' => 'nullable|string|max:500|required_if:type,return,intake_return',
         ]);
@@ -50,12 +52,13 @@ class TransactionController extends Controller
 
             $activityData = [
                 'product_id' => $validated['product_id'],
-                'user_id' => auth()->id(),
                 'qty' => $validated['qty'],
                 'type' => $validated['type'],
                 'total_price' => $validated['total_price'],
                 'paid_amount' => $validated['paid_amount'] ?? 0,
+                'payment_type' => $validated['payment_type'] ?? 0,
                 'client_phone' => $validated['client_phone'] ?? null,
+                'client_name' => $validated['client_name'] ?? null,
                 'return_reason' => $validated['return_reason'] ?? null,
             ];
 
@@ -67,6 +70,7 @@ class TransactionController extends Controller
                 'product_name' => $product->name,
                 'action' => $validated['type'],
                 'quantity' => $validated['qty'],
+                'payment_type' => $validated['payment_type'],
                 'total_price' => $validated['total_price'],
                 'date' => now()->toDateTimeString(),
             ]);
