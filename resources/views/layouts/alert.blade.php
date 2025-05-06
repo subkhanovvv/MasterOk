@@ -12,7 +12,7 @@
     @if ($errors->any())
         <div class="alert alert-danger alert-dismissible fade show alert-position">
             <div class="d-flex align-items-center">
-                <i class="fas fa-exclamation-circle me-2"></i>
+                <i class="mdi mdi-alert-box me-2"></i>
                 <div>
                     @foreach ($errors->all() as $error)
                         <div>{{ $error }}</div>
@@ -26,7 +26,7 @@
     @if (Session::has('success'))
         <div class="alert alert-success alert-dismissible fade show alert-position">
             <div class="d-flex align-items-center">
-                <i class="fas fa-check-circle me-2"></i>
+                <i class="mdi mdi-check-circle me-2"></i>
                 <div>{{ Session::get('success') }}</div>
                 <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>

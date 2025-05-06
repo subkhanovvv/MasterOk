@@ -4,11 +4,11 @@
 <div class="container-fluid py-4">
     <div class="row">
         <div class="col-md-8">
-            <h4 class="mb-4">📦 Расход продуктов</h4>
+            <h4 class="mb-4">Расход продуктов</h4>
         </div>
         <div class="col-md-4 text-end">
             <a href="#" class="btn btn-outline-primary">
-                <i class="fas fa-history"></i> История расходов
+                <i class="mdi mdi-history"></i> История расходов
             </a>
         </div>
     </div>
@@ -19,9 +19,9 @@
                 <div class="card-body">
                     <div class="input-group">
                         <input type="text" id="product-search" class="form-control" 
-                               placeholder="Поиск по названию или штрихкоду...">
+                               placeholder="Поиск по названию или штрихкоду..." style="height: 45px">
                         <button class="btn btn-primary" id="search-btn">
-                            <i class="fas fa-search"></i>
+                            <i class="mdi mdi-magnify"></i>
                         </button>
                     </div>
                     
@@ -35,10 +35,10 @@
         <div class="col-md-8">
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white">
-                    <strong>📝 Список расходов</strong>
+                    <strong>Список расходов</strong>
                 </div>
                 <div class="card-body">
-                    <div class="table-responsive">
+                    <div class="table table-responsive">
                         <table class="table table-bordered table-hover" id="consumption-table">
                             <thead class="table-light">
                                 <tr>
