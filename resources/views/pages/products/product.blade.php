@@ -12,14 +12,16 @@
                 <div class="d-sm-flex justify-content-between align-items-center">
                     <div class="d-flex align-items-center gap-2 flex-wrap">
                         <div>
-                            <input type="text" id="barcodeInput" class="form-control rounded"
-                                placeholder="Сканируйте штрихкод..." autofocus
-                                style="height:45px; width:300px ; border:2px solid black" />
-                            <input type="text" class="form-control" value="{{ request('name') }}">
+                            <form action="{{ route('products.index') }}" method="GET">
+                                @csrf
+                                <input type="text" class="form-control rounded" name="search" id="searchInput"
+                                       placeholder="Поиск..."  value="{{ request('search') }}" autofocus
+                                       style="height:45px; width:300px ; border:2px solid black" />
+                            </form>
                         </div>
                         <div class="dropdown">
                             <button class="btn btn-secondary dropdown-toggle text-dark" type="button" id="filterDropdown"
-                                data-bs-toggle="dropdown" aria-expanded="false">
+                                    data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="mdi mdi-filter-outline"></i> Фильтр
                             </button>
                             <div class="dropdown-menu p-3 shadow" style="min-width:300px;" aria-labelledby="filterDropdown">
@@ -29,7 +31,7 @@
                                             <option value="">Все категории</option>
                                             @foreach ($categories as $c)
                                                 <option value="{{ $c->id }}"
-                                                    {{ request('category_id') == $c->id ? 'selected' : '' }}>
+                                                        {{ request('category_id') == $c->id ? 'selected' : '' }}>
                                                     {{ $c->name }}
                                                 </option>
                                             @endforeach
@@ -40,7 +42,7 @@
                                             <option value="">Все бренды</option>
                                             @foreach ($brands as $b)
                                                 <option value="{{ $b->id }}"
-                                                    {{ request('brand_id') == $b->id ? 'selected' : '' }}>
+                                                        {{ request('brand_id') == $b->id ? 'selected' : '' }}>
                                                     {{ $b->name }}
                                                 </option>
                                             @endforeach
@@ -49,30 +51,25 @@
                                     <div class="mb-2">
                                         <select name="status" class="form-select">
                                             <option value="">Все статусы</option>
-                                            <option value="normal" {{ request('status') === 'normal' ? 'selected' : '' }}>В
-                                                наличии</option>
-                                            <option value="low" {{ request('status') === 'low' ? 'selected' : '' }}>Мало
-                                            </option>
-                                            <option value="out_of_stock"
-                                                {{ request('status') === 'out_of_stock' ? 'selected' : '' }}>Нет в наличии
-                                            </option>
+                                            <option value="normal" {{ request('status') === 'normal' ? 'selected' : '' }}>В наличии</option>
+                                            <option value="low" {{ request('status') === 'low' ? 'selected' : '' }}>Мало</option>
+                                            <option value="out_of_stock" {{ request('status') === 'out_of_stock' ? 'selected' : '' }}>Нет в наличии</option>
                                         </select>
                                     </div>
                                     <div class="d-grid gap-2">
                                         <button type="submit" class="btn btn-sm btn-primary">
                                             <i class="mdi mdi-filter"></i> Применить
                                         </button>
-                                        <a href="{{ route('products.index') }}"
-                                            class="btn btn-sm btn-outline-secondary">Сброс</a>
+                                        <a href="{{ route('products.index') }}" class="btn btn-sm btn-outline-secondary">Сброс</a>
                                     </div>
                                 </form>
                             </div>
                         </div>
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newProductModal"
-                            type="button">
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newProductModal" type="button">
                             <i class="mdi mdi-plus"></i> Add new
                         </button>
                     </div>
+                    
                 </div>
             </div>
 
@@ -93,10 +90,22 @@
     @include('pages.products.modals.new-product')
     @include('pages.products.modals.edit-product')
     @include('pages.products.modals.view-product')
-    @include('pages.products.modals.consume-product')
     @include('pages.products.modals.intake-product')
     @include('pages.products.modals.delete-product')
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const input = document.getElementById('searchInput');
+            if (input) {
+                // Focus the input
+                input.focus();
+                
+                // Move cursor to the end
+                const length = input.value.length;
+                input.setSelectionRange(length, length);
+            }
+        });
+    </script>
 
     <script>
         // Global variables
@@ -423,43 +432,43 @@
             }
         }
 
-        // Barcode scanner functionality
-        document.getElementById('barcodeInput').addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                const barcode = this.value.trim();
-                if (!barcode) return;
-                console.log('Barcode entered:', barcode);
+        // // Barcode scanner functionality
+        // document.getElementById('barcodeInput').addEventListener('keydown', function(e) {
+        //     if (e.key === 'Enter') {
+        //         e.preventDefault();
+        //         const barcode = this.value.trim();
+        //         if (!barcode) return;
+        //         console.log('Barcode entered:', barcode);
 
-                // Send AJAX request to find product by barcode
-                $.get(`/products/by-barcode/${barcode}`, function(product) {
-                    if (!product || !product.id) {
-                        alert('Товар с таким штрихкодом не найден');
-                        return;
-                    }
+        //         // Send AJAX request to find product by barcode
+        //         $.get(`/products/by-barcode/${barcode}`, function(product) {
+        //             if (!product || !product.id) {
+        //                 alert('Товар с таким штрихкодом не найден');
+        //                 return;
+        //             }
 
-                    // Create a temporary invisible element with data- attributes
-                    const temp = document.createElement('div');
-                    temp.setAttribute('data-id', product.id);
-                    temp.setAttribute('data-name', product.name);
-                    temp.setAttribute('data-photo', product.photo_url);
-                    temp.setAttribute('data-sale_price', product.sale_price);
-                    temp.setAttribute('data-bs-target', '#consumeProductModal');
+        //             // Create a temporary invisible element with data- attributes
+        //             const temp = document.createElement('div');
+        //             temp.setAttribute('data-id', product.id);
+        //             temp.setAttribute('data-name', product.name);
+        //             temp.setAttribute('data-photo', product.photo_url);
+        //             temp.setAttribute('data-sale_price', product.sale_price);
+        //             temp.setAttribute('data-bs-target', '#consumeProductModal');
 
-                    // Call your existing openModal
-                    openModal(temp);
+        //             // Call your existing openModal
+        //             openModal(temp);
 
-                    // Show modal manually (Bootstrap)
-                    const modal = new bootstrap.Modal(document.getElementById('consumeProductModal'));
-                    modal.show();
-                }).fail((jqXHR, textStatus, errorThrown) => {
-                    console.error('AJAX error:', textStatus, errorThrown);
-                    alert('Ошибка при получении товара');
-                });
+        //             // Show modal manually (Bootstrap)
+        //             const modal = new bootstrap.Modal(document.getElementById('consumeProductModal'));
+        //             modal.show();
+        //         }).fail((jqXHR, textStatus, errorThrown) => {
+        //             console.error('AJAX error:', textStatus, errorThrown);
+        //             alert('Ошибка при получении товара');
+        //         });
 
-                this.value = ''; // Clear input
-            }
-        });
+        //         this.value = ''; // Clear input
+        //     }
+        // });
     </script>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

@@ -22,8 +22,11 @@ class ProductController extends Controller
     {
         $products = Product::query()
             ->with('get_brand')
-            ->when($request->name, function ($query) use ($request) {
-                $query->where('name', 'like', '%' . $request->name . '%');
+            ->when($request->search, function ($query) use ($request) {
+                $query->where(function ($query) use ($request) {
+                    $query->where('name', 'like', '%' . $request->search . '%')
+                          ->orWhere('barcode', 'like', '%' . $request->search . '%');
+                });
             })
             ->when($request->category_id, function ($query) use ($request) {
                 $query->where('category_id', $request->category_id);
@@ -36,12 +39,13 @@ class ProductController extends Controller
             })
             ->orderBy('created_at', 'desc')
             ->paginate(10);
-
+    
         $categories = Category::all();
         $brands = Brand::all();
-
+    
         return view('pages.products.product', compact('products', 'categories', 'brands'));
     }
+    
     public function store(Request $request)
     {
         $validated = $request->validate([

@@ -236,4 +236,3 @@
 </script>
 
 
-@include('pages.products.modals.consume-product')

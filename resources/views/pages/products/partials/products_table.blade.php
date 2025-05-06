@@ -28,11 +28,7 @@
                     <td>
                         @php
                             $color =
-                                $p->status === 'normal'
-                                    ? 'success'
-                                    : ($p->status === 'low'
-                                        ? 'warning'
-                                        : 'danger');
+                                $p->status === 'normal' ? 'success' : ($p->status === 'low' ? 'warning' : 'danger');
 
                             $statusRu = match ($p->status) {
                                 'normal' => 'В наличии',
@@ -56,19 +52,19 @@
                     </td>
                     <td>
                         <div class="d-flex justify-content-center gap-1">
-                            <a href="javascript:void(0);" title="Расход товара" data-bs-toggle="modal"
-                                data-bs-target="#consumeProductModal" data-id="{{ $p->id }}"
-                                data-photo="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
-                                data-name="{{ $p->name }}" data-sale_price="{{ $p->sale_price }}"
-                                data-unit="{{ $p->unit }}" onclick="openModal(this)">
-                                <i class="mdi mdi-database-minus icon-sm text-primary"></i>
-                            </a>
                             <a href="javascript:void(0);" title="Приход товара" data-bs-toggle="modal"
                                 data-bs-target="#intakeProductModal" data-id="{{ $p->id }}"
                                 data-photo="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
                                 data-name="{{ $p->name }}" data-sale_price="{{ $p->sale_price }}"
                                 data-unit="{{ $p->unit }}" onclick="openModal(this)">
-                                <i class="mdi mdi-database-plus icon-sm text-success"></i>
+                                <i class="mdi mdi-database-plus icon-sm text-primary"></i>
+                            </a>
+                            <a href="javascript:void(0);" title="Расход товара" data-bs-toggle="modal"
+                                data-bs-target="#consumeProductModal" data-id="{{ $p->id }}"
+                                data-photo="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
+                                data-name="{{ $p->name }}" data-sale_price="{{ $p->sale_price }}"
+                                data-unit="{{ $p->unit }}" onclick="openModal(this)">
+                                <i class="mdi mdi-eye icon-sm text-success"></i>
                             </a>
                             <a href="javascript:void(0);" title="Редактировать" data-bs-toggle="modal"
                                 data-bs-target="#editProductModal" data-id="{{ $p->id }}"
