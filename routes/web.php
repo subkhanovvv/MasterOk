@@ -43,13 +43,19 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::controller(TransactionController::class)->group(function () {
-        Route::post('consume', 'consume')->name('consume');
         Route::post('intake', 'intake')->name('intake');
         Route::get('transactions', 'transactions')->name('transactions');
+
         Route::get('consumption', 'consumption')->name('consumption');
-        Route::post('consumption.store' , 'store')->name('consumption.store');
         Route::get('consumption.products' , 'getProducts')->name('consumption.products');
+        Route::post('consumption.store' , 'store')->name('consumption.store');
+        Route::post('consumption.create' , 'create')->name('consumption.create');
+        Route::post('consumption.remove/{id}' , 'remove')->name('consumption.remove');
+        Route::post('consumption.add' , 'add')->name('consumption.add');
         Route::post('consumption.history' , 'history')->name('consumption.history');
+        Route::post('consumption.show/{id}' , 'show')->name('consumption.show');
+        Route::post('consumption/{id}/print' , 'print')->name('consumption.print');
+    
         Route::get('report', 'report')->name('admin.reports.index');
     });
   

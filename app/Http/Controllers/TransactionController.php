@@ -6,6 +6,7 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductActivity;
+use App\Models\ProductActivityItems;
 use Carbon\Carbon;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Http\Request;
@@ -16,85 +17,85 @@ use Illuminate\Validation\Validator;
 
 class TransactionController extends Controller
 {
-    public function consume(Request $request)
-    {
-        $validated = $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'qty' => 'required|integer|min:1',
-            'type' => 'required|in:consume,loan,return,intake,intake_loan,intake_return',
-            'total_price' => 'required|numeric|min:0',
-            'payment_type' => 'required',
-            'paid_amount' => 'nullable|numeric|min:0|lte:total_price',
-            'client_phone' => 'nullable|string|max:20|required_if:type,loan',
-            'client_name' => 'nullable|string|max:20|required_if:type,loan',
-            'units_per_stock' => 'nullable|string|max:20',
-            'return_reason' => 'nullable|string|max:500|required_if:type,return,intake_return',
-        ]);
+    // public function consume(Request $request)
+    // {
+    //     $validated = $request->validate([
+    //         'product_id' => 'required|exists:products,id',
+    //         'qty' => 'required|integer|min:1',
+    //         'type' => 'required|in:consume,loan,return,intake,intake_loan,intake_return',
+    //         'total_price' => 'required|numeric|min:0',
+    //         'payment_type' => 'required',
+    //         'paid_amount' => 'nullable|numeric|min:0|lte:total_price',
+    //         'client_phone' => 'nullable|string|max:20|required_if:type,loan',
+    //         'client_name' => 'nullable|string|max:20|required_if:type,loan',
+    //         'units_per_stock' => 'nullable|string|max:20',
+    //         'return_reason' => 'nullable|string|max:500|required_if:type,return,intake_return',
+    //     ]);
 
-        DB::beginTransaction();
+    //     DB::beginTransaction();
 
-        try {
-            $product = Product::findOrFail($validated['product_id']);
+    //     try {
+    //         $product = Product::findOrFail($validated['product_id']);
 
-            if (in_array($validated['type'], ['consume', 'loan']) && $product->qty < $validated['qty']) {
-                return back()->withErrors(['qty' => 'Недостаточно товара на складе. Доступно: ' . $product->qty]);
-            }
+    //         if (in_array($validated['type'], ['consume', 'loan']) && $product->qty < $validated['qty']) {
+    //             return back()->withErrors(['qty' => 'Недостаточно товара на складе. Доступно: ' . $product->qty]);
+    //         }
 
-            if (in_array($validated['type'], ['return', 'intake', 'intake_return'])) {
-                $product->increment('qty', $validated['qty']);
-            } elseif (in_array($validated['type'], ['consume', 'loan', 'intake_loan'])) {
-                $product->decrement('qty', $validated['qty']);
-            }
+    //         if (in_array($validated['type'], ['return', 'intake', 'intake_return'])) {
+    //             $product->increment('qty', $validated['qty']);
+    //         } elseif (in_array($validated['type'], ['consume', 'loan', 'intake_loan'])) {
+    //             $product->decrement('qty', $validated['qty']);
+    //         }
 
-            if ($product->qty > 10) {
-                $product->decrement('units_per_stock', $validated['units_per_stock']);
-            } else {
-            }
+    //         if ($product->qty > 10) {
+    //             $product->decrement('units_per_stock', $validated['units_per_stock']);
+    //         } else {
+    //         }
 
-            $activityData = [
-                'product_id' => $validated['product_id'],
-                'qty' => $validated['qty'],
-                'type' => $validated['type'],
-                'total_price' => $validated['total_price'],
-                'paid_amount' => $validated['paid_amount'] ?? 0,
-                'payment_type' => $validated['payment_type'] ?? 0,
-                'client_phone' => $validated['client_phone'] ?? null,
-                'client_name' => $validated['client_name'] ?? null,
-                'return_reason' => $validated['return_reason'] ?? null,
-            ];
+    //         $activityData = [
+    //             'product_id' => $validated['product_id'],
+    //             'qty' => $validated['qty'],
+    //             'type' => $validated['type'],
+    //             'total_price' => $validated['total_price'],
+    //             'paid_amount' => $validated['paid_amount'] ?? 0,
+    //             'payment_type' => $validated['payment_type'] ?? 0,
+    //             'client_phone' => $validated['client_phone'] ?? null,
+    //             'client_name' => $validated['client_name'] ?? null,
+    //             'return_reason' => $validated['return_reason'] ?? null,
+    //         ];
 
-            $productActivity = ProductActivity::create($activityData);
+    //         $productActivity = ProductActivity::create($activityData);
 
-            $qrContent = json_encode([
-                'transaction_id' => $productActivity->id,
-                'product_id' => $product->id,
-                'product_name' => $product->name,
-                'action' => $validated['type'],
-                'quantity' => $validated['qty'],
-                'payment_type' => $validated['payment_type'],
-                'total_price' => $validated['total_price'],
-                'date' => now()->toDateTimeString(),
-            ]);
+    //         $qrContent = json_encode([
+    //             'transaction_id' => $productActivity->id,
+    //             'product_id' => $product->id,
+    //             'product_name' => $product->name,
+    //             'action' => $validated['type'],
+    //             'quantity' => $validated['qty'],
+    //             'payment_type' => $validated['payment_type'],
+    //             'total_price' => $validated['total_price'],
+    //             'date' => now()->toDateTimeString(),
+    //         ]);
 
-            $qrCodePath = 'qrcodes/transaction_' . $productActivity->id . '.svg';
-            Storage::disk('public')->put(
-                $qrCodePath,
-                QrCode::format('svg')->size(150)->generate($qrContent)
-            );
+    //         $qrCodePath = 'qrcodes/transaction_' . $productActivity->id . '.svg';
+    //         Storage::disk('public')->put(
+    //             $qrCodePath,
+    //             QrCode::format('svg')->size(150)->generate($qrContent)
+    //         );
 
-            $productActivity->update(['qr_code' => $qrCodePath]);
+    //         $productActivity->update(['qr_code' => $qrCodePath]);
 
-            DB::commit();
+    //         DB::commit();
 
-            return back()->with([
-                'success' => 'Операция успешно сохранена!',
-                'qr_code' => Storage::url($qrCodePath)
-            ]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->withErrors(['error' => 'Ошибка: ' . $e->getMessage()]);
-        }
-    }
+    //         return back()->with([
+    //             'success' => 'Операция успешно сохранена!',
+    //             'qr_code' => Storage::url($qrCodePath)
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         return back()->withErrors(['error' => 'Ошибка: ' . $e->getMessage()]);
+    //     }
+    // }
     public function intake(Request $req)
     {
         $validated = $req->validate([
@@ -314,156 +315,181 @@ class TransactionController extends Controller
             'transaction_count' => $data->pluck('transaction_count')
         ];
     }
-    public function consumption()
-    {
-        return view('pages.consumption');
-    }
-
-    public function getProducts(Request $request)
+    public function consumption(Request $request)
     {
         $search = $request->input('search');
 
-        $products = Product::with(['stocks' => function ($query) {
-            $query->where('quantity', '>', 0);
-        }])
-            ->when($search, function ($query) use ($search) {
-                $query->where('name', 'like', "%$search%")
-                    ->orWhere('barcode', 'like', "%$search%");
-            })
-            ->limit(20)
-            ->get()
-            ->map(function ($product) {
-                return [
-                    'id' => $product->id,
-                    'name' => $product->name,
-                    'barcode' => $product->barcode,
-                    'sale_price' => $product->sale_price,
-                    'unit' => json_decode($product->unit, true),
-                    'stock' => $product->stocks->sum('quantity'),
-                    'image' => $product->photo ? asset('storage/' . $product->photo) : null
-                ];
-            });
-
-        return response()->json($products);
-    }
-
-    // public function store(Request $request)
-    // {
-    //     $validator = FacadesValidator::make($request->all(), [
-    //         'items' => 'required|array|min:1',
-    //         'items.*.product_id' => 'required|exists:products,id',
-    //         'items.*.quantity' => 'required|numeric|min:0.001',
-    //         'items.*.unit' => 'required|string',
-    //         'items.*.price' => 'required|numeric|min:0',
-    //         'items.*.total' => 'required|numeric|min:0',
-    //         'notes' => 'nullable|string|max:500'
-    //     ]);
-
-    //     if ($validator->fails()) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'errors' => $validator->errors()
-    //         ], 422);
-    //     }
-
-    //     try {
-    //         DB::beginTransaction();
-
-    //         // Create consumption record
-    //         $consumption = Consumption::create([
-    //             'user_id' => auth()->id(),
-    //             'total_amount' => collect($request->items)->sum('total'),
-    //             'notes' => $request->notes,
-    //             'status' => 'completed'
-    //         ]);
-
-    //         // Process each item
-    //         foreach ($request->items as $item) {
-    //             $product = Product::find($item['product_id']);
-    //             $units = json_decode($product->unit, true);
-    //             $multiplier = $units[$item['unit']] ?? 1;
-
-    //             // Convert to base unit quantity
-    //             $baseQuantity = $item['quantity'] * $multiplier;
-
-    //             // Create consumption item
-    //             ConsumptionItem::create([
-    //                 'consumption_id' => $consumption->id,
-    //                 'product_id' => $product->id,
-    //                 'quantity' => $item['quantity'],
-    //                 'base_quantity' => $baseQuantity,
-    //                 'unit' => $item['unit'],
-    //                 'price' => $item['price'],
-    //                 'total' => $item['total']
-    //             ]);
-
-    //             // Deduct from stock (FIFO method)
-    //             $this->deductFromStock($product->id, $baseQuantity, $consumption->id);
-    //         }
-
-    //         DB::commit();
-
-    //         return response()->json([
-    //             'success' => true,
-    //             'message' => 'Расход успешно сохранен',
-    //             'data' => [
-    //                 'id' => $consumption->id,
-    //                 'total' => $consumption->total_amount,
-    //                 'date' => $consumption->created_at->format('d.m.Y H:i')
-    //             ]
-    //         ]);
-    //     } catch (\Exception $e) {
-    //         DB::rollBack();
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Ошибка при сохранении: ' . $e->getMessage()
-    //         ], 500);
-    //     }
-    // }
-
-    // protected function deductFromStock($productId, $quantity, $consumptionId)
-    // {
-    //     $remaining = $quantity;
-
-    //     // Get available stock batches (FIFO)
-    //     $stocks = Stock::where('product_id', $productId)
-    //         ->where('quantity', '>', 0)
-    //         ->orderBy('created_at')
-    //         ->get();
-
-    //     foreach ($stocks as $stock) {
-    //         if ($remaining <= 0) break;
-
-    //         $deducted = min($stock->quantity, $remaining);
-
-    //         // Update stock
-    //         $stock->decrement('quantity', $deducted);
-
-    //         // Record stock history
-    //         StockHistory::create([
-    //             'product_id' => $productId,
-    //             'stock_id' => $stock->id,
-    //             'consumption_id' => $consumptionId,
-    //             'quantity' => -$deducted,
-    //             'remaining' => $stock->quantity - $deducted,
-    //             'type' => 'consumption',
-    //             'notes' => 'Расход продукта'
-    //         ]);
-
-    //         $remaining -= $deducted;
-    //     }
-
-    //     if ($remaining > 0) {
-    //         throw new \Exception("Недостаточно товара на складе для продукта ID: $productId");
-    //     }
-    // }
-
-    public function history(Request $request)
-    {
-        $consumptions = ProductActivity::with(['user', 'items.product'])
-            ->latest()
+        $products = Product::when($search, function ($query) use ($search) {
+            $query->where('name', 'like', "%$search%")
+                ->orWhere('barcode', 'like', "%$search%");
+        })
+            ->where('qty', '>', 0)
+            ->orderBy('name')
             ->paginate(20);
 
-        return view('pages.consumption', compact('consumptions'));
+        return view('pages.consumption', compact('products', 'search'));
+    }
+
+    /**
+     * Store new consumption (No AJAX)
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|array',
+            'product_id.*' => 'required|exists:products,id',
+            'quantity' => 'required|array',
+            'quantity.*' => 'required|numeric|min:0.001',
+            'unit' => 'required|array',
+            'unit.*' => 'required|string',
+            'price' => 'required|array',
+            'price.*' => 'required|numeric|min:0',
+            'total' => 'required|array',
+            'total.*' => 'required|numeric|min:0',
+            'notes' => 'nullable|string|max:500'
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $items = [];
+            $count = count($request->product_id);
+            for ($i = 0; $i < $count; $i++) {
+                $items[] = [
+                    'product_id' => $request->product_id[$i],
+                    'quantity' => $request->quantity[$i],
+                    'unit' => $request->unit[$i],
+                    'price' => $request->price[$i],
+                    'total' => $request->total[$i]
+                ];
+            }
+
+            $activity = ProductActivity::create([
+                'type' => 'consume',
+                'total_price' => collect($items)->sum('total'),
+                'note' => $request->notes,
+                'user_id' => auth()->id(),
+            ]);
+
+            foreach ($items as $item) {
+                $product = Product::findOrFail($item['product_id']);
+                $multiplier = $item['unit'] === $product->unit ? 1 : ($product->units_per_stock ?? 1);
+                $baseQuantity = $item['quantity'] * $multiplier;
+
+                if ($product->qty < $baseQuantity) {
+                    throw new \Exception("Недостаточно товара: {$product->name}. Доступно: {$product->qty} {$product->unit}");
+                }
+
+                ProductActivityItems::create([
+                    'product_activity_id' => $activity->id,
+                    'product_id' => $product->id,
+                    'quantity' => $item['quantity'],
+                    'unit' => $item['unit'],
+                    'price' => $item['price'],
+                    'total' => $item['total'],
+                    'base_quantity' => $baseQuantity,
+                ]);
+
+                $product->decrement('qty', $baseQuantity);
+                $this->updateProductStatus($product);
+            }
+
+            DB::commit();
+            return redirect()->route('consumption.history')->with('success', 'Расход успешно сохранен');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => $e->getMessage()])->withInput();
+        }
+    }
+
+    protected function updateProductStatus(Product $product)
+    {
+        if ($product->qty <= 0) {
+            $status = 'out_of_stock';
+        } elseif ($product->qty < ($product->min_stock_level ?? 5)) {
+            $status = 'low';
+        } else {
+            $status = 'normal';
+        }
+
+        if ($product->status !== $status) {
+            $product->update(['status' => $status]);
+        }
+    }
+
+    public function history()
+    {
+        $activities = ProductActivity::where('type', 'consume')
+            ->with(['user', 'items.product'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        return view('consumption.history', compact('activities'));
+    }
+
+    public function show($id)
+    {
+        $activity = ProductActivity::with(['items.product', 'user'])->findOrFail($id);
+
+        return view('consumption.partials.details', compact('activity'));
+    }
+
+    public function print($id)
+    {
+        $activity = ProductActivity::with(['items.product', 'user'])->findOrFail($id);
+
+        return view('consumption.print', compact('activity'));
+    }
+    public function add(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'quantity' => 'required|numeric|min:0.001',
+            'unit' => 'required|string',
+        ]);
+
+        $product = Product::findOrFail($request->product_id);
+        $consumptions = session('consumptions', []);
+
+        $found = false;
+
+        foreach ($consumptions as &$item) {
+            if ($item['product_id'] == $product->id && $item['unit'] == $request->unit) {
+                $item['quantity'] += $request->quantity;
+                $item['total'] = $item['quantity'] * $item['price'];
+                $found = true;
+                break;
+            }
+        }
+
+        if (!$found) {
+            $price = $product->price_uzs; // optionally adjust by unit
+            $consumptions[] = [
+                'product_id' => $product->id,
+                'name' => $product->name,
+                'unit' => $request->unit,
+                'quantity' => $request->quantity,
+                'price' => $price,
+                'total' => $price * $request->quantity,
+            ];
+        }
+
+        session(['consumptions' => $consumptions]);
+
+        $tableHtml = view('pages.consumption_table', [
+            'consumptions' => $consumptions
+        ])->render();
+
+        return back()->with('success' , 'sucess');
+    }
+
+
+    public function remove($index)
+    {
+        $consumptions = session('consumptions', []);
+        unset($consumptions[$index]);
+        session(['consumptions' => array_values($consumptions)]);
+
+        return back()->with('success', 'Продукт удален из списка');
     }
 }
