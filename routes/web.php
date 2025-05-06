@@ -47,6 +47,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('intake', 'intake')->name('intake');
         Route::get('transactions', 'transactions')->name('transactions');
         Route::get('consumption', 'consumption')->name('consumption');
+        Route::post('consumption.store' , 'store')->name('consumption.store');
+        Route::get('consumption.products' , 'getProducts')->name('consumption.products');
+        Route::post('consumption.history' , 'history')->name('consumption.history');
         Route::get('report', 'report')->name('admin.reports.index');
     });
   

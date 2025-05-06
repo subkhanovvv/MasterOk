@@ -11,6 +11,8 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator as FacadesValidator;
+use Illuminate\Validation\Validator;
 
 class TransactionController extends Controller
 {
@@ -47,7 +49,6 @@ class TransactionController extends Controller
             if ($product->qty > 10) {
                 $product->decrement('units_per_stock', $validated['units_per_stock']);
             } else {
-               
             }
 
             $activityData = [
@@ -315,9 +316,154 @@ class TransactionController extends Controller
     }
     public function consumption()
     {
-        $products = Product::select('id', 'name', 'barcode', 'sale_price', 'unit')->get();
-        return view('pages.consumption', compact('products'));
+        return view('pages.consumption');
     }
-    
-    
+
+    public function getProducts(Request $request)
+    {
+        $search = $request->input('search');
+
+        $products = Product::with(['stocks' => function ($query) {
+            $query->where('quantity', '>', 0);
+        }])
+            ->when($search, function ($query) use ($search) {
+                $query->where('name', 'like', "%$search%")
+                    ->orWhere('barcode', 'like', "%$search%");
+            })
+            ->limit(20)
+            ->get()
+            ->map(function ($product) {
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'barcode' => $product->barcode,
+                    'sale_price' => $product->sale_price,
+                    'unit' => json_decode($product->unit, true),
+                    'stock' => $product->stocks->sum('quantity'),
+                    'image' => $product->photo ? asset('storage/' . $product->photo) : null
+                ];
+            });
+
+        return response()->json($products);
+    }
+
+    // public function store(Request $request)
+    // {
+    //     $validator = FacadesValidator::make($request->all(), [
+    //         'items' => 'required|array|min:1',
+    //         'items.*.product_id' => 'required|exists:products,id',
+    //         'items.*.quantity' => 'required|numeric|min:0.001',
+    //         'items.*.unit' => 'required|string',
+    //         'items.*.price' => 'required|numeric|min:0',
+    //         'items.*.total' => 'required|numeric|min:0',
+    //         'notes' => 'nullable|string|max:500'
+    //     ]);
+
+    //     if ($validator->fails()) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'errors' => $validator->errors()
+    //         ], 422);
+    //     }
+
+    //     try {
+    //         DB::beginTransaction();
+
+    //         // Create consumption record
+    //         $consumption = Consumption::create([
+    //             'user_id' => auth()->id(),
+    //             'total_amount' => collect($request->items)->sum('total'),
+    //             'notes' => $request->notes,
+    //             'status' => 'completed'
+    //         ]);
+
+    //         // Process each item
+    //         foreach ($request->items as $item) {
+    //             $product = Product::find($item['product_id']);
+    //             $units = json_decode($product->unit, true);
+    //             $multiplier = $units[$item['unit']] ?? 1;
+
+    //             // Convert to base unit quantity
+    //             $baseQuantity = $item['quantity'] * $multiplier;
+
+    //             // Create consumption item
+    //             ConsumptionItem::create([
+    //                 'consumption_id' => $consumption->id,
+    //                 'product_id' => $product->id,
+    //                 'quantity' => $item['quantity'],
+    //                 'base_quantity' => $baseQuantity,
+    //                 'unit' => $item['unit'],
+    //                 'price' => $item['price'],
+    //                 'total' => $item['total']
+    //             ]);
+
+    //             // Deduct from stock (FIFO method)
+    //             $this->deductFromStock($product->id, $baseQuantity, $consumption->id);
+    //         }
+
+    //         DB::commit();
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Расход успешно сохранен',
+    //             'data' => [
+    //                 'id' => $consumption->id,
+    //                 'total' => $consumption->total_amount,
+    //                 'date' => $consumption->created_at->format('d.m.Y H:i')
+    //             ]
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Ошибка при сохранении: ' . $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
+
+    // protected function deductFromStock($productId, $quantity, $consumptionId)
+    // {
+    //     $remaining = $quantity;
+
+    //     // Get available stock batches (FIFO)
+    //     $stocks = Stock::where('product_id', $productId)
+    //         ->where('quantity', '>', 0)
+    //         ->orderBy('created_at')
+    //         ->get();
+
+    //     foreach ($stocks as $stock) {
+    //         if ($remaining <= 0) break;
+
+    //         $deducted = min($stock->quantity, $remaining);
+
+    //         // Update stock
+    //         $stock->decrement('quantity', $deducted);
+
+    //         // Record stock history
+    //         StockHistory::create([
+    //             'product_id' => $productId,
+    //             'stock_id' => $stock->id,
+    //             'consumption_id' => $consumptionId,
+    //             'quantity' => -$deducted,
+    //             'remaining' => $stock->quantity - $deducted,
+    //             'type' => 'consumption',
+    //             'notes' => 'Расход продукта'
+    //         ]);
+
+    //         $remaining -= $deducted;
+    //     }
+
+    //     if ($remaining > 0) {
+    //         throw new \Exception("Недостаточно товара на складе для продукта ID: $productId");
+    //     }
+    // }
+
+    public function history(Request $request)
+    {
+        $consumptions = ProductActivity::with(['user', 'items.product'])
+            ->latest()
+            ->paginate(20);
+
+        return view('pages.consumption', compact('consumptions'));
+    }
 }
