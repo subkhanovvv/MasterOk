@@ -315,6 +315,10 @@ class TransactionController extends Controller
     }
     public function consumption()
     {
-        return view('pages.consumption');    
+        $products = Product::select('id', 'name', 'barcode', 'sale_price', 'unit')->get();
+    
+        // units column is assumed to be JSON like: {"box": 12, "kg": 1}
+        return view('pages.consumption', compact('products'));
     }
+    
 }
