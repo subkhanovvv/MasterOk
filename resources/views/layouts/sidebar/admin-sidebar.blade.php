@@ -28,9 +28,6 @@
                 <i class="menu-arrow"></i>
             </a>
         </li>
-       
-      
-        <li class="nav-item nav-category">Бренд</li>
         <li class="nav-item">
             <a class="nav-link" href="{{ route('brands.index') }}">
                 <i class="menu-icon mdi mdi-tag"></i>
@@ -38,6 +35,7 @@
                 <i class="menu-arrow"></i>
             </a>
         </li>
+        <li class="nav-item nav-category">Транзакции</li>
         <li class="nav-item">
             <a class="nav-link" href="{{ route('suppliers.index') }}">
                 <i class="menu-icon mdi mdi-truck"></i>
@@ -45,7 +43,6 @@
                 <i class="menu-arrow"></i>
             </a>
         </li>
-        <li class="nav-item nav-category">Транзакции</li>
         <li class="nav-item">
             <a class="nav-link" href="{{ route('consumption') }}">
                 <i class="menu-icon mdi mdi-database-minus"></i>

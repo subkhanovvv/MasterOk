@@ -4,7 +4,7 @@
 <form class="form" method="POST" action="{{route('ProcessLogin')}}">
     @csrf
     <p class="form-title"> 
-        <img src="{{ asset('images/logo/logo3.png') }}">   
+        <img src="{{ asset('../admin../assets/images/logo.png') }}">   
         <div class="text-center login-title">Войдите в свой аккаунт</div>
    </p>
     <div class="input-container">
