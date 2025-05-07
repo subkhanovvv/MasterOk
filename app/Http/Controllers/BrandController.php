@@ -24,15 +24,14 @@ class BrandController extends Controller
          ->paginate(10)
          ->appends(['sort' => $sortOrder]);
 
-      // Attach last intake-related activity per brand
       foreach ($brands as $brand) {
          $lastIntake = \App\Models\ProductActivity::whereIn('type', ['intake', 'intake_return', 'intake_loan'])
-            ->whereHas('product', function ($query) use ($brand) {
-               $query->where('brand_id', $brand->id);
-            })
-            ->latest('created_at')
-            ->first();
-
+         ->whereHas('items.product', function ($query) use ($brand) {
+             $query->where('brand_id', $brand->id);
+         })
+         ->latest('created_at')
+         ->first();
+     
          $brand->last_intake = $lastIntake ? $lastIntake->created_at : null;
       }
 

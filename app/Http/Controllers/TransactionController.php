@@ -100,11 +100,17 @@ class TransactionController extends Controller
     {
         $validated = $req->validate([
             'product_id' => 'required|exists:products,id',
-            'qty' => 'required|integer|min:1',
-            'type' => 'required|string|max:50',
+            'qty' => 'required|numeric|min:0.01',
+            'type' => 'required|in:intake,intake_loan,intake_return',
             'total_price' => 'required|numeric|min:0',
             'paid_amount' => 'nullable|numeric|min:0',
+            'payment_type' => 'nullable|in:cash,card',
+            'client_phone' => 'nullable|string|max:20',
+            'client_name' => 'nullable|string|max:100',
             'return_reason' => 'nullable|string|max:255',
+            'note' => 'nullable|string',
+            'unit' => 'required|string', // Added unit field
+            'price' => 'nullable|numeric|min:0', // Added price per unit
         ]);
 
         DB::beginTransaction();
@@ -112,48 +118,61 @@ class TransactionController extends Controller
         try {
             $product = Product::findOrFail($validated['product_id']);
 
-            // Adjust product quantity based on type (intake or intake_loan)
-            if (in_array($validated['type'], ['intake_loan', 'intake'])) {
+            // Adjust product quantity based on type
+            if (in_array($validated['type'], ['intake_loan', 'intake', 'intake_return'])) {
                 $product->increment('qty', $validated['qty']);
             } else {
                 $product->decrement('qty', $validated['qty']);
             }
             $product->save();
 
-            // Ensure 'paid_amount' is not null
-            $validated['paid_amount'] = $validated['paid_amount'] ?? 0;
-
             // Create Product Activity entry
             $productActivity = ProductActivity::create([
-                'product_id' => $validated['product_id'],
-                'qty' => $validated['qty'],
                 'type' => $validated['type'],
+                'client_phone' => $validated['client_phone'] ?? null,
+                'client_name' => $validated['client_name'] ?? null,
+                'paid_amount' => $validated['paid_amount'] ?? 0,
+                'payment_type' => $validated['payment_type'] ?? 'cash',
                 'total_price' => $validated['total_price'],
-                'paid_amount' => $validated['paid_amount'],
-                'return_reason' => $validated['return_reason'],
+                'return_reason' => $validated['return_reason'] ?? null,
+                'note' => $validated['note'] ?? null,
             ]);
 
-            // Step 1: Generate the content for the QR code
-            $qrContent = "Transaction ID: {$productActivity->id}\nProduct ID: {$productActivity->product_id}\nAction: {$productActivity->type}\nQty: {$productActivity->qty}\nTotal Price: {$productActivity->total_price}\nPaid Amount: {$productActivity->paid_amount}";
+            // Create Product Activity Item
+            $productActivity->items()->create([
+                'product_id' => $validated['product_id'],
+                'quantity' => $validated['qty'],
+                'unit' => $validated['unit'],
+                'price' => $validated['price'] ?? ($validated['total_price'] / $validated['qty']),
+            ]);
 
-            // Step 2: Generate the signature
+            // Generate QR code content
+            $qrContent = "Transaction ID: {$productActivity->id}\n";
+            $qrContent .= "Type: {$productActivity->type}\n";
+            $qrContent .= "Client: {$productActivity->client_name} ({$productActivity->client_phone})\n";
+            $qrContent .= "Total Price: {$productActivity->total_price}\n";
+            $qrContent .= "Paid Amount: {$productActivity->paid_amount}\n";
+            $qrContent .= "Payment Type: {$productActivity->payment_type}";
+
+            // Generate signature
             $secret = env('QR_SECRET', 'default-secret');
-            $signatureData = "{$productActivity->id}|{$productActivity->product_id}|{$productActivity->qty}|{$productActivity->total_price}|{$productActivity->paid_amount}|{$secret}";
+            $signatureData = implode('|', [
+                $productActivity->id,
+                $productActivity->type,
+                $productActivity->total_price,
+                $productActivity->paid_amount,
+                $secret
+            ]);
             $signature = hash('sha256', $signatureData);
-
-            // Step 3: Append the signature to the QR content
             $qrContent .= "\nSignature: {$signature}";
 
-            // Step 4: Generate QR code in SVG format
+            // Generate and save QR code
             $qrCodeSvg = QrCode::format('svg')->size(150)->generate($qrContent);
-
-            // Step 5: Save the QR code to the storage folder
             $qrCodePath = 'qrcodes/transaction_' . $productActivity->id . '.svg';
             Storage::disk('public')->put($qrCodePath, $qrCodeSvg);
 
-            // Step 6: Save the QR code path in the product activity
-            $productActivity->qr_code = $qrCodePath;
-            $productActivity->save();
+            // Update activity with QR code path
+            $productActivity->update(['qr_code' => $qrCodePath]);
 
             DB::commit();
 
@@ -163,12 +182,38 @@ class TransactionController extends Controller
             return back()->withErrors(['error' => 'Произошла ошибка: ' . $e->getMessage()]);
         }
     }
-    public function transactions()
+    public function transactions(Request $request)
     {
-        $brands = Brand::orderBy('id', 'desc')->get();
-        $categories = Category::orderBy('id', 'desc')->get();
-        $transaction = ProductActivity::orderBy('id', 'desc')->paginate(10);
-        return view('pages.transaction.transactions', compact('transaction', 'brands', 'categories'));
+        $query = ProductActivity::with('product')
+            ->orderBy('created_at', 'desc');
+
+        // Apply filters
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
+        if ($request->filled('product_id')) {
+            $query->whereHas('product', function ($q) use ($request) {
+                $q->where('id', $request->product_id);
+            });
+        }
+
+        $transactions = $query->paginate(25);
+
+        $products = Product::orderBy('name')->get();
+
+        return view('pages.transaction.transactions', [
+            'transactions' => $transactions,
+            'products' => $products
+        ]);
     }
     public function report(Request $request)
     {
@@ -330,75 +375,42 @@ class TransactionController extends Controller
         return view('pages.consumption', compact('products', 'search'));
     }
 
-    /**
-     * Store new consumption (No AJAX)
-     */
     public function store(Request $request)
     {
-        $request->validate([
-            'product_id' => 'required|array',
-            'product_id.*' => 'required|exists:products,id',
-            'quantity' => 'required|array',
-            'quantity.*' => 'required|numeric|min:0.001',
-            'unit' => 'required|array',
-            'unit.*' => 'required|string',
-            'price' => 'required|array',
-            'price.*' => 'required|numeric|min:0',
-            'total' => 'required|array',
-            'total.*' => 'required|numeric|min:0',
-            'notes' => 'nullable|string|max:500'
-        ]);
+        DB::beginTransaction();
 
         try {
-            DB::beginTransaction();
-
-            $items = [];
-            $count = count($request->product_id);
-            for ($i = 0; $i < $count; $i++) {
-                $items[] = [
-                    'product_id' => $request->product_id[$i],
-                    'quantity' => $request->quantity[$i],
-                    'unit' => $request->unit[$i],
-                    'price' => $request->price[$i],
-                    'total' => $request->total[$i]
-                ];
-            }
-
-            $activity = ProductActivity::create([
+            // Create the product activity WITHOUT user_id
+            $productActivity = ProductActivity::create([
                 'type' => 'consume',
-                'total_price' => collect($items)->sum('total'),
+                'total_price' => array_sum($request->total),
                 'note' => $request->notes,
-                'user_id' => auth()->id(),
+                // Removed user_id
             ]);
 
-            foreach ($items as $item) {
-                $product = Product::findOrFail($item['product_id']);
-                $multiplier = $item['unit'] === $product->unit ? 1 : ($product->units_per_stock ?? 1);
-                $baseQuantity = $item['quantity'] * $multiplier;
-
-                if ($product->qty < $baseQuantity) {
-                    throw new \Exception("Недостаточно товара: {$product->name}. Доступно: {$product->qty} {$product->unit}");
-                }
-
-                ProductActivityItems::create([
-                    'product_activity_id' => $activity->id,
-                    'product_id' => $product->id,
-                    'quantity' => $item['quantity'],
-                    'unit' => $item['unit'],
-                    'price' => $item['price'],
-                    'total' => $item['total'],
-                    'base_quantity' => $baseQuantity,
+            // Create product activity items
+            foreach ($request->product_id as $index => $productId) {
+                $productActivity->items()->create([
+                    'product_id' => $productId,
+                    'quantity' => $request->quantity[$index],
+                    'unit' => $request->unit[$index],
+                    'price' => $request->price[$index],
                 ]);
 
-                $product->decrement('qty', $baseQuantity);
-                $this->updateProductStatus($product);
+                // Update product quantity
+                $product = Product::find($productId);
+                $product->decrement('qty', $request->quantity[$index]);
             }
 
             DB::commit();
-            return redirect()->route('consumption.history')->with('success', 'Расход успешно сохранен');
+
+            // Clear the session consumption data
+            session()->forget('consumptions');
+
+            return redirect()->route('transactions')->with('success', 'Расход успешно сохранен!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error' => $e->getMessage()])->withInput();
+            return back()->withErrors(['error' => 'Произошла ошибка: ' . $e->getMessage()]);
         }
     }
 
@@ -480,7 +492,7 @@ class TransactionController extends Controller
             'consumptions' => $consumptions
         ])->render();
 
-        return back()->with('success' , 'sucess');
+        return back()->with('success', 'sucess');
     }
 
 
