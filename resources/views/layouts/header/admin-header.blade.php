@@ -59,7 +59,6 @@
         justify-content: center;
     }
 </style>
-
 <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
     <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
         <div class="me-3">
@@ -72,7 +71,7 @@
                 <img src="{{ asset('../admin/assets/images/logo.png') }}" alt="logo" />
             </a>
             <a class="navbar-brand brand-logo-mini" href="/">
-                <img src="{{ asset('../admin../assets/images/logo-mini.svg') }}" alt="logo" />
+                <img src="{{ asset('../admin../assets/images/ico.png') }}" alt="logo" />
             </a>
         </div>
     </div>
@@ -85,39 +84,25 @@
                 <div class="currency-container ">
                     <div class="currency-card" title="Доллар США">
                         <div class="price-row">
-                            <img src="{{asset('../admin../assets/images/flags/usd.png')}}" alt="UZ Flag" class="flag">
+                            <img src="{{ asset('../admin../assets/images/flags/usd.png') }}" alt="UZ Flag"
+                                class="flag">
                             <div class="price" id="usd-uzs">Loading...</div>
                             <div class="change" id="uzs-change"></div>
                         </div>
                     </div>
                     <div class="currency-card" title="Российский рубль">
                         <div class="price-row">
-                            <img src="{{asset('../admin../assets/images/flags/rub.png')}}" alt="RU Flag" class="flag">
+                            <img src="{{ asset('../admin../assets/images/flags/rub.png') }}" alt="RU Flag"
+                                class="flag">
                             <div class="price" id="rub-uzs">Loading...</div>
                             <div class="change" id="rub-uzs-change"></div>
                         </div>
                     </div>
                 </div>
             </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link count-indicator" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
-                    <i class="mdi mdi-bell"></i>
-                    <span class="count" id="notification-count"></span>
-                </a>
-                <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list pb-0"
-                     aria-labelledby="notificationDropdown" id="notification-list">
-                    <a class="dropdown-item py-3 border-bottom">
-                        <p class="mb-0 font-weight-medium float-start">You have <span id="total-notifications">0</span> new notifications</p>
-                        <span class="badge bg-primary float-end">View all</span>
-                    </a>
-                    <!-- Dynamic notifications will go here -->
-                </div>
-            </li>
-            
             <li class="nav-item dropdown d-none d-lg-block user-dropdown">
                 <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img class="img-xs rounded-circle"
-                        src="https://yt3.googleusercontent.com/ytc/AIdro_npbXKiyqfpTdsCz8ODcBzVrkK0keEAI6D54mnYAIvZzw=s900-c-k-c0x00ffffff-no-rj"
+                    <img class="img-xs rounded-circle" src="{{ asset('../admin../assets/images/profile.jpg') }}"
                         alt="Profile image">
                 </a>
                 <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
@@ -181,10 +166,8 @@
     }
 
     fetchExchangeRates();
-    setInterval(fetchExchangeRates, 10000);
-</script>
+    setInterval(fetchExchangeRates, 100);
 
-<script>
     function toggleFullscreen() {
         const elem = document.documentElement;
         const icon = document.getElementById("fullscreenIcon");
@@ -207,37 +190,3 @@
     }
 </script>
 
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        fetchNotifications();
-
-        function fetchNotifications() {
-            fetch('/notifications')
-                .then(res => res.json())
-                .then(data => {
-                    document.getElementById('notification-count').textContent = data.unread || '';
-                    document.getElementById('total-notifications').textContent = data.unread || 0;
-
-                    let listContainer = document.getElementById('notification-list');
-                    let existing = listContainer.querySelectorAll('.dynamic-notification');
-                    existing.forEach(e => e.remove());
-
-                    data.notifications.forEach(notif => {
-                        const item = document.createElement('a');
-                        item.className = 'dropdown-item preview-item py-3 dynamic-notification';
-                        item.innerHTML = `
-                            <div class="preview-thumbnail">
-                                <i class="mdi mdi-alert m-auto text-primary"></i>
-                            </div>
-                            <div class="preview-item-content">
-                                <h6 class="preview-subject fw-normal text-dark mb-1">${notif.title}</h6>
-                                <p class="fw-light small-text mb-0">${notif.created_at}</p>
-                            </div>
-                        `;
-                        listContainer.appendChild(item);
-                    });
-                });
-        }
-    });
-</script>

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -15,9 +14,8 @@
     <link rel="stylesheet" href="{{ asset('admin/assets/vendors/datatables.net-bs4/dataTables.bootstrap4.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('admin/assets/js/select.dataTables.min.css') }}">
     <link rel="stylesheet" href="{{ asset('admin/assets/css/vertical-layout-light/style.css') }}">
-    <link rel="shortcut icon" href="{{ asset('admin/assets/images/favicon.ico') }}" />
+    <link rel="shortcut icon" href="{{ asset('admin/assets/images/ico.png') }}" />
 </head>
-
 <body class="body">
     <div class="container-scroller">
         @include('layouts.header.admin-header')
@@ -47,5 +45,4 @@
     <script src="{{ asset('admin/assets/js/jquery.cookie.js') }}" type="text/javascript"></script>
     <script src="{{ asset('admin/assets/js/dashboard.js') }}"></script>
 </body>
-
 </html>
