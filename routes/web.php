@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\TransactionController;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
@@ -31,6 +32,7 @@ Route::middleware(['auth'])->group(function () {
         'brands' => BrandController::class,
         'categories' => CategoryController::class,
         'products' => ProductController::class,
+        'suppliers' => SupplierController::class,
     ]);
 
     Route::get('/products/by-barcode/{barcode}', [ProductController::class, 'getByBarcode']);
@@ -67,6 +69,9 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('report', 'report')->name('admin.reports.index');
     });
+    // Route::controller(SupplierController::class)->group(function(){
+
+    // })
 });
 
 Route::middleware(['guest'])->controller(AuthController::class)->group(function () {
