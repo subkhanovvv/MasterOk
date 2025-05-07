@@ -27,29 +27,26 @@ class SupplierController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name'  => 'required|string|max:255',
-            'note'=>'nullable',
+            'name'     => 'required|string|max:255',
+            'note'     => 'nullable|string|max:255',
             'brand_id' => 'required|exists:brands,id',
-
         ]);
-
+    
         try {
-            Supplier::create([
-                'name'  => $validated['name'],
-                'note' => $validated['note']?? null,
-                'brand_id' => $validated['brand_id'],
-            ]);
-
+            Supplier::create($validated);
+    
             return redirect()
                 ->route('suppliers.index')
-                ->with('success', 's успешно добавлена!');
+                ->with('success', 'Поставщик успешно добавлен!');
         } catch (\Exception $e) {
-            Log::error('Category creation error: ' . $e->getMessage());
+            Log::error('Supplier creation error: ' . $e->getMessage());
+
             return back()
                 ->withInput()
-                ->with('error', 'Ошибка при создании категории');
+                ->with('error', 'Ошибка при создании поставщика');
         }
     }
+    
 
     public function update(Request $request, Supplier $s)
     {

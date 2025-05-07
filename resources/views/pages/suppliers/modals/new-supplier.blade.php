@@ -6,7 +6,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form method="POST" action="{{ route('suppliers.store') }}" enctype="multipart/form-data">
+                <form method="POST" action="{{ route('suppliers.store') }}">
                     @csrf
                     <div class="form-group">
                         <label for="supplierName">Название категория</label>
@@ -16,11 +16,11 @@
                     <div class="form-group">
                         <label for="supplierNote">Название категория</label>
                         <input type="text" class="form-control form-control-sm" placeholder="Название категория"
-                            name="note" required id="supplierNote">
+                            name="note" id="supplierNote">
                     </div>
                     <div>
-                        <label for="brand">Бренд</label>
-                        <select name="brand_id" class="form-select" id="brand" required>
+                        <label for="brand_id">Бренд</label>
+                        <select name="brand_id" class="form-select" id="brand_id" required>
                             <option disabled selected>Выберите бренд</option>
                             @foreach ($brands as $b)
                                 <option value="{{ $b->id }}">{{ $b->name }}</option>
