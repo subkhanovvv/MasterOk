@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Brand;
 use App\Models\Supplier;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -19,8 +20,9 @@ class SupplierController extends Controller
             ->orderBy('id', $sortOrder)
             ->paginate(10)
             ->appends(['sort' => $sortOrder]);
+        $brands = Brand::all();
 
-        return view('pages.suppliers.index', compact('suppliers'));
+        return view('pages.suppliers.index', compact('suppliers' ,'brands'));
     }
     public function store(Request $request)
     {

@@ -1,4 +1,4 @@
-<div class="modal fade" id="intakeProductModal">
+{{-- <div class="modal fade" id="intakeProductModal">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -74,4 +74,4 @@
             </form>
         </div>
     </div>
-</div>
+</div> --}}

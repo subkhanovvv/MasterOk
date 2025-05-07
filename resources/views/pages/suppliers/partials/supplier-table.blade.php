@@ -18,14 +18,14 @@
                     <td>{{ $s->brand->name }}</td>
                     <td>
                         <a href="javascript:void(0);" title="Редактировать" data-bs-toggle="modal"
-                            data-bs-target="#editCategoryModal" data-id="{{ $s->id }}"
+                            data-bs-target="#editSupplierModal" data-id="{{ $s->id }}"
                             data-name="{{ $s->name }}"
-                            data-photo="{{ $s->photo ? Storage::url($s->photo) : asset('admin/assets/images/default_product.png') }}"
+                            data-photo="{{ $s->note}}"
                             onclick="openModal(this)" class="text-decoration-none">
                             <i class="mdi mdi-pencil icon-sm text-primary"></i>
                         </a>
                         <a href="javascript:void(0);" title="Удалить" data-bs-toggle="modal"
-                            data-bs-target="#deleteCategoryModal" data-id="{{ $c->id }}"
+                            data-bs-target="#deleteSupplierModal" data-id="{{ $s->id }}"
                             onclick="openModal(this)" class="text-decoration-none">
                             <i class="mdi mdi-delete icon-sm text-danger"></i>
                         </a>

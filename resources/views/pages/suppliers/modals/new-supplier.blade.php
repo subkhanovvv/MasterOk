@@ -1,0 +1,37 @@
+<div class="modal fade" id="newSupplierModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Новый категория</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{{ route('suppliers.store') }}" enctype="multipart/form-data">
+                    @csrf
+                    <div class="form-group">
+                        <label for="supplierName">Название категория</label>
+                        <input type="text" class="form-control form-control-sm" placeholder="Название категория"
+                            name="name" required id="supplierName">
+                    </div>
+                    <div class="form-group">
+                        <label for="supplierNote">Название категория</label>
+                        <input type="text" class="form-control form-control-sm" placeholder="Название категория"
+                            name="note" required id="supplierNote">
+                    </div>
+                    <div>
+                        <label for="brand">Бренд</label>
+                        <select name="brand_id" class="form-select" id="brand" required>
+                            <option disabled selected>Выберите бренд</option>
+                            @foreach ($brands as $b)
+                                <option value="{{ $b->id }}">{{ $b->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary rounded text-white">Сохранить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
