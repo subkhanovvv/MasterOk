@@ -77,7 +77,6 @@
         </div>
     </div>
     <div class="navbar-menu-wrapper d-flex align-items-top">
-
         <ul class="navbar-nav ms-auto">
             <li class="nav-item">
                 <i class="mdi mdi-fullscreen icon-sm" id="fullscreenIcon" onclick="toggleFullscreen()"></i>
@@ -86,62 +85,35 @@
                 <div class="currency-container ">
                     <div class="currency-card" title="Доллар США">
                         <div class="price-row">
-                            <img src="https://nbu.uz/assets/flags/usd.png" alt="UZ Flag" class="flag">
+                            <img src="{{asset('../admin../assets/images/flags/usd.png')}}" alt="UZ Flag" class="flag">
                             <div class="price" id="usd-uzs">Loading...</div>
                             <div class="change" id="uzs-change"></div>
                         </div>
                     </div>
                     <div class="currency-card" title="Российский рубль">
                         <div class="price-row">
-                            <img src="https://nbu.uz/assets/flags/rub.png" alt="RU Flag" class="flag">
+                            <img src="{{asset('../admin../assets/images/flags/rub.png')}}" alt="RU Flag" class="flag">
                             <div class="price" id="rub-uzs">Loading...</div>
                             <div class="change" id="rub-uzs-change"></div>
                         </div>
                     </div>
                 </div>
             </li>
-
-
             <li class="nav-item dropdown">
                 <a class="nav-link count-indicator" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
-                    <i class="icon-bell"></i>
-                    <span class="count"></span>
+                    <i class="mdi mdi-bell"></i>
+                    <span class="count" id="notification-count"></span>
                 </a>
-                <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0"
-                    aria-labelledby="notificationDropdown">
+                <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list pb-0"
+                     aria-labelledby="notificationDropdown" id="notification-list">
                     <a class="dropdown-item py-3 border-bottom">
-                        <p class="mb-0 font-weight-medium float-left">You have 4 new notifications </p>
-                        <span class="badge badge-pill badge-primary float-right">View all</span>
+                        <p class="mb-0 font-weight-medium float-start">You have <span id="total-notifications">0</span> new notifications</p>
+                        <span class="badge bg-primary float-end">View all</span>
                     </a>
-                    <a class="dropdown-item preview-item py-3">
-                        <div class="preview-thumbnail">
-                            <i class="mdi mdi-alert m-auto text-primary"></i>
-                        </div>
-                        <div class="preview-item-content">
-                            <h6 class="preview-subject fw-normal text-dark mb-1">Application Error</h6>
-                            <p class="fw-light small-text mb-0"> Just now </p>
-                        </div>
-                    </a>
-                    <a class="dropdown-item preview-item py-3">
-                        <div class="preview-thumbnail">
-                            <i class="mdi mdi-settings m-auto text-primary"></i>
-                        </div>
-                        <div class="preview-item-content">
-                            <h6 class="preview-subject fw-normal text-dark mb-1">Settings</h6>
-                            <p class="fw-light small-text mb-0"> Private message </p>
-                        </div>
-                    </a>
-                    <a class="dropdown-item preview-item py-3">
-                        <div class="preview-thumbnail">
-                            <i class="mdi mdi-airballoon m-auto text-primary"></i>
-                        </div>
-                        <div class="preview-item-content">
-                            <h6 class="preview-subject fw-normal text-dark mb-1">New user registration</h6>
-                            <p class="fw-light small-text mb-0"> 2 days ago </p>
-                        </div>
-                    </a>
+                    <!-- Dynamic notifications will go here -->
                 </div>
             </li>
+            
             <li class="nav-item dropdown d-none d-lg-block user-dropdown">
                 <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                     <img class="img-xs rounded-circle"
@@ -236,3 +208,36 @@
 </script>
 
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        fetchNotifications();
+
+        function fetchNotifications() {
+            fetch('/notifications')
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('notification-count').textContent = data.unread || '';
+                    document.getElementById('total-notifications').textContent = data.unread || 0;
+
+                    let listContainer = document.getElementById('notification-list');
+                    let existing = listContainer.querySelectorAll('.dynamic-notification');
+                    existing.forEach(e => e.remove());
+
+                    data.notifications.forEach(notif => {
+                        const item = document.createElement('a');
+                        item.className = 'dropdown-item preview-item py-3 dynamic-notification';
+                        item.innerHTML = `
+                            <div class="preview-thumbnail">
+                                <i class="mdi mdi-alert m-auto text-primary"></i>
+                            </div>
+                            <div class="preview-item-content">
+                                <h6 class="preview-subject fw-normal text-dark mb-1">${notif.title}</h6>
+                                <p class="fw-light small-text mb-0">${notif.created_at}</p>
+                            </div>
+                        `;
+                        listContainer.appendChild(item);
+                    });
+                });
+        }
+    });
+</script>
