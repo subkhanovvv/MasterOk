@@ -26,17 +26,6 @@ class CategoryController extends Controller
         return view('pages.categories.category', compact('categories'));
     }
 
-
-    public function create()
-    {
-        return view('pages.categories.new-category');
-    }
-
-    public function edit(Category $category)
-    {
-        return view('pages.categories.edit-category', compact('category'));
-    }
-
     public function store(Request $request)
     {
         $validated = $request->validate([
