@@ -15,6 +15,7 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('admin/assets/js/select.dataTables.min.css') }}">
     <link rel="stylesheet" href="{{ asset('admin/assets/css/vertical-layout-light/style.css') }}">
     <link rel="shortcut icon" href="{{ asset('admin/assets/images/ico.png') }}" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body class="body">
     <div class="container-scroller">
