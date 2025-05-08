@@ -13,8 +13,10 @@ class SupplierController extends Controller
     public function index(Request $request)
     {
         $sortOrder = $request->get('sort', 'desc');
-    
-        $suppliers = Supplier::query()
+
+        $suppliers = Supplier::with(['brand' => function ($query) {
+            $query->withCount('products');
+        }])
             ->when($request->filled('search'), function ($query) use ($request) {
                 $query->where('name', 'like', '%' . $request->search . '%');
             })
@@ -24,12 +26,12 @@ class SupplierController extends Controller
             ->orderBy('id', $sortOrder)
             ->paginate(10)
             ->appends($request->only(['sort', 'search', 'brand_id']));
-    
-        $brands = Brand::all();
-    
+
+        $brands = Brand::withCount('products')->get();
+
         return view('pages.suppliers.index', compact('suppliers', 'brands'));
     }
-    
+
     public function store(Request $request)
     {
         $validated = $request->validate([

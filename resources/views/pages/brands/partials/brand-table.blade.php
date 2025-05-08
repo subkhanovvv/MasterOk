@@ -28,9 +28,7 @@
                             data-bs-target="#viewBrandModal" data-id="{{ $brand->id }}"
                             data-name="{{ $brand->name }}" data-description="{{ $brand->description }}"
                             data-phone="{{ $brand->phone }}"
-                            data-intake="  @if ($brand->last_intake) {{ $brand->last_intake->format('d.m.Y H:i') }}
-    @else
-        — @endif"
+                            data-intake="  @if ($brand->last_intake) {{ $brand->last_intake->format('d.m.Y H:i') }}@else — @endif"
                             data-product="{{ $brand->products_count }}"
                             data-photo="{{ $brand->photo ? Storage::url($brand->photo) : asset('admin/assets/images/default_product.png') }}"
                             onclick="openModal(this)" class="text-decoration-none">
