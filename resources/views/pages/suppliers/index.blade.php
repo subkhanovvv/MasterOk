@@ -25,6 +25,7 @@
     @include('pages.suppliers.modals.delete-supplier')
     @include('pages.suppliers.modals.edit-supplier')
     @include('pages.suppliers.modals.new-supplier')
+    @include('pages.suppliers.modals.view-supplier')
     @include('pages.suppliers.js.script')
     @include('pages.brands.modals.view-brand')
 @endsection

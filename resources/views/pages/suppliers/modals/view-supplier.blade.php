@@ -11,34 +11,33 @@
                     <div class="col-md-6 text-center mb-3">
 
                         <div class="form-group">
-                            <img id="view_brand_photo" src="" class="rounded-circle border" alt="Brand Image"
+                            <img id="view_supplier_photo" src="{{ asset('admin/assets/images/driver.png') }}"
+                                class="rounded-circle border" alt="Brand Image"
                                 style="width: 150px; height: 150px; object-fit: cover;">
                         </div>
 
                         <div class="form-group">
-                            <h5 id="view_brand_name"></h5>
+                            <h5 id="view_supplier_name"></h5>
                         </div>
 
-                        <div class="form-group ">
-                            <div id="view_brand_phone"></div>
-                        </div>
 
                     </div>
                     <div class="col-md-6">
+                        <div class="form-group"> <label for="">Brand:</label>
+                            <p id="view_supplier_brand">
+                            </p>
+                        </div>
 
+                        <div class="form-group"> <label for="">brand Phone :</label>
+                            <p id="view_supplier_phone">
+                            </p>
+                        </div>
 
                         <div class="form-group">
-                            <label for="view_brand_description">Описание :</label>
-                            <p id="view_brand_description"></p>
+                            <label for="view_supplier_description">Описание :</label>
+                            <p id="view_supplier_note"></p>
                         </div>
-                        <div class="form-group">
-                            <label for="view_brand_intake">Активность :</label>
-                            <p id="view_brand_intake"></p>
-                        </div>
-                        <div class="form-group">
-                            <label for="view_brand_product">Склад :</label>
-                            <p id="view_brand_product"></p>
-                        </div>
+
                     </div>
 
 
