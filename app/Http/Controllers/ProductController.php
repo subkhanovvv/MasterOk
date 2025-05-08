@@ -20,12 +20,14 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
+        $sortOrder = $request->get('sort', 'desc');
+
         $products = Product::query()
             ->with('get_brand')
             ->when($request->search, function ($query) use ($request) {
                 $query->where(function ($query) use ($request) {
                     $query->where('name', 'like', '%' . $request->search . '%')
-                          ->orWhere('barcode', 'like', '%' . $request->search . '%');
+                        ->orWhere('barcode', 'like', '%' . $request->search . '%');
                 });
             })
             ->when($request->category_id, function ($query) use ($request) {
@@ -37,15 +39,16 @@ class ProductController extends Controller
             ->when($request->status, function ($query) use ($request) {
                 $query->where('status', $request->status);
             })
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
-    
+            ->orderBy('id', $sortOrder)
+            ->paginate(10)
+            ->appends(['sort' => $sortOrder]);
+
         $categories = Category::all();
         $brands = Brand::all();
-    
-        return view('pages.products.product', compact('products', 'categories', 'brands'));
+
+        return view('pages.products.index', compact('products', 'categories', 'brands'));
     }
-    
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -159,24 +162,5 @@ class ProductController extends Controller
         $product->save();
 
         return redirect()->back()->with('success', 'Товар успешно обновлен.');
-    }
-
-    public function getByBarcode($barcode)
-    {
-        // Search in both columns
-        $product = Product::where('barcode', $barcode)
-            ->orWhere('barcode_value', $barcode)
-            ->first();
-
-        if (!$product) {
-            return response()->json(['message' => 'Product not found'], 404);
-        }
-
-        return response()->json([
-            'id' => $product->id,
-            'name' => $product->name,
-            'sale_price' => $product->sale_price,
-            'photo_url' => asset('storage/' . $product->photo),
-        ]);
     }
 }

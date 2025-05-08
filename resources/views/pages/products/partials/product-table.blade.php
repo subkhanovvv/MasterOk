@@ -6,7 +6,6 @@
                 <th>Название</th>
                 <th>photo</th>
                 <th>Цена (UZS/USD)</th>
-                <th>Бренд</th>
                 <th>Статус</th>
                 <th>Цена</th>
                 <th>Склад</th>
@@ -24,7 +23,6 @@
                             alt="{{ $p->name }}" style="width: 50px; height: 50px; object-fit: cover;">
                     </td>
                     <td>{{ number_format($p->price_uzs) }} sum / ${{ $p->price_usd }}</td>
-                    <td>{{ $p->get_brand->name }}</td>
                     <td>
                         @php
                             $color =
@@ -51,19 +49,12 @@
                         @endif
                     </td>
                     <td>
-                        <div class="d-flex justify-content-center gap-1">
-                            <a href="javascript:void(0);" title="Приход товара" data-bs-toggle="modal"
-                                data-bs-target="#intakeProductModal" data-id="{{ $p->id }}"
-                                data-photo="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
-                                data-name="{{ $p->name }}" data-sale_price="{{ $p->sale_price }}"
-                                data-unit="{{ $p->unit }}" onclick="openModal(this)">
-                                <i class="mdi mdi-database-plus icon-sm text-primary"></i>
-                            </a>
+                        <div>
                             <a href="javascript:void(0);" title="Расход товара" data-bs-toggle="modal"
                                 data-bs-target="#consumeProductModal" data-id="{{ $p->id }}"
                                 data-photo="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
                                 data-name="{{ $p->name }}" data-sale_price="{{ $p->sale_price }}"
-                                data-unit="{{ $p->unit }}" onclick="openModal(this)">
+                                data-unit="{{ $p->unit }}" onclick="openModal(this)" class="text-decoration-none">
                                 <i class="mdi mdi-eye icon-sm text-success"></i>
                             </a>
                             <a href="javascript:void(0);" title="Редактировать" data-bs-toggle="modal"
@@ -71,13 +62,13 @@
                                 data-name="{{ $p->name }}" data-short_description="{{ $p->short_description }}"
                                 data-sale_price="{{ $p->sale_price }}"
                                 data-photo="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
-                                onclick="openModal(this)">
+                                onclick="openModal(this)" class="text-decoration-none">
                                 <i class="mdi mdi-pencil icon-sm text-primary"></i>
                             </a>
 
                             <a href="javascript:void(0);" title="Удалить" data-bs-toggle="modal"
                                 data-bs-target="#deleteProductModal" data-id="{{ $p->id }}"
-                                onclick="openModal(this)">
+                                onclick="openModal(this)" class="text-decoration-none">
                                 <i class="mdi mdi-delete icon-sm text-danger"></i>
                             </a>
                         </div>
