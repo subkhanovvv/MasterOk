@@ -40,8 +40,8 @@ Route::middleware(['auth'])->group(function () {
     Route::controller(AuthController::class)->group(function () {
         Route::get('logout', 'logout')->name('logout');
         Route::get('profile', 'profile')->name('profile');
-        Route::get('edit/{id}', 'edit')->name('edit');
-        Route::post('update', 'update')->name('update');
+        // Route::get('edit/{id}', 'edit')->name('edit');
+        Route::post('profile.update', 'update')->name('profile.update');
     });
 
     Route::prefix('intake')->group(function () {

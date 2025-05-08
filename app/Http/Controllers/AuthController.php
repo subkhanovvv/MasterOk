@@ -47,14 +47,26 @@ class AuthController extends Controller
 
         return view('pages.profile.profile', compact('user'));
     }
-    public function edit_profile($id)
+    public function update(Request $request )
     {
-        $user = User::find($id);
-        return view('pages.profile.edit-profile', compact('user'));
-    }
+       $request->validate([
+            'name'  => 'nullable|string|max:255',
+            'password' => 'nullable|min:8',
+        ]);
+        $data = [];
 
-    public function update_profile(Request $request)
-    {
+        if ($request->filled('name') && $request->name !== auth()->user()->name) {
+            $data['name'] = $request->name;
+        }
+
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        }
+        if (empty($data)) {
+          return back()->with('error', 'no changes were made');
+        }
+        User::find(auth()->id())->update($data);
+
         return back()->with('success', 'Профиль обновлен!');
     }
 }

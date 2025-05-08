@@ -16,16 +16,12 @@
                         <td>{{ Auth::user()->name }}</td>
                     </tr>
                     <tr>
-                        <th>Email</th>
-                        <td>{{ Auth::user()->email }}</td>
-                    </tr>
-                    <tr>
                         <th>Created at</th>
-                        <td>{{ Auth::user()->created_at }}</td>
+                        <td>{{ (Auth::user()->created_at ?? today())->format('d-m-y') }}</td>
                     </tr>
                     <tr>
                         <th>Updated at</th>
-                        <td>{{ Auth::user()->updated_at }}</td>
+                        <td>{{ Auth::user()->updated_at->format('d-m-y') }}</td>
                     </tr>
                 </table>
             </div>
