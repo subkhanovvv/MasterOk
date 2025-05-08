@@ -20,7 +20,7 @@
                     <td>{{ $p->name }}</td>
                     <td>
                         <img src="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
-                            alt="{{ $p->name }}" style="width: 50px; height: 50px; object-fit: cover;">
+                            alt="{{ $p->name }}">
                     </td>
                     <td>{{ number_format($p->price_uzs) }} sum / ${{ $p->price_usd }}</td>
                     <td>
