@@ -58,7 +58,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('transactions') }}">
+            <a class="nav-link" href="{{ route('history.index') }}">
                 <i class="menu-icon mdi mdi-history"></i>
                 <span class="menu-title">История</span>
                 <i class="menu-arrow"></i>

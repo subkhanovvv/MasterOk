@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\TransactionController;
@@ -33,6 +34,7 @@ Route::middleware(['auth'])->group(function () {
         'categories' => CategoryController::class,
         'products' => ProductController::class,
         'suppliers' => SupplierController::class,
+        'history' => HistoryController::class,
     ]);
 
     Route::get('/products/by-barcode/{barcode}', [ProductController::class, 'getByBarcode']);
@@ -54,7 +56,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::controller(TransactionController::class)->group(function () {
         // Route::get('intake', 'intake')->name('intake');
-        Route::get('transactions', 'transactions')->name('transactions');
+        // Route::get('transactions', 'transactions')->name('transactions');
         // Route::get('consumption', 'consumption')->name('intake');
 
         Route::get('consumption', 'consumption')->name('consumption');

@@ -253,39 +253,39 @@ class TransactionController extends Controller
 
         $productActivity->update(['qr_code' => $qrCodePath]);
     }
-    public function transactions(Request $request)
-    {
-        $query = ProductActivity::with('product')
-            ->orderBy('created_at', 'desc');
+    // public function transactions(Request $request)
+    // {
+    //     $query = ProductActivity::with('product')
+    //         ->orderBy('created_at', 'desc');
 
-        // Apply filters
-        if ($request->filled('date_from')) {
-            $query->whereDate('created_at', '>=', $request->date_from);
-        }
+    //     // Apply filters
+    //     if ($request->filled('date_from')) {
+    //         $query->whereDate('created_at', '>=', $request->date_from);
+    //     }
 
-        if ($request->filled('date_to')) {
-            $query->whereDate('created_at', '<=', $request->date_to);
-        }
+    //     if ($request->filled('date_to')) {
+    //         $query->whereDate('created_at', '<=', $request->date_to);
+    //     }
 
-        if ($request->filled('type')) {
-            $query->where('type', $request->type);
-        }
+    //     if ($request->filled('type')) {
+    //         $query->where('type', $request->type);
+    //     }
 
-        if ($request->filled('product_id')) {
-            $query->whereHas('product', function ($q) use ($request) {
-                $q->where('id', $request->product_id);
-            });
-        }
+    //     if ($request->filled('product_id')) {
+    //         $query->whereHas('product', function ($q) use ($request) {
+    //             $q->where('id', $request->product_id);
+    //         });
+    //     }
 
-        $transactions = $query->paginate(25);
+    //     $transactions = $query->paginate(25);
 
-        $products = Product::orderBy('name')->get();
+    //     $products = Product::orderBy('name')->get();
 
-        return view('pages.transaction.transactions', [
-            'transactions' => $transactions,
-            'products' => $products
-        ]);
-    }
+    //     return view('pages.transaction.transactions', [
+    //         'transactions' => $transactions,
+    //         'products' => $products
+    //     ]);
+    // }
     public function report(Request $request)
     {
         // Date filters (default to current month)

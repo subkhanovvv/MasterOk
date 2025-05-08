@@ -11,7 +11,7 @@ class HistoryController extends Controller
     {
         $sortOrder = $request->get('sort', 'desc');
 
-        $categories = ProductActivity::withCount('products')
+        $transactions = ProductActivity::withCount('items')
             ->when($request->filled('search'), function ($query) use ($request) {
                 $query->where('name', 'like', '%' . $request->search . '%');
             })
@@ -19,6 +19,6 @@ class HistoryController extends Controller
             ->paginate(10)
             ->appends(['sort' => $sortOrder]);
         
-        return view('pages.history.index', compact('categories'));
+        return view('pages.history.index', compact('transactions'));
     }
 }
