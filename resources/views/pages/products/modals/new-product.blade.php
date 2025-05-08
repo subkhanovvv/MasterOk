@@ -1,129 +1,165 @@
 <div class="modal fade" id="newProductModal" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Добавить товар</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <div class="modal-content border-0">
+            <div class="modal-header bg-light">
+                <h4 class="modal-title fw-bold">Добавить товар</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form method="POST" action="{{ route('products.store') }}" enctype="multipart/form-data">
                 @csrf
-                <div class="modal-body">
-                    <div class="row g-4">
-
-                        <!-- LEFT COLUMN -->
-                        <div class="col-12 col-md-4">
-                            <div class="form-group mb-3">
-                                <label for="productName">Название товара</label>
-                                <input type="text" class="form-control" name="name" id="productName" placeholder="Название товара" required>
+                <div class="modal-body p-4">
+                    <div class="row">
+                        <!-- Left Column - Image Section -->
+                        <div class="col-md-4 border-end pe-4">
+                            <div class="text-center mb-4">
+                                <div class="position-relative d-inline-block">
+                                    <img id="preview" src="" alt="Image Preview" 
+                                         class="img-thumbnail rounded-circle border" 
+                                         style="width: 150px; height: 150px; object-fit: cover; display: none;">
+                                    <div id="imagePlaceholder" 
+                                         class="rounded-circle border d-flex align-items-center justify-content-center" 
+                                         style="width: 150px; height: 150px; background-color: #f8f9fa;">
+                                        <i class="bi bi-camera fs-1 text-muted"></i>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <input type="file" name="photo" class="form-control form-control-sm" 
+                                           id="photo" onchange="previewImage(event)">
+                                </div>
                             </div>
-
-                            <div class="form-group mb-3">
-                                <label for="brand">Бренд</label>
-                                <select name="brand_id" class="form-select" id="brand" required>
-                                    <option disabled selected>Выберите бренд</option>
-                                    @foreach ($brands as $b)
-                                        <option value="{{ $b->id }}">{{ $b->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <label for="short_description">Краткое описание</label>
-                                <input name="short_description" class="form-control" id="short_description" placeholder="Краткое описание">
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <label for="photo">Изображение</label>
-                                <input type="file" name="photo" class="form-control form-control-sm" onchange="previewImage(event)">
-                            </div>
-
-                            <div class="preview mb-3" id="imagePreview" style="display: none;">
-                                <img id="preview" src="" alt="Image Preview" class="img-thumbnail" style="max-width: 100%;">
+                            
+                            <div class="mb-4">
+                                <label class="form-label text-muted small mb-1">Штрих-код</label>
+                                <div class="bg-light p-2 rounded text-center">
+                                    <small class="text-muted">Автоматически сгенерируется</small>
+                                </div>
                             </div>
                         </div>
-
-                        <!-- MIDDLE COLUMN -->
-                        <div class="col-12 col-md-4">
-                            <div class="form-group mb-3">
-                                <label for="category">Категория</label>
-                                <select name="category_id" class="form-select" id="category" required>
-                                    <option disabled selected value="">Выберите категорию</option>
-                                    @foreach ($categories as $c)
-                                        <option value="{{ $c->id }}">{{ $c->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <label for="price_usd">Цена в USD</label>
-                                <input type="text" class="form-control decimal-input" name="price_usd" id="price_usd" placeholder="USD" required>
-                            </div>
-
-                            <div class="form-group mb-1">
-                                <label for="price_uzs">Цена в UZS</label>
-                                <input type="text" class="form-control decimal-input" name="price_uzs" id="price_uzs" placeholder="UZS" required>
-                            </div>
-                            <small class="text-primary">1 USD = <strong id="usd-uzs-rate">Загрузка...</strong> UZS</small>
-
-                            <div class="form-group mt-3 mb-3">
-                                <label for="sale_price">Цена продажи</label>
-                                <input type="number" class="form-control decimal-input" name="sale_price" id="sale_price" placeholder="Цена продажи" required>
+                        
+                        <!-- Right Column - Form Fields -->
+                        <div class="col-md-8 ps-4">
+                            <div class="row g-3">
+                                <!-- Basic Info -->
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" name="name" id="productName" required>
+                                        <label for="productName">Название товара</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input name="short_description" class="form-control" id="short_description">
+                                        <label for="short_description">Краткое описание</label>
+                                    </div>
+                                </div>
+                                
+                                <!-- Brand and Category -->
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <select name="brand_id" class="form-select" id="brand" required>
+                                            <option disabled selected></option>
+                                            @foreach ($brands as $b)
+                                                <option value="{{ $b->id }}">{{ $b->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        <label for="brand">Бренд</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <select name="category_id" class="form-select" id="category" required>
+                                            <option disabled selected></option>
+                                            @foreach ($categories as $c)
+                                                <option value="{{ $c->id }}">{{ $c->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        <label for="category">Категория</label>
+                                    </div>
+                                </div>
+                                
+                                <!-- Pricing Section -->
+                                <div class="col-12 mt-4">
+                                    <h5 class="fw-bold text-uppercase text-muted mb-3">Цены</h5>
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <div class="form-floating">
+                                                <input type="text" class="form-control decimal-input" name="price_usd" id="price_usd" required>
+                                                <label for="price_usd">USD</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-floating">
+                                                <input type="text" class="form-control decimal-input" name="price_uzs" id="price_uzs" required>
+                                                <label for="price_uzs">UZS</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-floating">
+                                                <input type="number" class="form-control decimal-input" name="sale_price" id="sale_price" required>
+                                                <label for="sale_price">Sale</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="d-flex align-items-center text-muted small">
+                                                <i class="bi bi-arrow-left-right me-2"></i>
+                                                1 USD = <strong id="usd-uzs-rate" class="ms-1">Загрузка...</strong> UZS
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Units Section -->
+                                <div class="col-12 mt-3">
+                                    <h5 class="fw-bold text-uppercase text-muted mb-3">Единицы измерения</h5>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="form-floating">
+                                                <select name="unit" class="form-select" id="unit" required>
+                                                    <option disabled selected></option>
+                                                    <option value="кг">кг</option>
+                                                    <option value="г">г</option>
+                                                    <option value="л">л</option>
+                                                    <option value="мл">мл</option>
+                                                    <option value="м">м</option>
+                                                    <option value="см">см</option>
+                                                    <option value="шт">шт</option>
+                                                    <option value="пара">пара</option>
+                                                    <option value="набор">набор</option>
+                                                </select>
+                                                <label for="unit">Малая единица</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating">
+                                                <select name="stock_unit" class="form-select" id="stock_unit">
+                                                    <option disabled selected></option>
+                                                    <option value="коробка">коробка</option>
+                                                    <option value="упаковка">упаковка</option>
+                                                    <option value="рулон">рулон</option>
+                                                    <option value="набор">набор</option>
+                                                    <option value="дюжина">дюжина</option>
+                                                    <option value="шт">шт</option>
+                                                </select>
+                                                <label for="stock_unit">Складская единица</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="form-floating">
+                                                <input type="number" min="1" name="units_per_stock" class="form-control" id="units_per_stock">
+                                                <label for="units_per_stock">Количество в складской единице</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-
-                        <!-- RIGHT COLUMN -->
-                      <div class="col-12 col-md-4">
-                            {{-- <div class="form-group mb-3">
-                                <label for="tax">Налог</label>
-                                <select name="tax" class="form-select" id="tax" required>
-                                    <option value="0" selected>0%</option>
-                                    <option value="1">1%</option>
-                                    <option value="2">2%</option>
-                                    <option value="4">4%</option>
-                                    <option value="6">6%</option>
-                                    <option value="8">8%</option>
-                                </select>
-                            </div> --}} 
-
-                            <div class="form-group mb-3">
-                                <label for="unit">Малая единица измерения</label>
-                                <select name="unit" class="form-select" id="unit" required>
-                                    <option disabled selected>Выберите единицу</option>
-                                    <option value="кг">кг</option>
-                                    <option value="г">г</option>
-                                    <option value="л">л</option>
-                                    <option value="мл">мл</option>
-                                    <option value="м">м</option>
-                                    <option value="см">см</option>
-                                    <option value="шт">шт</option>
-                                    <option value="пара">пара</option>
-                                    <option value="набор">набор</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <label for="stock_unit">Складская единица</label>
-                                <select name="stock_unit" class="form-select" id="stock_unit">
-                                    <option disabled selected>Выберите складскую единицу</option>
-                                    <option value="коробка">коробка</option>
-                                    <option value="упаковка">упаковка</option>
-                                    <option value="рулон">рулон</option>
-                                    <option value="набор">набор</option>
-                                    <option value="дюжина">дюжина</option>
-                                    <option value="шт">шт</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <label for="units_per_stock">Количество в складской единице</label>
-                                <input type="number" min="1" name="units_per_stock" class="form-control" id="units_per_stock" placeholder="Например: 10">
-                            </div>
-                        </div>
-
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-success btn-lg">Сохранить</button>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle me-2"></i>Сохранить
+                    </button>
                 </div>
             </form>
         </div>
@@ -131,6 +167,27 @@
 </div>
 
 <script>
+    // Image Preview Function (updated for circular preview)
+    function previewImage(event) {
+        const input = event.target;
+        const preview = document.getElementById('preview');
+        const placeholder = document.getElementById('imagePlaceholder');
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                placeholder.style.display = 'none';
+            };
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            preview.style.display = 'none';
+            placeholder.style.display = 'flex';
+        }
+    }
+
+    // Keep all your existing currency and decimal handling scripts
     let usdToUzsRate = null;
     async function fetchExchangeRates() {
         try {
@@ -173,24 +230,4 @@
             this.value = v;
         });
     });
-</script>
-<script>
-    function previewImage(event) {
-        const input = event.target;
-        const preview = document.getElementById('imagePreview');
-        const previewImg = document.getElementById('preview');
-
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-
-            reader.onload = function(e) {
-                previewImg.src = e.target.result;
-                preview.style.display = 'block';
-            };
-
-            reader.readAsDataURL(input.files[0]);
-        } else {
-            preview.style.display = 'none';
-        }
-    }
 </script>

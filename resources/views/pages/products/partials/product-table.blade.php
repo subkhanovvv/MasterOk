@@ -50,17 +50,29 @@
                     </td>
                     <td>
                         <div>
-                            <a href="javascript:void(0);" title="Расход товара" data-bs-toggle="modal"
-                                data-bs-target="#consumeProductModal" data-id="{{ $p->id }}"
+                            <a href="javascript:void(0);" title="Просмотр товара" data-bs-toggle="modal"
+                                data-bs-target="#viewProductModal" 
+                                data-id="{{ $p->id }}"
                                 data-photo="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
-                                data-name="{{ $p->name }}" data-sale_price="{{ $p->sale_price }}"
-                                data-unit="{{ $p->unit }}" onclick="openModal(this)" class="text-decoration-none">
+                                data-name="{{ $p->name }}"
+                                 data-sale-price="{{ $p->sale_price }}"
+                                 data-uzs-price="{{ $p->price_uzs }}"
+                                 data-usd-price="{{ $p->price_usd }}"
+                                data-brand="{{ $p->get_brand->name }}"
+                                 data-category="{{ $p->get_category->name }}"
+                                data-barcode="{{ Storage::url($p->barcode)}}"
+                                 data-qty="{{$p->qty}}" 
+                                data-unit="{{ $p->unit }}"
+                                data-description="{{ $p->short_description ?? 'Нет описания' }}"
+                                data-status="{{ $p->status}}"
+                                onclick="openModal(this)" class="text-decoration-none">
                                 <i class="mdi mdi-eye icon-sm text-success"></i>
                             </a>
+
                             <a href="javascript:void(0);" title="Редактировать" data-bs-toggle="modal"
                                 data-bs-target="#editProductModal" data-id="{{ $p->id }}"
                                 data-name="{{ $p->name }}" data-short_description="{{ $p->short_description }}"
-                                data-sale_price="{{ $p->sale_price }}"
+                                data-sale-price="{{ $p->sale_price }}"
                                 data-photo="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
                                 onclick="openModal(this)" class="text-decoration-none">
                                 <i class="mdi mdi-pencil icon-sm text-primary"></i>
