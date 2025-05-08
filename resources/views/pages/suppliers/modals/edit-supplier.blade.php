@@ -6,7 +6,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form id="editSupplierForm" method="POST" action="#" enctype="multipart/form-data">
+                <form id="editSupplierForm" method="POST" action="#" >
                     @csrf
                     @method('PUT')
 
@@ -18,7 +18,7 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">note s</label>
-                        <input type="text" class="form-control" id="edit_supplier_note" name="name" required>
+                        <input type="text" class="form-control" id="edit_supplier_note" name="note" required>
                     </div>
             </div>
             <div class="modal-footer">

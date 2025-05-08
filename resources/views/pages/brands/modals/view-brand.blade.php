@@ -39,6 +39,10 @@
                             <label for="view_brand_product">Склад :</label>
                             <p id="view_brand_product"></p>
                         </div>
+                        <div class="form-group">
+                            <label for="view_brand_supplier">водители :</label>
+                            <p id="view_brand_supplier"></p>
+                        </div>
                     </div>
 
 

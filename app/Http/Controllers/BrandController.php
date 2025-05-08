@@ -16,7 +16,7 @@ class BrandController extends Controller
    {
       $sortOrder = $request->get('sort', 'desc');
 
-      $brands = Brand::withCount('products')
+      $brands = Brand::withCount('products' , 'suppliers')
          ->when($request->filled('search'), function ($query) use ($request) {
             $query->where('name', 'like', '%' . $request->search . '%');
          })

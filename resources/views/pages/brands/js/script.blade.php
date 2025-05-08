@@ -6,6 +6,7 @@
         var name = element.getAttribute('data-name');
         var product = element.getAttribute('data-product');
         var intake = element.getAttribute('data-intake');
+        var supplier = element.getAttribute('data-supplier');
         const modalId = element.getAttribute('data-bs-target');
 
 
@@ -27,6 +28,7 @@
             document.getElementById('view_brand_photo').src = photo;
             document.getElementById('view_brand_intake').textContent = intake;
             document.getElementById('view_brand_product').textContent = product;
+            document.getElementById('view_brand_supplier').textContent = supplier;
         }
 
     }

@@ -15,7 +15,7 @@ class SupplierController extends Controller
         $sortOrder = $request->get('sort', 'desc');
 
         $suppliers = Supplier::with(['brand' => function ($query) {
-            $query->withCount('products');
+            $query->withCount('products', 'suppliers');
         }])
             ->when($request->filled('search'), function ($query) use ($request) {
                 $query->where('name', 'like', '%' . $request->search . '%');
@@ -55,48 +55,33 @@ class SupplierController extends Controller
         }
     }
 
-
-    public function update(Request $request, Supplier $s)
+    public function update(Request $request, Supplier $supplier)
     {
         $validated = $request->validate([
-            'name'  => 'required|string|max:255',
-            'note' => 'nullable',
+            'name' => 'nullable|string|max:255',
+            'note' => 'nullable|string',
         ]);
 
-        try {
-            $s->update($validated);
-
+        $supplier->update($validated);
+        
             return redirect()
                 ->route('suppliers.index')
-                ->with('success', 'Категория успешно обновлена!');
-        } catch (\Exception $e) {
-            Log::error('s update error: ' . $e->getMessage());
-            return back()
-                ->withInput()
-                ->with('error', 'Ошибка при обновлении категории');
-        }
+                ->with('success', 'Поставщик успешно обновлен!');
     }
 
-    public function destroy(Supplier $s)
+    public function destroy(Supplier $supplier)
     {
         try {
-            // Check if category has associated products
-            if ($s->products_count > 0) {
-                return redirect()
-                    ->route('suppliers.index')
-                    ->with('error', 'Невозможно удалить категорию, так как она используется в продуктах.');
-            }
-
-            $s->delete();
+            $supplier->delete();
 
             return redirect()
                 ->route('suppliers.index')
-                ->with('success', 'Категория успешно удалена!');
+                ->with('success', 'Поставщик успешно удален!');
         } catch (QueryException $e) {
-            Log::error('s deletion error: ' . $e->getMessage());
+            Log::error('Ошибка при удалении поставщика: ' . $e->getMessage());
             return redirect()
                 ->route('suppliers.index')
-                ->with('error', 'Ошибка при удалении категории: ' . $e->getMessage());
+                ->with('error', 'Ошибка при удалении поставщика.');
         }
     }
 }

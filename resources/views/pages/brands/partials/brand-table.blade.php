@@ -6,6 +6,7 @@
                 <th>Название</th>
                 <th>Фото</th>
                 <th>Склад</th>
+                <th>Поставщики</th>
                 <th>Действие</th>
             </tr>
         </thead>
@@ -24,12 +25,17 @@
                             {{ $brand->products_count }} товаров</a>
                     </td>
                     <td>
+                        <a href="{{ route('suppliers.index', array_merge(request()->except('page'), ['brand_id' => $brand->id])) }}"
+                            class="text-decoration-none text-dark" title="Товары в категории">
+                            {{ $brand->suppliers_count }} водители</a>
+                    </td>
+                    <td>
                         <a href="javascript:void(0);" title="Просмотреть" data-bs-toggle="modal"
                             data-bs-target="#viewBrandModal" data-id="{{ $brand->id }}"
                             data-name="{{ $brand->name }}" data-description="{{ $brand->description }}"
                             data-phone="{{ $brand->phone }}"
                             data-intake="  @if ($brand->last_intake) {{ $brand->last_intake->format('d.m.Y H:i') }}@else — @endif"
-                            data-product="{{ $brand->products_count }}"
+                            data-product="{{ $brand->products_count }}" data-supplier="{{ $brand->suppliers_count }}"
                             data-photo="{{ $brand->photo ? Storage::url($brand->photo) : asset('admin/assets/images/default_product.png') }}"
                             onclick="openModal(this)" class="text-decoration-none">
                             <i class="mdi mdi-eye icon-sm text-success"></i>

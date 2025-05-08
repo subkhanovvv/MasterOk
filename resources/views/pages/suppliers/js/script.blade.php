@@ -9,6 +9,7 @@
         var brand_phone = element.getAttribute('data-brand-phone');
         var brand_name = element.getAttribute('data-brand-name');
         var brand_product = element.getAttribute('data-brand-product');
+        var brand_supplier = element.getAttribute('data-brand-supplier');
         var brand_intake = element.getAttribute('data-brand-intake');
 
         const modalId = element.getAttribute('data-bs-target');
@@ -31,6 +32,7 @@
             document.getElementById('view_brand_photo').src = brand_photo;
             document.getElementById('view_brand_intake').textContent = brand_intake;
             document.getElementById('view_brand_product').textContent = brand_product;
+            document.getElementById('view_brand_supplier').textContent = brand_supplier;
         } else if (modalId === '#viewSupplierModal') {
             currentModalType = 'view';
             document.getElementById('view_supplier_name').textContent = name;
