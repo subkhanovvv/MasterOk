@@ -30,6 +30,7 @@ return new class extends Migration
             $table->integer('barcode_value')->nullable();
             $table->timestamps();
             $table->index('status');
+            $table->index('name');
         });
     }
 

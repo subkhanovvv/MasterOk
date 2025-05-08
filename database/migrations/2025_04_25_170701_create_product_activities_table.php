@@ -16,13 +16,17 @@ return new class extends Migration
             $table->enum('type', ['consume', 'loan', 'return', 'intake', 'intake_loan', 'intake_return']);
             $table->string('client_phone')->nullable();
             $table->string('client_name')->nullable();
-            $table->string('paid_amount')->nullable();
             $table->enum('payment_type', ['cash', 'card'])->default('cash');
-            $table->string('total_price')->default(0); 
+            $table->decimal('paid_amount', 12, 2)->nullable();
+            $table->decimal('total_price', 12, 2)->default(0);
             $table->string('return_reason')->nullable();
             $table->string('qr_code')->nullable();
+            $table->enum('loan_status', ['complete', 'incomplete'])->nullable();
             $table->text('note')->nullable();
             $table->timestamps();
+            $table->index('client_phone');
+            $table->index('type');
+            $table->index('qr_code');
         });
     }
 
