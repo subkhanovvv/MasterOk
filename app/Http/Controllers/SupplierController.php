@@ -13,17 +13,23 @@ class SupplierController extends Controller
     public function index(Request $request)
     {
         $sortOrder = $request->get('sort', 'desc');
-
-        $suppliers = Supplier::when($request->filled('search'), function ($query) use ($request) {
+    
+        $suppliers = Supplier::query()
+            ->when($request->filled('search'), function ($query) use ($request) {
                 $query->where('name', 'like', '%' . $request->search . '%');
+            })
+            ->when($request->filled('brand_id'), function ($query) use ($request) {
+                $query->where('brand_id', $request->brand_id);
             })
             ->orderBy('id', $sortOrder)
             ->paginate(10)
-            ->appends(['sort' => $sortOrder]);
+            ->appends($request->only(['sort', 'search', 'brand_id']));
+    
         $brands = Brand::all();
-
-        return view('pages.suppliers.index', compact('suppliers' ,'brands'));
+    
+        return view('pages.suppliers.index', compact('suppliers', 'brands'));
     }
+    
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -31,10 +37,10 @@ class SupplierController extends Controller
             'note'     => 'nullable|string|max:255',
             'brand_id' => 'required|exists:brands,id',
         ]);
-    
+
         try {
             Supplier::create($validated);
-    
+
             return redirect()
                 ->route('suppliers.index')
                 ->with('success', 'Поставщик успешно добавлен!');
@@ -46,13 +52,13 @@ class SupplierController extends Controller
                 ->with('error', 'Ошибка при создании поставщика');
         }
     }
-    
+
 
     public function update(Request $request, Supplier $s)
     {
         $validated = $request->validate([
             'name'  => 'required|string|max:255',
-            'note'=>'nullable',
+            'note' => 'nullable',
         ]);
 
         try {

@@ -11,7 +11,7 @@ class Supplier extends Model
     
     public function brand()
     {
-        return $this->hasMany(Brand::class);
+        return $this->belongsTo(Brand::class);
     }
 
     use HasFactory;

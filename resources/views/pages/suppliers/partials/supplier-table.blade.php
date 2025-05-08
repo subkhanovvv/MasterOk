@@ -14,7 +14,7 @@
                 <tr>
                     <td>{{ $loop->iteration + ($suppliers->currentPage() - 1) * $suppliers->perPage() }}</td>
                     <td>{{ $s->name }}</td>
-                    <td>{{$s->notes}}</td>
+                    <td>{{$s->note}}</td>
                     <td>{{ $s->brand->name }}</td>
                     <td>
                         <a href="javascript:void(0);" title="Редактировать" data-bs-toggle="modal"
