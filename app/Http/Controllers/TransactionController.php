@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductActivity;
 use App\Models\ProductActivityItems;
+use App\Models\Supplier;
 use Carbon\Carbon;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Http\Request;
@@ -99,28 +100,28 @@ class TransactionController extends Controller
     public function intakeIndex(Request $request)
     {
         $search = $request->input('search');
-    
+
         $products = Product::when($search, function ($query) use ($search) {
             $query->where('name', 'like', "%$search%")
-                  ->orWhere('barcode', 'like', "%$search%");
+                ->orWhere('barcode', 'like', "%$search%");
         })
-        ->orderBy('name')
-        ->paginate(20);
-    
-        return view('pages.intake', compact('products', 'search'));
+            ->orderBy('name')
+            ->paginate(20);
+        $suppliers = Supplier::all() ?? '-';
+
+        return view('pages.intake', compact('products', 'search', 'suppliers'));
     }
-    
+
     public function intakeStore(Request $request)
     {
         DB::beginTransaction();
-    
+
         try {
-            // Validate the request
             $validated = $request->validate([
                 'product_id' => 'required|array',
                 'product_id.*' => 'exists:products,id',
-                'quantity' => 'required|array',
-                'quantity.*' => 'numeric|min:0.001',
+                'qty' => 'required|array',
+                'qty.*' => 'numeric|min:0.001',
                 'unit' => 'required|array',
                 'unit.*' => 'string',
                 'price' => 'required|array',
@@ -130,13 +131,13 @@ class TransactionController extends Controller
                 'supplier_id' => 'nullable|exists:suppliers,id',
                 'note' => 'nullable|string',
             ]);
-    
+
             // Calculate total price
             $totalPrice = 0;
             foreach ($request->price as $index => $price) {
-                $totalPrice += $price * $request->quantity[$index];
+                $totalPrice += $price * $request->qty[$index];
             }
-    
+
             // Create the product activity
             $productActivity = ProductActivity::create([
                 'type' => $validated['type'],
@@ -145,111 +146,111 @@ class TransactionController extends Controller
                 'supplier_id' => $validated['supplier_id'] ?? null,
                 'note' => $validated['note'] ?? null,
             ]);
-    
+
             // Create product activity items and update quantities
             foreach ($request->product_id as $index => $productId) {
                 $productActivity->items()->create([
                     'product_id' => $productId,
-                    'quantity' => $request->quantity[$index],
+                    'qty' => $request->qty[$index],
                     'unit' => $request->unit[$index],
                     'price' => $request->price[$index],
                 ]);
-    
+
                 // Update product quantity
                 $product = Product::find($productId);
-                $product->increment('qty', $request->quantity[$index]);
+                $product->increment('qty', $request->qty[$index]);
                 $this->updateProductStatus($product);
             }
-    
+
             // Generate QR code
             $this->generateQrCode($productActivity);
-    
+
             DB::commit();
-    
+
             // Clear the session intake data
             session()->forget('intakes');
-    
+
             return redirect()->route('transactions')->with('success', 'Приход успешно сохранен!');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withErrors(['error' => 'Произошла ошибка: ' . $e->getMessage()]);
         }
     }
-    
+
     public function intakeAdd(Request $request)
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|numeric|min:0.001',
+            'qty' => 'required|numeric|min:0.001',
             'unit' => 'required|string',
             'price' => 'required|numeric|min:0',
         ]);
-    
+
         $product = Product::findOrFail($request->product_id);
         $intakes = session('intakes', []);
-    
+
         $found = false;
-    
+
         foreach ($intakes as &$item) {
             if ($item['product_id'] == $product->id && $item['unit'] == $request->unit) {
-                $item['quantity'] += $request->quantity;
-                $item['total'] = $item['quantity'] * $item['price'];
+                $item['qty'] += $request->qty;
+                $item['total'] = $item['qty'] * $item['price'];
                 $found = true;
                 break;
             }
         }
-    
+
         if (!$found) {
             $intakes[] = [
                 'product_id' => $product->id,
                 'name' => $product->name,
                 'unit' => $request->unit,
-                'quantity' => $request->quantity,
+                'qty' => $request->qty,
                 'price' => $request->price,
-                'total' => $request->price * $request->quantity,
+                'total' => $request->price * $request->qty,
             ];
         }
-    
+
         session(['intakes' => $intakes]);
-    
+
         return back()->with('success', 'Продукт добавлен в приход');
     }
-    
+
     public function intakeRemove($index)
     {
         $intakes = session('intakes', []);
         unset($intakes[$index]);
         session(['intakes' => array_values($intakes)]);
-    
+
         return back()->with('success', 'Продукт удален из списка прихода');
     }
-    
+
     public function intakeHistory()
     {
         $activities = ProductActivity::whereIn('type', ['intake', 'intake_loan', 'intake_return'])
             ->with(['supplier', 'items.product'])
             ->orderBy('created_at', 'desc')
             ->paginate(20);
-    
+
         return view('intake.history', compact('activities'));
     }
-    
+
     private function generateQrCode($productActivity)
     {
         $qrContent = "Transaction ID: {$productActivity->id}\n";
         $qrContent .= "Type: {$productActivity->type}\n";
         $qrContent .= "Total Price: {$productActivity->total_price}\n";
-        $qrContent .= "Date: {$productActivity->created_at}";
-    
-        $secret = env('QR_SECRET', 'default-secret');
-        $signatureData = "{$productActivity->id}|{$productActivity->type}|{$productActivity->total_price}|{$secret}";
-        $signature = hash('sha256', $signatureData);
-        $qrContent .= "\nSignature: {$signature}";
-    
+        $qrContent .= "Date: {$productActivity->created_at}\n";
+        $qrContent .= "Items:\n";
+
+        foreach ($productActivity->items as $item) {
+            $qrContent .= "- {$item->product->name} | Qty: {$item->qty} {$item->unit}\n";
+        }
+
         $qrCodeSvg = QrCode::format('svg')->size(150)->generate($qrContent);
         $qrCodePath = 'qrcodes/intake_' . $productActivity->id . '.svg';
         Storage::disk('public')->put($qrCodePath, $qrCodeSvg);
-    
+
         $productActivity->update(['qr_code' => $qrCodePath]);
     }
     public function transactions(Request $request)

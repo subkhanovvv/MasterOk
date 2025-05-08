@@ -25,6 +25,7 @@ return new class extends Migration
             $table->text('note')->nullable();
             $table->timestamps();
             $table->index('client_phone');
+            $table->integer('supplier_id')->nullable();
             $table->index('type');
             $table->index('qr_code');
         });

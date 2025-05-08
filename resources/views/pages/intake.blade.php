@@ -12,24 +12,10 @@
                         <input type="text" name="search" class="form-control" placeholder="Поиск по названию или штрих-коду" value="{{ request('search') }}">
                         <button class="btn btn-primary" type="submit">Поиск</button>
                     </div>
+
                 </form>
             </div>
         </div>
-
-        @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
-
-        @if($errors->any())
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
         <div class="row">
             <div class="col-md-8">
                 <div class="table-responsive">
@@ -54,7 +40,7 @@
                                             @csrf
                                             <input type="hidden" name="product_id" value="{{ $product->id }}">
                                             <input type="hidden" name="unit" value="{{ $product->unit }}">
-                                            <input type="number" name="quantity" class="form-control form-control-sm" value="1" min="0.001" step="0.001" style="width: 80px;">
+                                            <input type="number" name="qty" class="form-control form-control-sm" value="1" min="0.001" step="0.001" style="width: 80px;">
                                             <input type="number" name="price" class="form-control form-control-sm ms-2" value="{{ $product->price_uzs }}" min="0" step="0.01" style="width: 100px;">
                                             <button type="submit" class="btn btn-sm btn-success ms-2">
                                                 <i class="mdi mdi-plus"></i> Добавить
@@ -93,7 +79,7 @@
                                             @foreach($intakes as $index => $item)
                                                 <tr>
                                                     <td>{{ $item['name'] }}</td>
-                                                    <td>{{ $item['quantity'] }} {{ $item['unit'] }}</td>
+                                                    <td>{{ $item['qty'] }} {{ $item['unit'] }}</td>
                                                     <td>{{ number_format($item['price'], 2) }}</td>
                                                     <td>{{ number_format($item['total'], 2) }}</td>
                                                     <td class="text-end">
@@ -117,7 +103,7 @@
                                 @foreach($intakes as $index => $item)
                                     <input type="hidden" name="product_id[]" value="{{ $item['product_id'] }}">
                                     <input type="hidden" name="unit[]" value="{{ $item['unit'] }}">
-                                    <input type="hidden" name="quantity[]" value="{{ $item['quantity'] }}">
+                                    <input type="hidden" name="qty[]" value="{{ $item['qty']}}">
                                     <input type="hidden" name="price[]" value="{{ $item['price'] }}">
                                 @endforeach
 
@@ -142,9 +128,9 @@
                                     <label class="form-label">Поставщик</label>
                                     <select name="supplier_id" class="form-select">
                                         <option value="">Без поставщика</option>
-                                        {{-- @foreach($suppliers as $supplier)
+                                        @foreach($suppliers as $supplier)
                                             <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
-                                        @endforeach --}}
+                                        @endforeach
                                     </select>
                                 </div>
 
