@@ -137,26 +137,41 @@ class ProductController extends Controller
         return view('pages.barcodes.barcode', compact('barcodes', 'categories'));
     }
 
+    //  use Illuminate\Support\Facades\Storage;
+
     public function update(Request $request, Product $product)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            // 'description' => 'nullable|string',
-            'sale_price' => 'required|numeric|min:0',
-            'photo' => 'nullable|image|max:2048',
+            'photo' => 'nullable|image',
+            'stock_unit' => 'nullable|string|max:50',
+            'units_per_stock' => 'nullable|integer|min:1',
+            'unit' => 'nullable|string|max:50',
+            'price_uzs' => 'required|numeric|min:0',
+            'price_usd' => 'required|numeric|min:0',
+            'short_description' => 'nullable|string|max:1000',
+            'sale_price' => 'nullable|numeric|min:0',
         ]);
 
         $product->name = $validated['name'];
-        // $product->description = $validated['description'] ?? '';
-        $product->sale_price = $validated['sale_price']; // Updated to sale_price
+        $product->short_description = $validated['short_description'] ?? null;
+        // $product->category_id = $validated['category_id'] ?? null;
+        // $product->brand_id = $validated['brand_id'] ?? null;
+        $product->unit = $validated['unit'];
+        $product->stock_unit = $validated['stock_unit'];
+        $product->units_per_stock = $validated['units_per_stock'];
+        $product->price_usd = $validated['price_usd'] ?? 0;
+        $product->price_uzs = $validated['price_uzs'] ?? 0;
+        $product->sale_price = $validated['sale_price'];
 
         if ($request->hasFile('photo')) {
-            // Delete the old photo if it exists
-            if ($product->photo) {
-                Storage::delete($product->photo);
+            // Only delete if file exists on disk
+            if ($product->photo && Storage::disk('public')->exists($product->photo)) {
+                Storage::disk('public')->delete($product->photo);
             }
-            // Store the new photo and update the file path
-            $product->photo = $request->file('photo')->store('products');
+
+            $path = $request->file('photo')->store('products', 'public');
+            $product->photo = $path;
         }
 
         $product->save();

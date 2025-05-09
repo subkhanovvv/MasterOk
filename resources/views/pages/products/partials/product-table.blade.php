@@ -70,9 +70,12 @@
                             <a href="javascript:void(0);" title="Редактировать" data-bs-toggle="modal"
                                 data-bs-target="#editProductModal" data-id="{{ $p->id }}"
                                 data-name="{{ $p->name }}" data-description="{{ $p->short_description }}"
-                                data-uzs-price="{{ $p->price_uzs }}" data-usd-price="{{ $p->price_usd }}"    
-                                 data-photo="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
-                                 data-sale-price="{{ $p->sale_price }}"
+                                data-uzs-price="{{ $p->price_uzs }}" data-usd-price="{{ $p->price_usd }}"
+                                data-photo="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
+                                data-sale-price="{{ $p->sale_price }}" data-barcode="{{ Storage::url($p->barcode) }}"
+                                data-units-per-stock="{{ $p->units_per_stock }}"
+                                data-brand="{{ $p->get_brand->name }}" data-category="{{ $p->get_category->name }}"
+                                data-unit="{{ $p->unit }}" data-stock-unit="{{ $p->stock_unit }}"
                                 onclick="openModal(this)" class="text-decoration-none">
                                 <i class="mdi mdi-pencil icon-sm text-primary"></i>
                             </a>
