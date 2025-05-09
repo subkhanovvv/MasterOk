@@ -212,21 +212,21 @@
     //     }
     // }
 
-    // Initialize currency conversion for edit modal
-    // document.addEventListener('DOMContentLoaded', () => {
-    //     const editUsdInput = document.querySelector('#editPriceUsd');
-    //     const editUzsInput = document.querySelector('#editPriceUzs');
+    Initialize currency conversion for edit modal
+    document.addEventListener('DOMContentLoaded', () => {
+        const editUsdInput = document.querySelector('#editPriceUsd');
+        const editUzsInput = document.querySelector('#editPriceUzs');
         
-    //     editUsdInput.addEventListener('input', () => {
-    //         if (usdToUzsRate) {
-    //             const usdValue = parseFloat(editUsdInput.value);
-    //             if (!isNaN(usdValue)) {
-    //                 const uzsValue = usdValue * usdToUzsRate;
-    //                 editUzsInput.value = uzsValue.toFixed(2);
-    //             } else {
-    //                 editUzsInput.value = '';
-    //             }
-    //         }
-    //     });
-    // });
+        editUsdInput.addEventListener('input', () => {
+            if (usdToUzsRate) {
+                const usdValue = parseFloat(editUsdInput.value);
+                if (!isNaN(usdValue)) {
+                    const uzsValue = usdValue * usdToUzsRate;
+                    editUzsInput.value = uzsValue.toFixed(2);
+                } else {
+                    editUzsInput.value = '';
+                }
+            }
+        });
+    });
 </script>
