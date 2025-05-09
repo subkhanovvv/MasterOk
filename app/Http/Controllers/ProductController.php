@@ -50,60 +50,74 @@ class ProductController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'photo' => 'nullable|image',
-            'stock_unit' => 'nullable|string|max:50',
-            'units_per_stock' => 'nullable|integer|min:1',
-            'unit' => 'required|string|max:50',
-            'price_uzs' => 'required|numeric|min:0',
-            'price_usd' => 'required|numeric|min:0',
-            'short_description' => 'nullable|string|max:1000',
-            'sale_price' => 'nullable|numeric|min:0',
-            'category_id' => 'required|exists:categories,id',
-            'brand_id' => 'required|exists:brands,id',
-        ]);
+{
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'photo' => 'nullable|image',
+        'stock_unit' => 'nullable|string|max:50',
+        'units_per_stock' => 'nullable|integer|min:1',
+        'unit' => 'required|string|max:50',
+        'price_uzs' => 'required|numeric|min:0',
+        'price_usd' => 'required|numeric|min:0',
+        'short_description' => 'nullable|string|max:1000',
+        'sale_price' => 'nullable|numeric|min:0',
+        'category_id' => 'required|exists:categories,id',
+        'brand_id' => 'required|exists:brands,id',
+    ]);
 
-        $photoPath = null;
-        if ($request->hasFile('photo')) {
-            $photoPath = $request->file('photo')->store('products', 'public');
-        }
-
-        $product = Product::create([
-            'name' => $validated['name'],
-            'photo' => $photoPath,
-            'units_per_stock' => $validated['units_per_stock'],
-            'stock_unit' => $validated['stock_unit'] ?? null, // Use null if stock_unit is not present
-            'unit' => $validated['unit'],
-            'price_uzs' => $validated['price_uzs'],
-            'price_usd' => $validated['price_usd'],
-            'short_description' => $validated['short_description'] ?? null,
-            'sale_price' => $validated['sale_price'] ?? null,
-            'category_id' => $validated['category_id'],
-            'brand_id' => $validated['brand_id'],
-        ]);
-
-        // Generate barcode based on category_id and product id
-        $barcodeValue = str_pad($product->category_id, 2, '0', STR_PAD_LEFT) . str_pad($product->id, 5, '0', STR_PAD_LEFT);
-
-        $barcodeDir = storage_path('app/public/barcodes');
-        if (!file_exists($barcodeDir)) {
-            mkdir($barcodeDir, 0755, true);
-        }
-
-        $dns1d = new \Milon\Barcode\DNS1D();
-        $barcodeSVG = $dns1d->getBarcodeSVG($barcodeValue, 'C39', 1, 60);
-        $barcodeImagePath = 'barcodes/' . $barcodeValue . '.svg';
-        file_put_contents(storage_path('app/public/' . $barcodeImagePath), $barcodeSVG);
-
-        $product->update([
-            'barcode_value' => $barcodeValue,
-            'barcode' => $barcodeImagePath,
-        ]);
-        return back()->with('success', 'Товар и штрихкод успешно сохранены!');
+    $photoPath = null;
+    if ($request->hasFile('photo')) {
+        $photoPath = $request->file('photo')->store('products', 'public');
     }
 
+    // Create the product first to get an ID
+    $product = Product::create([
+        'name' => $validated['name'],
+        'photo' => $photoPath,
+        'units_per_stock' => $validated['units_per_stock'],
+        'stock_unit' => $validated['stock_unit'] ?? null,
+        'unit' => $validated['unit'],
+        'price_uzs' => $validated['price_uzs'],
+        'price_usd' => $validated['price_usd'],
+        'short_description' => $validated['short_description'] ?? null,
+        'sale_price' => $validated['sale_price'] ?? null,
+        'category_id' => $validated['category_id'],
+        'brand_id' => $validated['brand_id'],
+    ]);
+
+    // Get first letter of product name (uppercase)
+    $firstLetter = strtoupper(substr($validated['name'], 0, 1)); // "K" for "Keyboard"
+
+    // Generate numeric part (e.g., "01" + "00001" = "0100001")
+    $categoryPart = str_pad($product->category_id, 2, '0', STR_PAD_LEFT);
+    $productPart = str_pad($product->id, 5, '0', STR_PAD_LEFT);
+    $numericPart = $categoryPart . $productPart;
+
+    // Combine to create final barcode value (e.g., "K0100001")
+    $barcodeValue = $firstLetter . $numericPart;
+
+    // Barcode directory setup
+    $barcodeDir = storage_path('app/public/barcodes');
+    if (!file_exists($barcodeDir)) {
+        mkdir($barcodeDir, 0755, true);
+    }
+
+    $dns1d = new \Milon\Barcode\DNS1D();
+
+    // Generate SVG barcode (using CODE128 for reliability)
+    $barcodeSVG = $dns1d->getBarcodeSVG($barcodeValue, 'C128', 1, 60, false);
+
+    $barcodeImagePath = 'barcodes/' . $barcodeValue . '.svg';
+    file_put_contents(storage_path('app/public/' . $barcodeImagePath), $barcodeSVG);
+
+    // Update product with the new barcode format
+    $product->update([
+        'barcode_value' => $barcodeValue, // "K0100001"
+        'barcode' => $barcodeImagePath,    // "barcodes/K0100001.svg"
+    ]);
+
+    return back()->with('success', 'Товар и штрихкод успешно сохранены!');
+}
     public function destroy($id)
     {
         try {
