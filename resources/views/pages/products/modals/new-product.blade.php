@@ -165,9 +165,8 @@
         </div>
     </div>
 </div>
-
 <script>
-    // Image Preview Function (updated for circular preview)
+    // Image Preview Function
     function previewImage(event) {
         const input = event.target;
         const preview = document.getElementById('preview');
@@ -187,8 +186,8 @@
         }
     }
 
-    // Keep all your existing currency and decimal handling scripts
     let usdToUzsRate = null;
+    
     async function fetchExchangeRates() {
         try {
             const response = await fetch('https://open.er-api.com/v6/latest/USD');
@@ -196,37 +195,58 @@
             usdToUzsRate = data.rates.UZS;
             document.getElementById('usd-uzs-rate').textContent = usdToUzsRate.toFixed(2);
         } catch (error) {
-            console.error('Ошибка при получении курса обмена:', error);
+            console.error('Error fetching exchange rates:', error);
+            // Fallback rate if API fails
+            usdToUzsRate = 12500; // Example fallback rate
+            document.getElementById('usd-uzs-rate').textContent = usdToUzsRate.toFixed(2);
         }
     }
+
     document.addEventListener('DOMContentLoaded', () => {
-        const usdInput = document.querySelector('input[name="price_usd"]');
-        const uzsInput = document.querySelector('input[name="price_uzs"]');
-        usdInput.addEventListener('input', () => {
+        fetchExchangeRates();
+        setInterval(fetchExchangeRates, 3600000); // Refresh every hour
+        
+        const usdInput = document.getElementById('price_usd');
+        const uzsInput = document.getElementById('price_uzs');
+        
+        usdInput.addEventListener('input', function() {
             if (usdToUzsRate) {
-                const usdValue = parseFloat(usdInput.value);
-                if (!isNaN(usdValue)) {
-                    const uzsValue = usdValue * usdToUzsRate;
-                    uzsInput.value = uzsValue.toFixed(2);
-                } else {
-                    uzsInput.value = '';
-                }
+                const usdValue = parseFloat(this.value.replace(/,/g, '.')) || 0;
+                const uzsValue = usdValue * usdToUzsRate;
+                uzsInput.value = uzsValue.toFixed(2);
             }
         });
-        fetchExchangeRates();
-        setInterval(fetchExchangeRates, 10000);
+        
+        // Also allow manual UZS entry without overwriting
+        uzsInput.addEventListener('focus', function() {
+            this.dataset.previousValue = this.value;
+        });
+        
+        uzsInput.addEventListener('change', function() {
+            if (this.value !== this.dataset.previousValue && usdToUzsRate) {
+                // If UZS was manually changed, update USD
+                const uzsValue = parseFloat(this.value.replace(/,/g, '.')) || 0;
+                const usdValue = uzsValue / usdToUzsRate;
+                usdInput.value = usdValue.toFixed(4);
+            }
+        });
     });
+
+    // Decimal input handling
     document.querySelectorAll('.decimal-input').forEach(input => {
         input.addEventListener('input', function() {
             let v = this.value
                 .replace(/,/g, '.')
                 .replace(/[^0-9.]/g, '');
 
-            const firstDot = v.indexOf('.');
-            if (firstDot !== -1) {
-                v = v.slice(0, firstDot + 1) +
-                    v.slice(firstDot + 1).replace(/\./g, '');
+            const parts = v.split('.');
+            if (parts.length > 1) {
+                v = parts[0] + '.' + parts.slice(1).join('').replace(/\./g, '');
+                if (parts[1].length > 2) {
+                    v = parts[0] + '.' + parts[1].substring(0, 2);
+                }
             }
+            
             this.value = v;
         });
     });

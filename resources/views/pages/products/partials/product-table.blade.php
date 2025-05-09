@@ -55,21 +55,24 @@
                                 data-photo="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
                                 data-name="{{ $p->name }}" data-sale-price="{{ $p->sale_price }}"
                                 data-uzs-price="{{ $p->price_uzs }}" data-usd-price="{{ $p->price_usd }}"
+                                data-units-per-stock="{{ $p->units_per_stock }}"
                                 data-brand="{{ $p->get_brand->name }}" data-category="{{ $p->get_category->name }}"
                                 data-barcode="{{ Storage::url($p->barcode) }}" data-qty="{{ $p->qty }}"
-                                data-updated-at="{{ $p->updated_at->format('d-m-y')}}" data-unit="{{ $p->unit }}" data-stock-unit="{{$p->stock_unit}}"
-                                data-units-per-stock="{{$p->units_per_stock}}"
+                                data-updated-at="{{ $p->updated_at->format('d-m-y') }}"
+                                data-unit="{{ $p->unit }}" data-stock-unit="{{ $p->stock_unit }}"
                                 data-description="{{ $p->short_description ?? 'Нет описания' }}"
-                                onclick="openModal(this)"data-created-at="{{$p->created_at->format('d-m-y')}}" data-status="{{$statusRu}}"
+                                data-created-at="{{ $p->created_at->format('d-m-y') }}"
+                                data-status="{{ $statusRu }}" onclick="openModal(this)"
                                 class="text-decoration-none">
                                 <i class="mdi mdi-eye icon-sm text-success"></i>
                             </a>
 
                             <a href="javascript:void(0);" title="Редактировать" data-bs-toggle="modal"
                                 data-bs-target="#editProductModal" data-id="{{ $p->id }}"
-                                data-name="{{ $p->name }}" data-short_description="{{ $p->short_description }}"
-                                data-sale-price="{{ $p->sale_price }}"
-                                data-photo="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
+                                data-name="{{ $p->name }}" data-description="{{ $p->short_description }}"
+                                data-uzs-price="{{ $p->price_uzs }}" data-usd-price="{{ $p->price_usd }}"    
+                                 data-photo="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
+                                 data-sale-price="{{ $p->sale_price }}"
                                 onclick="openModal(this)" class="text-decoration-none">
                                 <i class="mdi mdi-pencil icon-sm text-primary"></i>
                             </a>
