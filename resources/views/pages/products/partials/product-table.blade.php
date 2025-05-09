@@ -51,21 +51,17 @@
                     <td>
                         <div>
                             <a href="javascript:void(0);" title="Просмотр товара" data-bs-toggle="modal"
-                                data-bs-target="#viewProductModal" 
-                                data-id="{{ $p->id }}"
+                                data-bs-target="#viewProductModal" data-id="{{ $p->id }}"
                                 data-photo="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
-                                data-name="{{ $p->name }}"
-                                 data-sale-price="{{ $p->sale_price }}"
-                                 data-uzs-price="{{ $p->price_uzs }}"
-                                 data-usd-price="{{ $p->price_usd }}"
-                                data-brand="{{ $p->get_brand->name }}"
-                                 data-category="{{ $p->get_category->name }}"
-                                data-barcode="{{ Storage::url($p->barcode)}}"
-                                 data-qty="{{$p->qty}}" 
-                                data-unit="{{ $p->unit }}"
+                                data-name="{{ $p->name }}" data-sale-price="{{ $p->sale_price }}"
+                                data-uzs-price="{{ $p->price_uzs }}" data-usd-price="{{ $p->price_usd }}"
+                                data-brand="{{ $p->get_brand->name }}" data-category="{{ $p->get_category->name }}"
+                                data-barcode="{{ Storage::url($p->barcode) }}" data-qty="{{ $p->qty }}"
+                                data-updated-at="{{ $p->updated_at->format('d-m-y')}}" data-unit="{{ $p->unit }}" data-stock-unit="{{$p->stock_unit}}"
+                                data-units-per-stock="{{$p->units_per_stock}}"
                                 data-description="{{ $p->short_description ?? 'Нет описания' }}"
-                                data-status="{{ $p->status}}"
-                                onclick="openModal(this)" class="text-decoration-none">
+                                onclick="openModal(this)"data-created-at="{{$p->created_at->format('d-m-y')}}" data-status="{{$statusRu}}"
+                                class="text-decoration-none">
                                 <i class="mdi mdi-eye icon-sm text-success"></i>
                             </a>
 

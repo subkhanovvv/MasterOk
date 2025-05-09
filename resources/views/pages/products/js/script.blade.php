@@ -2,19 +2,26 @@
     function openModal(element) {
         var id = element.getAttribute('data-id');
         var photo = element.getAttribute('data-photo');
+        var description = element.getAttribute('data-description');
         var name = element.getAttribute('data-name');
+        var status = element.getAttribute('data-status');
         var barcode = element.getAttribute('data-barcode');
-        var uzsPrice = element.getAttribute(' data-usd-price');
+
+        var uzsPrice = element.getAttribute('data-uzs-price');
         var usdPrice = element.getAttribute('data-usd-price');
+        var salePrice = element.getAttribute('data-sale-price')?.replace(/\s/g, '') || 0;
+
         var brand = element.getAttribute('data-brand');
         var category = element.getAttribute('data-category');
-        var qty = element.getAttribute(' data-qty');
+
+        var qty = element.getAttribute('data-qty');
         var unit = element.getAttribute('data-unit');
-        var status = element.getAttribute('data-status');
-        var description = element.getAttribute('data-description');
-        var category = element.getAttribute(' data-category');
-        var salePrice = element.getAttribute('data-sale-price')?.replace(/\s/g, '') || 0;
-        unitPrice = parseFloat(salePrice);
+        var stock_unit = element.getAttribute('data-stock-unit');
+        var units_per_stock = element.getAttribute('data-units-per-stock');
+        
+        var updated_at = element.getAttribute('data-updated-at');
+        var created_at = element.getAttribute('data-created-at');
+        
 
         const modalId = element.getAttribute('data-bs-target');
         if (modalId === '#viewProductModal') {
@@ -28,9 +35,14 @@
             document.getElementById('product_sale_price').textContent = salePrice
             document.getElementById('product_description').textContent = description;
             document.getElementById('product_qty').textContent = qty;
+            document.getElementById('product_updated_at').textContent = updated_at;
+            document.getElementById('product_created_at').textContent = created_at;
             document.getElementById('product_brand').textContent = brand;
             document.getElementById('product_category').textContent = category;
             document.getElementById('product_unit').textContent = unit;
+            document.getElementById('product_stock_unit').textContent = stock_unit;
+            document.getElementById('product_units_per_stock').textContent = units_per_stock;
+            document.getElementById('product_status').textContent = status;
 
         } else if (modalId === '#editProductModal') {
             document.getElementById('editProductForm').action = `/products/${id}`;
