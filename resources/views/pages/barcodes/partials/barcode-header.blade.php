@@ -3,7 +3,7 @@
         <h4 class="card-title card-title-dash">Бренды</h4>
     </div>
     <div class="d-flex justify-content-between align-items-center gap-2">
-        <form action="{{ route('barcode') }}" method="GET" class="d-flex">
+        <form action="{{ route('barcode.index') }}" method="GET" class="d-flex">
             <input type="text" name="search" class="rounded form-control" placeholder="Поиск бренды..."
                 style="height:45px; width:300px; border:2px solid black;" value="{{ request('search') }}" autofocus>
         </form>
@@ -13,7 +13,7 @@
                 <i class="mdi mdi-filter-outline"></i> Фильтр
             </button>
             <div class="dropdown-menu p-3 shadow" style="min-width: 250px;" aria-labelledby="filterDropdown">
-                <form method="GET" action="{{ route('barcode') }}">
+                <form method="GET" action="{{ route('barcode.index') }}">
                     <div class="mb-2">
                         <select name="sort" class="form-select" onchange="this.form.submit()">
                             <option value="desc" {{ request('sort') == 'desc' ? 'selected' : '' }}>Сначала новые
@@ -60,7 +60,7 @@
                         <button type="submit" class="btn btn-sm btn-primary">
                             <i class="mdi mdi-filter"></i> Применить
                         </button>
-                        <a href="{{ route('barcode') }}" class="btn btn-sm btn-outline-secondary">Сброс</a>
+                        <a href="{{ route('barcode.index') }}" class="btn btn-sm btn-outline-secondary">Сброс</a>
                     </div>
                 </form>
             </div>

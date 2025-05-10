@@ -33,15 +33,48 @@
         margin-top: 8px;
         color: #666;
     }
+
+    .barcode-actions {
+        margin-top: 10px;
+    }
+
+    .barcode-actions a {
+        display: inline-block;
+        margin: 0 5px;
+        padding: 5px 10px;
+        font-size: 12px;
+        border-radius: 4px;
+        text-decoration: none;
+        color: white;
+        background-color: #3490dc;
+    }
+
+    .barcode-actions a.download {
+        background-color: #38c172;
+    }
 </style>
+
 <div class="barcode-grid">
     @forelse ($barcodes as $barcode)
         <div class="barcode-item">
             <strong>{{ $barcode->name }} ({{ $barcode->qty }} {{ $barcode->unit }})</strong>
+
+            {{-- Render SVG --}}
             {!! file_get_contents(storage_path('app/public/' . $barcode->barcode)) !!}
+
             <p>{{ $barcode->barcode_value }}</p>
+
+            <div class="barcode-actions">
+                <button class="btn btn-primary" onclick="openBarcodeModal('print', '{{ $barcode->id }}')">
+                    <i class="mdi mdi-printer"></i> Print Barcode
+                </button>
+
+                <button class="btn btn-success" onclick="openBarcodeModal('download', '{{ $barcode->id }}')">
+                    <i class="mdi mdi-file-pdf"></i> Download PDF
+                </button>
+            </div>
         </div>
     @empty
-            <div>No barcodes found matching your criteria.</div>
-   @endforelse
+        <div>No barcodes found matching your criteria.</div>
+    @endforelse
 </div>

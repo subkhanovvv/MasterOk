@@ -14,4 +14,6 @@
             @include('pages.barcodes.partials.barcode-footer')
         </div>
     </div>
+    @include('pages.barcodes.modals.print-barcode')
+    @include('pages.barcodes.js.script')
 @endsection

@@ -22,7 +22,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('barcode') }}">
+            <a class="nav-link" href="{{ route('barcode.index') }}">
                 <i class="menu-icon mdi mdi-barcode"></i>
                 <span class="menu-title">Штрихкоды</span>
                 <i class="menu-arrow"></i>

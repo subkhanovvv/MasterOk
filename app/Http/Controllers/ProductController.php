@@ -2,19 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Barcode;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
-use App\Models\ProductActivity;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Milon\Barcode\DNS1D;
-use Illuminate\Support\Facades\Validator;
-
-
 
 class ProductController extends Controller
 {
@@ -70,7 +62,6 @@ class ProductController extends Controller
             $photoPath = $request->file('photo')->store('products', 'public');
         }
 
-        // Create the product first to get an ID
         $product = Product::create([
             'name' => $validated['name'],
             'photo' => $photoPath,
@@ -85,35 +76,27 @@ class ProductController extends Controller
             'brand_id' => $validated['brand_id'],
         ]);
 
-        // Get first letter of product name (uppercase)
-        $firstLetter = strtoupper(substr($validated['name'], 0, 1)); // "K" for "Keyboard"
+        $firstLetter = strtoupper(substr($validated['name'], 0, 1)); 
 
-        // Generate numeric part (e.g., "01" + "00001" = "0100001")
         $categoryPart = str_pad($product->category_id, 2, '0', STR_PAD_LEFT);
         $productPart = str_pad($product->id, 5, '0', STR_PAD_LEFT);
         $numericPart = $categoryPart . $productPart;
 
-        // Combine to create final barcode value (e.g., "K0100001")
         $barcodeValue = $firstLetter . $numericPart;
 
-        // Barcode directory setup
         $barcodeDir = storage_path('app/public/barcodes');
         if (!file_exists($barcodeDir)) {
             mkdir($barcodeDir, 0755, true);
         }
 
         $dns1d = new \Milon\Barcode\DNS1D();
-
-        // Generate SVG barcode (using CODE128 for reliability)
         $barcodeSVG = $dns1d->getBarcodeSVG($barcodeValue, 'C128', 1, 60, false);
-
         $barcodeImagePath = 'barcodes/' . $barcodeValue . '.svg';
         file_put_contents(storage_path('app/public/' . $barcodeImagePath), $barcodeSVG);
 
-        // Update product with the new barcode format
         $product->update([
-            'barcode_value' => $barcodeValue, // "K0100001"
-            'barcode' => $barcodeImagePath,    // "barcodes/K0100001.svg"
+            'barcode_value' => $barcodeValue, 
+            'barcode' => $barcodeImagePath,   
         ]);
 
         return back()->with('success', 'Товар и штрихкод успешно сохранены!');
@@ -129,36 +112,6 @@ class ProductController extends Controller
             return redirect()->back()->with('error', 'Ошибка при удалении продукта');
         }
     }
-
-    public function barcode(Request $request)
-    {
-        $sortOrder = $request->get('sort', 'desc');
-
-        $barcodes = Product::query()
-            ->when($request->filled('search'), function ($query) use ($request) {
-                $query->where('name', 'like', '%' . $request->search . '%')
-                    ->orWhere('barcode_value', 'like', '%' . $request->search . '%');
-            })
-            ->when($request->filled('category_id'), function ($query) use ($request) {
-                $query->where('category_id', $request->category_id);
-            })
-            ->when($request->filled('brand_id'), function ($query) use ($request) {
-                $query->where('brand_id', $request->brand_id);
-            })
-            ->when($request->filled('status'), function ($query) use ($request) {
-                $query->where('status', $request->status);
-            })
-            ->orderBy('id', $sortOrder)
-            ->whereNotNull('barcode')
-            ->paginate(9)
-            ->appends(['sort' => $sortOrder]);
-
-        $categories = Category::all();
-        $brands = Brand::all();
-        return view('pages.barcodes.barcode', compact('barcodes', 'categories', 'brands'));
-    }
-
-    //  use Illuminate\Support\Facades\Storage;
 
     public function update(Request $request, Product $product)
     {

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BarcodeController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\HistoryController;
@@ -27,22 +28,24 @@ Route::redirect('/', '/index');
 Route::middleware(['auth'])->group(function () {
 
     Route::view('/index', 'pages.index')->name('index');
-    Route::get('barcode', [ProductController::class, 'barcode'])->name('barcode');
 
     Route::resources([
         'brands' => BrandController::class,
+        'barcode' => BarcodeController::class,
         'categories' => CategoryController::class,
         'products' => ProductController::class,
         'suppliers' => SupplierController::class,
         'history' => HistoryController::class,
     ]);
 
-    Route::get('/products/by-barcode/{barcode}', [ProductController::class, 'getByBarcode']);
+    Route::controller(BarcodeController::class)->group(function () {
+        Route::get('/barcode/print/{id}', [BarcodeController::class, 'print'])->name('barcode.print');
+        Route::get('/barcode/download/{id}', [BarcodeController::class, 'download'])->name('barcode.download');
+    });
 
     Route::controller(AuthController::class)->group(function () {
         Route::get('logout', 'logout')->name('logout');
         Route::get('profile', 'profile')->name('profile');
-        // Route::get('edit/{id}', 'edit')->name('edit');
         Route::post('profile.update', 'update')->name('profile.update');
     });
 
@@ -55,10 +58,6 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::controller(TransactionController::class)->group(function () {
-        // Route::get('intake', 'intake')->name('intake');
-        // Route::get('transactions', 'transactions')->name('transactions');
-        // Route::get('consumption', 'consumption')->name('intake');
-
         Route::get('consumption', 'consumption')->name('consumption');
         Route::get('consumption.products', 'getProducts')->name('consumption.products');
         Route::post('consumption.store', 'store')->name('consumption.store');
@@ -71,9 +70,6 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('report', 'report')->name('admin.reports.index');
     });
-    // Route::controller(SupplierController::class)->group(function(){
-
-    // })
 });
 
 Route::middleware(['guest'])->controller(AuthController::class)->group(function () {
