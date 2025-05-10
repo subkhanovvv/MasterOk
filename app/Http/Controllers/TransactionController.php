@@ -109,7 +109,7 @@ class TransactionController extends Controller
             ->paginate(20);
         $suppliers = Supplier::all() ?? '-';
 
-        return view('pages.intake', compact('products', 'search', 'suppliers'));
+        return view('pages.intake.intake', compact('products', 'search', 'suppliers'));
     }
 
     public function intakeStore(Request $request)
@@ -443,7 +443,7 @@ class TransactionController extends Controller
             ->orderBy('name')
             ->paginate(20);
 
-        return view('pages.consumption', compact('products', 'search'));
+        return view('pages.consumption.index', compact('products', 'search'));
     }
 
     public function store(Request $request)
