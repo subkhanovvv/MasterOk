@@ -65,7 +65,7 @@
                 </form>
             </div>
         </div>
-        <button class="btn btn-primary rounded" data-bs-toggle="modal" data-bs-target="#newBrandModal" type="button">
+        <button class="btn btn-primary rounded" onclick="openBarcodeModal('print-all')" type="button">
             <i class="mdi mdi-printer"></i> Print
         </button>
     </div>

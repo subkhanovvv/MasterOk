@@ -39,8 +39,10 @@ Route::middleware(['auth'])->group(function () {
     ]);
 
     Route::controller(BarcodeController::class)->group(function () {
-        Route::get('/barcode/print/{id}', [BarcodeController::class, 'print'])->name('barcode.print');
-        Route::get('/barcode/download/{id}', [BarcodeController::class, 'download'])->name('barcode.download');
+        Route::get('/barcode/print/{id}', 'print')->name('barcode.print');
+        Route::get('/barcode/download/{id}', 'download')->name('barcode.download');
+        Route::get('/barcode/print-all',  'printAll')->name('barcode.printAll');
+        // Route::get('')
     });
 
     Route::controller(AuthController::class)->group(function () {

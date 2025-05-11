@@ -57,22 +57,17 @@
 <div class="barcode-grid">
     @forelse ($barcodes as $barcode)
         <div class="barcode-item">
+
+
             <strong>{{ $barcode->name }} ({{ $barcode->qty }} {{ $barcode->unit }})</strong>
 
-            {{-- <img src="{{ Storage::url($barcode->barcode) }}" alt="Product Barcode"> --}}
             <img src="{{ asset('storage/' . $barcode->barcode) }}" alt="Barcode Image">
 
-
-            <p>{{ $barcode->barcode_value }}</p>
-
-            <div class="barcode-actions">
-                <button class="btn btn-primary" onclick="openBarcodeModal('print', '{{ $barcode->id }}')">
-                    <i class="mdi mdi-printer"></i> Print Barcode
-                </button>
-
-                <button class="btn btn-success" onclick="openBarcodeModal('download', '{{ $barcode->id }}')">
-                    <i class="mdi mdi-file-pdf"></i> Download PDF
-                </button>
+            <div>
+                <a href="javascript:void(0);" onclick="openBarcodeModal('print', '{{ $barcode->id }}')"
+                    class="text-decoration-none">
+                    <i class="mdi mdi-printer"></i>
+                </a>
             </div>
         </div>
     @empty

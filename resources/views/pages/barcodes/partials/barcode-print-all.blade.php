@@ -3,46 +3,37 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barcode Print - {{$product->name}}</title>
+    <title>Print All Barcodes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         @media print {
             body {
-                padding: 0;
                 margin: 0;
                 font-family: Arial, sans-serif;
             }
 
-            /* Set up the grid to display 5 rows and 4 columns */
             .barcode-container {
                 display: grid;
                 grid-template-columns: repeat(4, 1fr);
-                /* 5 columns */
                 grid-gap: 10px;
-                /* Reduced gap between grid items */
-                page-break-before: always;
                 margin: 0 auto;
+                page-break-inside: avoid;
             }
 
-            /* Style for barcode items */
             .barcode-item {
                 text-align: center;
                 height: 1.7in;
-                /* Set fixed height */
                 padding-top: 10%;
-                border: 1px solid #ddd;
-                /* Optional border for clarity */
+                border: 1px solid #ccc;
                 box-sizing: border-box;
-                /* Prevent overflow due to padding */
-                flex-direction: column;
                 justify-content: center;
+                align-items: center;
+                page-break-inside: avoid;
             }
-
 
             .barcode-item svg {
                 max-width: 100%;
-                /* max-height: 80%; */
+                height: auto;
             }
 
             .barcode-item p {
@@ -50,22 +41,29 @@
                 margin-top: 5px;
                 font-weight: bold;
                 word-wrap: break-word;
-                justify-content: center
+            }
+
+            @page {
+                size: auto;
+                margin: 5mm;
             }
         }
     </style>
 </head>
 
-
-<body onload="window.print()" class="mt-3">
+<body onload="window.print()">
     <div class="barcode-container">
-        @for ($i = 0; $i < $copies; $i++)
-            <div class="barcode-item">
-                <div class="my-2"> {!! file_get_contents(storage_path('app/public/' . $product->barcode)) !!} </div>
-            </div>
-        @endfor
+        @foreach ($products as $product)
+            @for ($i = 0; $i < $copies; $i++)
+                <div class="barcode-item">
+                    <div class="my-2">
+                        {!! file_get_contents(storage_path('app/public/' . $product->barcode)) !!}
+                    </div>
+                    <p>{{ $product->name }}</p>
+                </div>
+            @endfor
+        @endforeach
     </div>
 </body>
-
 
 </html>

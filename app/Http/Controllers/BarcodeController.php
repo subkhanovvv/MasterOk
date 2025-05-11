@@ -41,33 +41,45 @@ class BarcodeController extends Controller
     {
         $product = Product::findOrFail($id);
         $copies = max((int)$request->get('copies', 1), 1);
-        $perPage = min(max((int)$request->get('per_page', 20), 20), 5); // 3-12 barcodes per page
+        // $perPage = min(max((int)$request->get('per_page', 20), 20), 5); // 3-12 barcodes per page
 
         return view('pages.barcodes.partials.barcode-print', [
             'product' => $product,
             'copies' => $copies,
-            'perPage' => $perPage,
+            // 'perPage' => $perPage,
         ]);
     }
 
-//    public function download(Request $request, $id)
-// {
-//     $product = Product::findOrFail($id);
-//     $copies = max((int)$request->get('copies', 1), 1);
-//     $barcodeSvg = $product->barcode; // Assuming you have raw SVG data in the 'barcode' column
+    public function printAll(Request $request)
+    {
+        $product = Product::all();
+        $copies = max((int)$request->get('copies', 1), 1);
+        // $perPage = min(max((int)$request->get('per_page', 20), 20), 5); // 3-12 barcodes per page
 
-//     // Pass data to the view
-//     $pdf = Pdf::loadView('pages.barcodes.partials.barcode-pdf', [
-//         'product' => $product,
-//         'copies' => $copies,
-//         'barcodeSvg' => $barcodeSvg,  // Pass the raw SVG
-//     ]);
+        return view('pages.barcodes.partials.barcode-print-all', [
+            'product' => $product,
+            'copies' => $copies,
+        ]);
+    }
 
-//     // Set paper size to A4, portrait orientation
-//     $pdf->setPaper('a4', 'portrait');
+    //    public function download(Request $request, $id)
+    // {
+    //     $product = Product::findOrFail($id);
+    //     $copies = max((int)$request->get('copies', 1), 1);
+    //     $barcodeSvg = $product->barcode; // Assuming you have raw SVG data in the 'barcode' column
 
-//     // Return the generated PDF as a downloadable file
-//     return $pdf->download("barcode_grid_{$product->id}.pdf");
-// }
+    //     // Pass data to the view
+    //     $pdf = Pdf::loadView('pages.barcodes.partials.barcode-pdf', [
+    //         'product' => $product,
+    //         'copies' => $copies,
+    //         'barcodeSvg' => $barcodeSvg,  // Pass the raw SVG
+    //     ]);
+
+    //     // Set paper size to A4, portrait orientation
+    //     $pdf->setPaper('a4', 'portrait');
+
+    //     // Return the generated PDF as a downloadable file
+    //     return $pdf->download("barcode_grid_{$product->id}.pdf");
+    // }
 
 }
