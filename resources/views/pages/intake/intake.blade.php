@@ -1,156 +1,122 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="card">
+<div class="card mb-4">
+    <div class="card-header">
+        <h4>New Product Intake</h4>
+    </div>
     <div class="card-body">
-        <h4 class="card-title">Добавление прихода товаров</h4>
-        
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <form method="GET" action="{{ route('intake.index') }}">
-                    <div class="input-group">
-                        <input type="text" name="search" class="form-control" placeholder="Поиск по названию или штрих-коду" value="{{ request('search') }}">
-                        <button class="btn btn-primary" type="submit">Поиск</button>
-                    </div>
+        <form>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Product</label>
+                    <select class="form-select">
+                        <option selected>Select Product</option>
+                        @foreach ($products as $p)
+                            
+                        <option value="{{$p->id}}">{{$p->name}}</option>
+                        @endforeach
+                   
+                    </select>
+                </div>
 
-                </form>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-8">
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>Товар</th>
-                                <th>Ед. изм.</th>
-                                <th>Цена</th>
-                                <th>Кол-во</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($products as $product)
-                                <tr>
-                                    <td>{{ $product->name }}</td>
-                                    <td>{{ $product->unit }}</td>
-                                    <td>{{ number_format($product->price_uzs, 2) }}</td>
-                                    <td>
-                                        <form method="POST" action="{{ route('intake.add') }}" class="d-flex">
-                                            @csrf
-                                            <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                            <input type="hidden" name="unit" value="{{ $product->unit }}">
-                                            <input type="number" name="qty" class="form-control form-control-sm" value="1" min="0.001" step="0.001" style="width: 80px;">
-                                            <input type="number" name="price" class="form-control form-control-sm ms-2" value="{{ $product->price_uzs }}" min="0" step="0.01" style="width: 100px;">
-                                            <button type="submit" class="btn btn-sm btn-success ms-2">
-                                                <i class="mdi mdi-plus"></i> Добавить
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                    {{ $products->links() }}
+                <div class="col-md-2">
+                    <label class="form-label">Quantity</label>
+                    <input type="number" class="form-control" value="1">
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Unit</label>
+                    <select class="form-select">
+                        <option selected>pcs</option>
+                        <option>box</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Price per Unit</label>
+                    <input type="text" class="form-control" value="150000">
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Supplier</label>
+                    <input type="text" class="form-control" value="Sample Supplier">
                 </div>
             </div>
-            <div class="col-md-4">
-                <form method="POST" action="{{ route('intake.store') }}">
-                    @csrf
-                    <div class="card">
-                        <div class="card-header">
-                            <h5>Список прихода</h5>
-                        </div>
-                        <div class="card-body">
-                            @if(count($intakes = session('intakes', [])) > 0)
-                                <div class="table-responsive">
-                                    <table class="table table-sm">
-                                        <thead>
-                                            <tr>
-                                                <th>Товар</th>
-                                                <th>Кол-во</th>
-                                                <th>Цена</th>
-                                                <th>Сумма</th>
-                                                <th></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @php $total = 0; @endphp
-                                            @foreach($intakes as $index => $item)
-                                                <tr>
-                                                    <td>{{ $item['name'] }}</td>
-                                                    <td>{{ $item['qty'] }} {{ $item['unit'] }}</td>
-                                                    <td>{{ number_format($item['price'], 2) }}</td>
-                                                    <td>{{ number_format($item['total'], 2) }}</td>
-                                                    <td class="text-end">
-                                                        <a href="{{ route('intake.remove', $index) }}" class="btn btn-sm btn-danger">
-                                                            <i class="mdi mdi-delete"></i>
-                                                        </a>
-                                                    </td>
-                                                </tr>
-                                                @php $total += $item['total']; @endphp
-                                            @endforeach
-                                        </tbody>
-                                        <tfoot>
-                                            <tr>
-                                                <th colspan="3">Итого:</th>
-                                                <th colspan="2">{{ number_format($total, 2) }}</th>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
-                                </div>
 
-                                @foreach($intakes as $index => $item)
-                                    <input type="hidden" name="product_id[]" value="{{ $item['product_id'] }}">
-                                    <input type="hidden" name="unit[]" value="{{ $item['unit'] }}">
-                                    <input type="hidden" name="qty[]" value="{{ $item['qty']}}">
-                                    <input type="hidden" name="price[]" value="{{ $item['price'] }}">
-                                @endforeach
-
-                                <div class="mb-3">
-                                    <label class="form-label">Тип прихода</label>
-                                    <select name="type" class="form-select">
-                                        <option value="intake">Обычный приход</option>
-                                        <option value="intake_loan">Приход в долг</option>
-                                        <option value="intake_return">Возврат от клиента</option>
-                                    </select>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">Тип оплаты</label>
-                                    <select name="payment_type" class="form-select">
-                                        <option value="cash">Наличные</option>
-                                        <option value="card">Карта</option>
-                                    </select>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">Поставщик</label>
-                                    <select name="supplier_id" class="form-select">
-                                        <option value="">Без поставщика</option>
-                                        @foreach($suppliers as $supplier)
-                                            <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">Примечание</label>
-                                    <textarea name="note" class="form-control" rows="2"></textarea>
-                                </div>
-
-                                <button type="submit" class="btn btn-primary w-100">
-                                    <i class="mdi mdi-content-save"></i> Сохранить приход
-                                </button>
-                            @else
-                                <div class="alert alert-info text-center">
-                                    Нет добавленных товаров
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                </form>
+            <div class="mt-4 text-end">
+                <button type="button" class="btn btn-success">➕ Add to Table</button>
             </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h4>Items to be Submitted</h4>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped mb-0 text-center">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Product</th>
+                        <th>SKU</th>
+                        <th>Quantity</th>
+                        <th>Unit</th>
+                        <th>Price/Unit</th>
+                        <th>Total</th>
+                        <th>Supplier</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>USB-C Charger</td>
+                        <td>USBC-65W</td>
+                        <td>
+                            <div class="d-flex justify-content-center align-items-center">
+                                <button class="btn btn-sm btn-outline-secondary me-1">−</button>
+                                <span class="px-2">3</span>
+                                <button class="btn btn-sm btn-outline-secondary ms-1">+</button>
+                            </div>
+                        </td>
+                        <td>pcs</td>
+                        <td>150,000 UZS</td>
+                        <td>450,000 UZS</td>
+                        <td>ChargerPro</td>
+                        <td>
+                            <button class="btn btn-sm btn-danger">🗑 Remove</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Samsung Galaxy S22</td>
+                        <td>SGS22-WHT</td>
+                        <td>
+                            <div class="d-flex justify-content-center align-items-center">
+                                <button class="btn btn-sm btn-outline-secondary me-1">−</button>
+                                <span class="px-2">1</span>
+                                <button class="btn btn-sm btn-outline-secondary ms-1">+</button>
+                            </div>
+                        </td>
+                        <td>box</td>
+                        <td>8,200,000 UZS</td>
+                        <td>8,200,000 UZS</td>
+                        <td>Samsung Distributors</td>
+                        <td>
+                            <button class="btn btn-sm btn-danger">🗑 Remove</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="p-3 text-end">
+            <strong>Total: 8,650,000 UZS</strong><br>
+            <button class="btn btn-primary mt-2">✅ Submit All</button>
         </div>
     </div>
 </div>

@@ -114,67 +114,75 @@ class TransactionController extends Controller
 
     public function intakeStore(Request $request)
     {
-        DB::beginTransaction();
+        $validated = $request->validate([
+            'supplier_id' => 'required|exists:suppliers,id',
+            'payment_type' => 'required|in:cash,card',
+            'paid_amount' => 'nullable|numeric',
+            'note' => 'nullable|string',
+            'products' => 'required|array|min:1',
+            'products.*.product_id' => 'required|exists:products,id',
+            'products.*.qty' => 'required|numeric|min:0.01',
+            'products.*.unit' => 'required|string',
+            'products.*.price_uzs' => 'required|numeric|min:0',
+            'products.*.price_usd' => 'required|numeric|min:0',
+        ]);
 
-        try {
-            $validated = $request->validate([
-                'product_id' => 'required|array',
-                'product_id.*' => 'exists:products,id',
-                'qty' => 'required|array',
-                'qty.*' => 'numeric|min:0.001',
-                'unit' => 'required|array',
-                'unit.*' => 'string',
-                'price' => 'required|array',
-                'price.*' => 'numeric|min:0',
-                'type' => 'required|in:intake,intake_loan,intake_return',
-                'payment_type' => 'nullable|in:cash,card',
-                'supplier_id' => 'nullable|exists:suppliers,id',
-                'note' => 'nullable|string',
+        // Calculate total price
+        $totalPrice = collect($request->products)->sum(function ($item) {
+            return $item['qty'] * $item['price_uzs'];
+        });
+
+        // Create product activity
+        $activity = ProductActivity::create([
+            'type' => 'intake',
+            'supplier_id' => $request->supplier_id,
+            'payment_type' => $request->payment_type,
+            'paid_amount' => $request->paid_amount,
+            'total_price' => $totalPrice,
+            'note' => $request->note,
+        ]);
+
+        // Create product activity items and update product quantities
+        foreach ($request->products as $productData) {
+            $product = Product::find($productData['product_id']);
+
+            // Create activity item
+            ProductActivityItems::create([
+                'product_activity_id' => $activity->id,
+                'product_id' => $product->id,
+                'qty' => $productData['qty'],
+                'unit' => $productData['unit'],
+                'price' => $productData['price_uzs'],
             ]);
 
-            // Calculate total price
-            $totalPrice = 0;
-            foreach ($request->price as $index => $price) {
-                $totalPrice += $price * $request->qty[$index];
+            // Update product quantity
+            // You may need to convert units here based on your business logic
+            $qtyToAdd = $productData['qty'];
+
+            // Example conversion if stock unit is different
+            if ($product->stock_unit && $product->units_per_stock && $productData['unit'] === $product->stock_unit) {
+                $qtyToAdd = $productData['qty'] * $product->units_per_stock;
             }
 
-            // Create the product activity
-            $productActivity = ProductActivity::create([
-                'type' => $validated['type'],
-                'total_price' => $totalPrice,
-                'payment_type' => $validated['payment_type'] ?? 'cash',
-                'supplier_id' => $validated['supplier_id'] ?? null,
-                'note' => $validated['note'] ?? null,
-            ]);
+            $product->qty += $qtyToAdd;
 
-            // Create product activity items and update quantities
-            foreach ($request->product_id as $index => $productId) {
-                $productActivity->items()->create([
-                    'product_id' => $productId,
-                    'qty' => $request->qty[$index],
-                    'unit' => $request->unit[$index],
-                    'price' => $request->price[$index],
-                ]);
-
-                // Update product quantity
-                $product = Product::find($productId);
-                $product->increment('qty', $request->qty[$index]);
-                $this->updateProductStatus($product);
+            // Update product status based on quantity
+            if ($product->qty > 10) {
+                $product->status = 'normal';
+            } elseif ($product->qty > 0) {
+                $product->status = 'low';
+            } else {
+                $product->status = 'out_of_stock';
             }
 
-            // Generate QR code
-            $this->generateQrCode($productActivity);
+            // Update prices if needed
+            $product->price_uzs = $productData['price_uzs'];
+            $product->price_usd = $productData['price_usd'];
 
-            DB::commit();
-
-            // Clear the session intake data
-            session()->forget('intakes');
-
-            return redirect()->route('transactions')->with('success', 'Приход успешно сохранен!');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->withErrors(['error' => 'Произошла ошибка: ' . $e->getMessage()]);
+            $product->save();
         }
+
+        return redirect()->route('intake.index')->with('success', 'Приход товаров успешно добавлен');
     }
 
     public function intakeAdd(Request $request)

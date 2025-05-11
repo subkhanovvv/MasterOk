@@ -5,6 +5,7 @@ use App\Http\Controllers\BarcodeController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\HistoryController;
+use App\Http\Controllers\IntakeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\TransactionController;
@@ -43,7 +44,15 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/barcode/download/{id}', 'download')->name('barcode.download');
         Route::get('/barcode/print-all',  'printAll')->name('barcode.printAll');
         Route::get('barcode',  'index')->name('barcode.index');
-        // Route::get('/barcode/send/{id}' ,'send')->name('barcode.send');
+    });
+
+
+    Route::controller(IntakeController::class)->group(function(){
+        Route::get('/intake','index')->name('intake.index');
+        Route::post('/intake/add','add')->name('intake.add');
+        Route::post('/intake/update/{key}','update')->name('intake.update');
+        Route::post('/intake/remove/{key}','remove')->name('intake.remove');
+        Route::post('/intake/store','store')->name('intake.store');
     });
 
     Route::controller(AuthController::class)->group(function () {
