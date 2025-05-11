@@ -31,7 +31,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resources([
         'brands' => BrandController::class,
-        'barcode' => BarcodeController::class,
+        // 'barcode' => BarcodeController::class,
         'categories' => CategoryController::class,
         'products' => ProductController::class,
         'suppliers' => SupplierController::class,
@@ -42,7 +42,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/barcode/print/{id}', 'print')->name('barcode.print');
         Route::get('/barcode/download/{id}', 'download')->name('barcode.download');
         Route::get('/barcode/print-all',  'printAll')->name('barcode.printAll');
-        // Route::get('')
+        Route::get('barcode',  'index')->name('barcode.index');
+        // Route::get('/barcode/send/{id}' ,'send')->name('barcode.send');
     });
 
     Route::controller(AuthController::class)->group(function () {

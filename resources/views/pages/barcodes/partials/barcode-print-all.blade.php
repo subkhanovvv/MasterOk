@@ -6,41 +6,63 @@
     <title>Print All Barcodes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        /* Styles for both screen and print */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 10px;
+        }
+
+        .barcode-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 0 auto;
+        }
+
+        .barcode-item {
+            text-align: center;
+            height: 1.7in;
+            padding: 10px;
+            border: 1px solid #ccc;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .barcode-item svg,
+        .barcode-item img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 5px;
+        }
+
+        .barcode-item p {
+            font-size: 12px;
+            margin: 5px 0 0;
+            font-weight: bold;
+            word-break: break-word;
+        }
+
+        /* Print-specific styles */
         @media print {
             body {
                 margin: 0;
-                font-family: Arial, sans-serif;
+                padding: 0;
+            }
+
+            .no-print {
+                display: none !important;
             }
 
             .barcode-container {
-                display: grid;
-                grid-template-columns: repeat(4, 1fr);
-                grid-gap: 10px;
-                margin: 0 auto;
                 page-break-inside: avoid;
             }
 
             .barcode-item {
-                text-align: center;
-                height: 1.7in;
-                padding-top: 10%;
-                border: 1px solid #ccc;
-                box-sizing: border-box;
-                justify-content: center;
-                align-items: center;
                 page-break-inside: avoid;
-            }
-
-            .barcode-item svg {
-                max-width: 100%;
-                height: auto;
-            }
-
-            .barcode-item p {
-                font-size: 12px;
-                margin-top: 5px;
-                font-weight: bold;
-                word-wrap: break-word;
+                break-inside: avoid;
             }
 
             @page {
@@ -51,19 +73,25 @@
     </style>
 </head>
 
-<body onload="window.print()">
+<body>
     <div class="barcode-container">
         @foreach ($products as $product)
             @for ($i = 0; $i < $copies; $i++)
                 <div class="barcode-item">
-                    <div class="my-2">
-                        {!! file_get_contents(storage_path('app/public/' . $product->barcode)) !!}
-                    </div>
+                    @if (file_exists(storage_path('app/public/' . $product->barcode)))
+                        <div class="barcode-image">
+                            {!! file_get_contents(storage_path('app/public/' . $product->barcode)) !!}
+                        </div>
+                    @else
+                        <div class="text-danger">Barcode image missing</div>
+                    @endif
                     <p>{{ $product->name }}</p>
                 </div>
             @endfor
         @endforeach
     </div>
+
+    
 </body>
 
 </html>

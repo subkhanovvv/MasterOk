@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Http;
 
 class BarcodeController extends Controller
 {
@@ -41,26 +42,32 @@ class BarcodeController extends Controller
     {
         $product = Product::findOrFail($id);
         $copies = max((int)$request->get('copies', 1), 1);
-        // $perPage = min(max((int)$request->get('per_page', 20), 20), 5); // 3-12 barcodes per page
+        $perPage = min(max((int)$request->get('per_page', 20), 20), 5); // 3-12 barcodes per page
 
         return view('pages.barcodes.partials.barcode-print', [
             'product' => $product,
             'copies' => $copies,
-            // 'perPage' => $perPage,
+            'perPage' => $perPage,
         ]);
     }
 
     public function printAll(Request $request)
     {
-        $product = Product::all();
+        $products = Product::all(); // Changed variable name to plural for clarity
         $copies = max((int)$request->get('copies', 1), 1);
-        // $perPage = min(max((int)$request->get('per_page', 20), 20), 5); // 3-12 barcodes per page
+        $perPage = min(max((int)$request->get('per_page', 20), 20), 5); // 3-12 barcodes per page
 
         return view('pages.barcodes.partials.barcode-print-all', [
-            'product' => $product,
+            'products' => $products, // Changed to plural
             'copies' => $copies,
+            'perPage' => $perPage,
+
         ]);
     }
+
+
+
+
 
     //    public function download(Request $request, $id)
     // {
