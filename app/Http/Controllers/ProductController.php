@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
@@ -101,17 +103,17 @@ class ProductController extends Controller
 
         return back()->with('success', 'Товар и штрихкод успешно сохранены!');
     }
-    public function destroy($id)
-    {
-        try {
-            $product = Product::findOrFail($id);
-            $product->delete();
+    // public function destroy($id)
+    // {
+    //     try {
+    //         $product = Product::findOrFail($id);
+    //         $product->delete();
 
-            return redirect()->back()->with('success', 'Продукт успешно удален');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Ошибка при удалении продукта');
-        }
-    }
+    //         return redirect()->back()->with('success', 'Продукт успешно удален');
+    //     } catch (\Exception $e) {
+    //         return redirect()->back()->with('error', 'Ошибка при удалении продукта');
+    //     }
+    // }
 
     public function update(Request $request, Product $product)
     {
@@ -152,4 +154,33 @@ class ProductController extends Controller
 
         return redirect()->back()->with('success', 'Товар успешно обновлен.');
     }
+      public function destroy(Product $product)
+   {
+      try {
+         // Check if barcode exists and delete it
+         if ($product->barcode) {
+            $barcodePath = storage_path('app/public/' . $product->barcode);
+            if (file_exists($barcodePath)) {
+               unlink($barcodePath);  // Deletes the barcode image
+            }
+         }
+
+         // Delete product image if it exists
+         if ($product->photo) {
+            Storage::delete('public/' . $product->photo);
+         }
+
+         // Delete the product
+         $product->delete();
+
+         return redirect()
+            ->route('products.index')
+            ->with('success', 'Товар успешно удален!');
+      } catch (QueryException $e) {
+         Log::error('Product deletion error: ' . $e->getMessage());
+         return redirect()
+            ->route('products.index')
+            ->with('error', 'Ошибка при удалении товара: ' . $e->getMessage());
+      }
+   }
 }

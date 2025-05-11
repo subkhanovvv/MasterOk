@@ -93,14 +93,3 @@
     </table>
 </div>
 
-@if ($products->hasPages())
-    <div class="mt-3 d-flex justify-content-between align-items-center mb-3">
-        <div class="pagination">
-            {{ $products->appends(request()->query())->links('pagination::bootstrap-4') }}
-        </div>
-        <p class="text-muted">
-            Показаны с {{ $products->firstItem() }} по {{ $products->lastItem() }} из
-            {{ $products->total() }} результатов
-        </p>
-    </div>
-@endif

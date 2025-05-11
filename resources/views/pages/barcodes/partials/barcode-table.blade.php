@@ -59,8 +59,9 @@
         <div class="barcode-item">
             <strong>{{ $barcode->name }} ({{ $barcode->qty }} {{ $barcode->unit }})</strong>
 
-            {{-- Render SVG --}}
-            {!! file_get_contents(storage_path('app/public/' . $barcode->barcode)) !!}
+            {{-- <img src="{{ Storage::url($barcode->barcode) }}" alt="Product Barcode"> --}}
+            <img src="{{ asset('storage/' . $barcode->barcode) }}" alt="Barcode Image">
+
 
             <p>{{ $barcode->barcode_value }}</p>
 

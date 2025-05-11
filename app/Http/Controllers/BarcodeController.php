@@ -47,42 +47,27 @@ class BarcodeController extends Controller
             'product' => $product,
             'copies' => $copies,
             'perPage' => $perPage,
-            'barcodeSvg' => file_get_contents(storage_path('app/public/' . $product->barcode))
         ]);
     }
 
-  public function download(Request $request, $id)
-{
-    $product = Product::findOrFail($id);
+//    public function download(Request $request, $id)
+// {
+//     $product = Product::findOrFail($id);
+//     $copies = max((int)$request->get('copies', 1), 1);
+//     $barcodeSvg = $product->barcode; // Assuming you have raw SVG data in the 'barcode' column
 
-    // Safe filename generation
-    $filename = $product->barcode_value ?: 'barcode_' . $product->id;
-    $filename = trim($filename) !== '' ? $filename : 'barcode_' . $product->id;
-    $filename = str_replace(['/', '\\', ':', '*', '?', '"', '<', '>', '|'], '_', $filename) . '.pdf';
+//     // Pass data to the view
+//     $pdf = Pdf::loadView('pages.barcodes.partials.barcode-pdf', [
+//         'product' => $product,
+//         'copies' => $copies,
+//         'barcodeSvg' => $barcodeSvg,  // Pass the raw SVG
+//     ]);
 
-    // Get number of copies and barcodes per row
-    $copies = max((int) $request->get('copies', 1), 1);
-    $perRow = max(2, min(4, (int) $request->get('per_row', 3)));
+//     // Set paper size to A4, portrait orientation
+//     $pdf->setPaper('a4', 'portrait');
 
-    // Barcode path check
-    $barcodePath = storage_path('app/public/' . $product->barcode);
-    if (!file_exists($barcodePath)) {
-        abort(404, 'Barcode image not found');
-    }
-
-    // Load barcode SVG as base64
-    $barcodeData = file_get_contents($barcodePath);
-    $barcodeBase64 = 'data:image/svg+xml;base64,' . base64_encode($barcodeData);
-
-    // Generate the PDF using the barcode partial view
-    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pages.barcodes.partials.barcode-pdf', [
-        'product' => $product,
-        'barcodeImage' => $barcodeBase64,
-        'copies' => $copies,
-        'perRow' => $perRow
-    ])->setPaper('a4', 'portrait');
-
-    return $pdf->download($filename);
-}
+//     // Return the generated PDF as a downloadable file
+//     return $pdf->download("barcode_grid_{$product->id}.pdf");
+// }
 
 }

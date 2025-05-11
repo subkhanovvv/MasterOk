@@ -62,7 +62,6 @@
         @for ($i = 0; $i < $copies; $i++)
             <div class="barcode-item">
                 <div class="my-2"> {!! file_get_contents(storage_path('app/public/' . $product->barcode)) !!} </div>
-                {{-- <p>{{ $product->barcode_value }}</p> --}}
             </div>
         @endfor
     </div>

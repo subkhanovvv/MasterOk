@@ -110,27 +110,27 @@ class BrandController extends Controller
       }
    }
 
-   public function destroy(Brand $brand)
-   {
-      try {
-         if ($brand->products_count > 0) {
+      public function destroy(Brand $brand)
+      {
+         try {
+            if ($brand->products_count > 0) {
+               return redirect()
+                  ->route('brands.index')
+                  ->with('error', 'Невозможно удалить категорию, так как она используется в продуктах.');
+            }
+            if ($brand->photo) {
+               Storage::delete('public/' . $brand->photo);
+            }
+            $brand->delete();
+
             return redirect()
                ->route('brands.index')
-               ->with('error', 'Невозможно удалить категорию, так как она используется в продуктах.');
+               ->with('success', 'Категория успешно удалена!');
+         } catch (QueryException $e) {
+            Log::error('Category deletion error: ' . $e->getMessage());
+            return redirect()
+               ->route('brands.index')
+               ->with('error', 'Ошибка при удалении категории: ' . $e->getMessage());
          }
-         if ($brand->photo) {
-            Storage::delete('public/' . $brand->photo);
-         }
-         $brand->delete();
-
-         return redirect()
-            ->route('brands.index')
-            ->with('success', 'Категория успешно удалена!');
-      } catch (QueryException $e) {
-         Log::error('Category deletion error: ' . $e->getMessage());
-         return redirect()
-            ->route('brands.index')
-            ->with('error', 'Ошибка при удалении категории: ' . $e->getMessage());
       }
-   }
 }
