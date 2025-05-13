@@ -7,6 +7,7 @@ use App\Models\ProductActivity;
 use App\Models\ProductActivityItems;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class IntakeController extends Controller
 {
@@ -57,44 +58,63 @@ class IntakeController extends Controller
         return back();
     }
 
+
+
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'supplier_id' => 'nullable|exists:suppliers,id',
+            'payment_type' => 'required|in:cash,card',
+            'paid_amount' => 'nullable|numeric|min:0',
             'note' => 'nullable|string',
+            'items' => 'required|array|min:1',
+            'items.*.product_id' => 'required|exists:products,id',
+            'items.*.qty' => 'required|numeric|min:0.01',
+            'items.*.unit' => 'required|string',
+            'items.*.price' => 'required|numeric|min:0',
         ]);
 
-        $items = session()->get('intake_items', []);
-        if (count($items) == 0) {
-            return back()->with('error', 'No products to intake.');
-        }
+        DB::beginTransaction();
 
-        $total = collect($items)->sum(fn($item) => $item['qty'] * $item['price']);
+        try {
+            $total = 0;
+            foreach ($request->items as $item) {
+                $total += $item['qty'] * $item['price'];
+            }
 
-        $activity = ProductActivity::create([
-            'type' => 'intake',
-            'supplier_id' => $validated['supplier_id'],
-            'note' => $validated['note'],
-            'total_price' => $total,
-        ]);
-
-        foreach ($items as $item) {
-            ProductActivityItems::create([
-                'product_activity_id' => $activity->id,
-                'product_id' => $item['product_id'],
-                'qty' => $item['qty'],
-                'unit' => $item['unit'],
-                'price' => $item['price'],
+            // Save main intake activity
+            $activity = ProductActivity::create([
+                'type' => 'intake',
+                'supplier_id' => $request->supplier_id,
+                'payment_type' => $request->payment_type,
+                'paid_amount' => $request->paid_amount ?? 0,
+                'total_price' => $total,
+                'note' => $request->note,
             ]);
 
-            // Optional: update product quantity
-            $product = Product::find($item['product_id']);
-            $product->qty += $item['qty'];
-            $product->save();
+            // Save intake items and update product stock
+            foreach ($request->items as $item) {
+                ProductActivityItems::create([
+                    'product_activity_id' => $activity->id,
+                    'product_id' => $item['product_id'],
+                    'qty' => $item['qty'],
+                    'unit' => $item['unit'],
+                    'price' => $item['price'],
+                ]);
+
+                // Update product quantity (assumes unit is same as base)
+                $product = Product::find($item['product_id']);
+                $product->qty += $item['qty'];
+                $product->status = 'normal'; // Intake means it's in stock now
+                $product->save();
+            }
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Product intake successfully recorded.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Failed to save product intake. ' . $e->getMessage());
         }
-
-        session()->forget('intake_items');
-
-        return redirect()->route('intake.index')->with('success', 'Intake saved!');
     }
 }

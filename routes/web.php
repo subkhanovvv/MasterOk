@@ -47,12 +47,13 @@ Route::middleware(['auth'])->group(function () {
     });
 
 
-    Route::controller(IntakeController::class)->group(function(){
-        Route::get('/intake','index')->name('intake.index');
-        Route::post('/intake/add','add')->name('intake.add');
-        Route::post('/intake/update/{key}','update')->name('intake.update');
-        Route::post('/intake/remove/{key}','remove')->name('intake.remove');
-        Route::post('/intake/store','store')->name('intake.store');
+    Route::controller(IntakeController::class)->group(function () {
+        Route::get('/intake', 'index')->name('intake.index');
+        // Route::post('/intake/add','add')->name('intake.add');
+        // Route::post('/intake/update/{key}','update')->name('intake.update');
+        // Route::post('/intake/remove/{key}','remove')->name('intake.remove');
+        Route::post('/intake/store', 'store')->name('intake.store');
+        Route::get('/   /barcode/{barcode}', 'findByBarcode');
     });
 
     Route::controller(AuthController::class)->group(function () {
