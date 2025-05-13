@@ -566,7 +566,7 @@ class TransactionController extends Controller
 
         session(['consumptions' => $consumptions]);
 
-        $tableHtml = view('pages.consumption_table', [
+        $tableHtml = view('pages.consumption.partials.consumption_table', [
             'consumptions' => $consumptions
         ])->render();
 

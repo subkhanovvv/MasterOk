@@ -53,7 +53,7 @@ Route::middleware(['auth'])->group(function () {
         // Route::post('/intake/update/{key}','update')->name('intake.update');
         // Route::post('/intake/remove/{key}','remove')->name('intake.remove');
         Route::post('/intake/store', 'store')->name('intake.store');
-        Route::get('/   /barcode/{barcode}', 'findByBarcode');
+        // Route::get('/   /barcode/{barcode}', 'findByBarcode');
     });
 
     Route::controller(AuthController::class)->group(function () {
