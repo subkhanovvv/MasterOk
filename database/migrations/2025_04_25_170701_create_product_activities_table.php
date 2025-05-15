@@ -24,7 +24,7 @@ return new class extends Migration
             $table->decimal('loan_due_to', 12, 2)->nullable(); // Remaining to be paid
 
             // PAYMENT
-            $table->enum('payment_type', ['cash', 'card'])->default('cash');
+            $table->enum('payment_type', ['cash', 'card','bank_transfer'])->default('cash');
             $table->decimal('paid_amount', 12, 2)->nullable();
             $table->decimal('total_price', 12, 2)->default(0);
 

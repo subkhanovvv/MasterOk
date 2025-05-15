@@ -61,6 +61,13 @@
                     <label for="loan_amount" class="form-label">Loan Amount (UZS)</label>
                     <input type="number" class="form-control" name="loan_amount" id="loan_amount" step="0.01">
                 </div>
+                 <div class="col-md-6">
+                    <label for="loan_direction" class="form-label">Loan direction</label>
+                    <select name="loan_direction" id="loan_direction">
+                        <option value="given">Given</option>
+                        <option value="taken">Taken</option>
+                    </select>
+                </div>
                 <div class="col-md-6">
                     <label for="due_date" class="form-label">Due Date</label>
                     <input type="date" class="form-control" name="due_date" id="due_date">
