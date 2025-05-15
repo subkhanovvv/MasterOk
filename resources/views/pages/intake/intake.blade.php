@@ -38,6 +38,33 @@
                         <option value="card">Card</option>
                     </select>
                 </div>
+                <div class="col-md-6">
+                    <label for="type" class="form-label">Transaction Type</label>
+                    <select class="form-select" id="type" name="type" required>
+                        <option value="intake" selected>Intake</option>
+                        <option value="intake_loan">Loan</option>
+                        <option value="intake_return">Return</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Additional fields that will show/hide based on transaction type -->
+            <div id="return-fields" class="row mb-3" style="display: none;">
+                <div class="col-md-12">
+                    <label for="return_reason" class="form-label">Return Reason</label>
+                    <textarea class="form-control" name="return_reason" id="return_reason" rows="2"></textarea>
+                </div>
+            </div>
+
+            <div id="loan-fields" class="row mb-3" style="display: none;">
+                <div class="col-md-6">
+                    <label for="loan_amount" class="form-label">Loan Amount (UZS)</label>
+                    <input type="number" class="form-control" name="loan_amount" id="loan_amount" step="0.01">
+                </div>
+                <div class="col-md-6">
+                    <label for="due_date" class="form-label">Due Date</label>
+                    <input type="date" class="form-control" name="due_date" id="due_date">
+                </div>
             </div>
 
             <div class="mb-3">
@@ -113,6 +140,25 @@
         const barcodeInput = document.getElementById('barcode');
         const scanButton = document.getElementById('scan-button');
         const productsContainer = document.getElementById('products-container');
+        const transactionType = document.getElementById('type');
+        const returnFields = document.getElementById('return-fields');
+        const loanFields = document.getElementById('loan-fields');
+
+        // Show/hide additional fields based on transaction type
+        transactionType.addEventListener('change', function() {
+            const selectedType = this.value;
+            
+            // Hide all first
+            returnFields.style.display = 'none';
+            loanFields.style.display = 'none';
+            
+            // Show relevant fields
+            if (selectedType === 'intake_return') {
+                returnFields.style.display = 'block';
+            } else if (selectedType === 'intake_loan') {
+                loanFields.style.display = 'block';
+            }
+        });
 
         function recalculateTotals() {
             let uzs = 0,
