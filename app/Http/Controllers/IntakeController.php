@@ -30,8 +30,8 @@ class IntakeController extends Controller
         'type' => 'required|in:intake,intake_loan,intake_return',
 
         // Loan-specific fields
-        'loan_amount' => 'required_if:type,intake_loan|numeric|min:0',
-        'loan_due_to' => 'required_if:type,intake_loan|date|after_or_equal:today',
+        // 'loan_amount' => 'required_if:type,intake_loan|numeric|min:0',
+        // 'loan_due_to' => 'required_if:type,intake_loan|date|after_or_equal:today',
 
         // Product item validations
         'products.*.product_id' => 'required|exists:products,id',

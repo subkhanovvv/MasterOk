@@ -15,7 +15,7 @@
 
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item"><strong>Тип:</strong> <span id="td_type"></span></li>
-                    <li class="list-group-item"><strong>Товар:</strong> <span id="td_product"></span></li>
+                    <li class="list-group-item"><strong>Products:</strong> <span id="td_product"></span></li>
                     <li class="list-group-item"><strong>Количество:</strong> <span id="td_qty"></span></li>
                     <li class="list-group-item"><strong>Общая сумма:</strong> <span id="td_total_price"></span></li>
                     <li class="list-group-item"><strong>Оплачено:</strong> <span id="td_paid_amount"></span></li>

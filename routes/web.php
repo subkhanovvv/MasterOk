@@ -32,7 +32,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resources([
         'brands' => BrandController::class,
-        // 'barcode' => BarcodeController::class,
         'categories' => CategoryController::class,
         'products' => ProductController::class,
         'suppliers' => SupplierController::class,
@@ -49,25 +48,13 @@ Route::middleware(['auth'])->group(function () {
 
     Route::controller(IntakeController::class)->group(function () {
         Route::get('/intake', 'index')->name('intake.index');
-        // Route::post('/intake/add','add')->name('intake.add');
-        // Route::post('/intake/update/{key}','update')->name('intake.update');
-        // Route::post('/intake/remove/{key}','remove')->name('intake.remove');
         Route::post('/intake/store', 'store')->name('intake.store');
-        // Route::get('/   /barcode/{barcode}', 'findByBarcode');
     });
 
     Route::controller(AuthController::class)->group(function () {
         Route::get('logout', 'logout')->name('logout');
         Route::get('profile', 'profile')->name('profile');
         Route::post('profile.update', 'update')->name('profile.update');
-    });
-
-    Route::prefix('intake')->group(function () {
-        // Route::get('/', [TransactionController::class, 'intakeIndex'])->name('intake.index');
-        // Route::post('/add', [TransactionController::class, 'intakeAdd'])->name('intake.add');
-        // Route::get('/remove/{index}', [TransactionController::class, 'intakeRemove'])->name('intake.remove');
-        // Route::post('/store', [TransactionController::class, 'intakeStore'])->name('intake.store');
-        Route::get('/history', [TransactionController::class, 'intakeHistory'])->name('intake.history');
     });
 
     Route::controller(TransactionController::class)->group(function () {

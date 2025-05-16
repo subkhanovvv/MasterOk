@@ -4,7 +4,7 @@
             <tr>
                 <th>#</th>
                 <th>Data transaction</th>
-                <th>type</th>   
+                <th>type</th>
                 <th>total amount</th>
                 <th>products number</th>
                 <th>payment method</th>
@@ -18,11 +18,17 @@
                 <tr>
                     <td>{{ $loop->iteration + ($transactions->currentPage() - 1) * $transactions->perPage() }}</td>
                     <td>{{ $t->created_at }}</td>
-                    <td>{{ $t->items_count }} товаров</td>
-                    <td>{{$t->type}}</td>
-                    <td>{{$t->total_price}}</td>
-                    <td>{{$t->payment_type}}</td>
+                    <td>{{ $t->type }}</td>
+                    <td>{{ $t->total_price }}</td>
+                    <td>{{ $t->items_count }} товаров</td>                                      
+                    <td>{{ $t->payment_type }}</td>
+                    <td>{{ $t->paid_amount }}</td>
+                    <td>{{ $t->status }}</td>
                     <td>
+                        <a href="javascript:void(0);" title="view" data-id="{{ $t->id }}" data-bs-toggle="modal"
+                            data-bs-target="#transactionDetailsModal" class="text-decoration-none view-transaction">
+                            <i class="mdi mdi-eye icon-sm text-success"></i>
+                        </a>
                         <a href="javascript:void(0);" title="Редактировать" data-bs-toggle="modal"
                             data-bs-target="#editCategoryModal" data-id="{{ $t->id }}"
                             data-name="{{ $t->name }}"
