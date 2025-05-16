@@ -63,10 +63,10 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::prefix('intake')->group(function () {
-        Route::get('/', [TransactionController::class, 'intakeIndex'])->name('intake.index');
-        Route::post('/add', [TransactionController::class, 'intakeAdd'])->name('intake.add');
-        Route::get('/remove/{index}', [TransactionController::class, 'intakeRemove'])->name('intake.remove');
-        Route::post('/store', [TransactionController::class, 'intakeStore'])->name('intake.store');
+        // Route::get('/', [TransactionController::class, 'intakeIndex'])->name('intake.index');
+        // Route::post('/add', [TransactionController::class, 'intakeAdd'])->name('intake.add');
+        // Route::get('/remove/{index}', [TransactionController::class, 'intakeRemove'])->name('intake.remove');
+        // Route::post('/store', [TransactionController::class, 'intakeStore'])->name('intake.store');
         Route::get('/history', [TransactionController::class, 'intakeHistory'])->name('intake.history');
     });
 

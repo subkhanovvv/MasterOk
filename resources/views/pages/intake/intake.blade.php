@@ -41,7 +41,7 @@
                 <div class="col-md-6">
                     <label for="type" class="form-label">Transaction Type</label>
                     <select class="form-select" id="type" name="type" required>
-                        <option value="intake" selected>Intake</option>
+                        <option value="intake">Intake</option>
                         <option value="intake_loan">Loan</option>
                         <option value="intake_return">Return</option>
                     </select>
@@ -61,7 +61,7 @@
                     <label for="loan_amount" class="form-label">Loan Amount (UZS)</label>
                     <input type="number" class="form-control" name="loan_amount" id="loan_amount" step="0.01">
                 </div>
-                 <div class="col-md-6">
+                <div class="col-md-6">
                     <label for="loan_direction" class="form-label">Loan direction</label>
                     <select name="loan_direction" id="loan_direction">
                         <option value="given">Given</option>
@@ -105,20 +105,21 @@
                     </div>
                     <div class="col-md-2 d-flex">
                         <button type="button" class="btn btn-outline-secondary qty-btn" data-action="decrease">-</button>
-                        <input type="number" class="form-control qty" name="products[0][qty]" min="1" value="1"
-                            required>
-                        <button type="button" class="btn btn-outline-secondary qty-btn" data-action="increase">+</button>
+                        <input type="number" class="form-control qty" name="products[0][qty]" min="1"
+                            value="1" required>
+                        <button type="button" class="btn btn-outline-secondary qty-btn"
+                            data-action="increase">+</button>
                     </div>
                     <div class="col-md-2">
                         <input type="text" class="form-control unit" name="products[0][unit]" readonly>
                     </div>
                     <div class="col-md-2">
-                        <input type="number" class="form-control price-uzs" name="products[0][price_uzs]" step="0.01"
-                            required>
+                        <input type="number" class="form-control price-uzs" name="products[0][price_uzs]"
+                            step="0.01" required>
                     </div>
                     <div class="col-md-1">
-                        <input type="number" class="form-control price-usd" name="products[0][price_usd]" step="0.01"
-                            required>
+                        <input type="number" class="form-control price-usd" name="products[0][price_usd]"
+                            step="0.01" required>
                     </div>
                     <div class="col-md-1">
                         <button type="button" class="btn btn-danger remove-product">×</button>
@@ -154,11 +155,11 @@
         // Show/hide additional fields based on transaction type
         transactionType.addEventListener('change', function() {
             const selectedType = this.value;
-            
+
             // Hide all first
             returnFields.style.display = 'none';
             loanFields.style.display = 'none';
-            
+
             // Show relevant fields
             if (selectedType === 'intake_return') {
                 returnFields.style.display = 'block';
