@@ -36,10 +36,8 @@
                             onclick="openModal(this)" class="text-decoration-none">
                             <i class="mdi mdi-pencil icon-sm text-primary"></i>
                         </a>
-                        <a href="javascript:void(0);" title="Удалить" data-bs-toggle="modal"
-                            data-bs-target="#deleteCategoryModal" data-id="{{ $t->id }}"
-                            onclick="openModal(this)" class="text-decoration-none">
-                            <i class="mdi mdi-delete icon-sm text-danger"></i>
+                        <a href="{{ route('history.print', $t->id) }}" title="print" class="text-decoration-none">
+                            <i class="mdi mdi-printer icon-sm"></i>
                         </a>
                     </td>
                 </tr>

@@ -35,14 +35,19 @@ Route::middleware(['auth'])->group(function () {
         'categories' => CategoryController::class,
         'products' => ProductController::class,
         'suppliers' => SupplierController::class,
-        'history' => HistoryController::class,
+        // 'history' => HistoryController::class,
     ]);
+
+    Route::controller(HistoryController::class)->group(function () {
+        Route::get('history', 'index')->name('history.index');
+        Route::get('/history/print/{id}', 'print')->name('history.print');
+    });
 
     Route::controller(BarcodeController::class)->group(function () {
         Route::get('/barcode/print/{id}', 'print')->name('barcode.print');
         Route::get('/barcode/download/{id}', 'download')->name('barcode.download');
         Route::get('/barcode/print-all',  'printAll')->name('barcode.printAll');
-        Route::get('barcode',  'index')->name('barcode.index');
+        Route::get('barcode', 'index')->name('barcode.index');
     });
 
 

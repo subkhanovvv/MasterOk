@@ -59,4 +59,9 @@ class HistoryController extends Controller
 
         return view('pages.history.index', compact('transactions'));
     }
+    public function print($id)
+    {
+        $transaction = ProductActivity::with(['items.product', 'supplier'])->findOrFail($id);
+        return view('pages.history.partials.history-print', compact('transaction'));
+    }
 }

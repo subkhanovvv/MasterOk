@@ -23,4 +23,8 @@ class ProductActivity extends Model
     {
         return $this->hasMany(ProductActivityItems::class);
     }
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class);
+    }
 }
