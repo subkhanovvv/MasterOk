@@ -6,9 +6,8 @@
                 <th>Data transaction</th>
                 <th>type</th>
                 <th>total amount</th>
-                <th>products number</th>
-                <th>payment method</th>
-                <th>payment amount</th>
+                <th>products</th>
+                <th>payment</th>
                 <th>status</th>
                 <th>actions</th>
             </tr>
@@ -19,11 +18,28 @@
                     <td>{{ $loop->iteration + ($transactions->currentPage() - 1) * $transactions->perPage() }}</td>
                     <td>{{ $t->created_at }}</td>
                     <td>{{ $t->type }}</td>
-                    <td>{{ $t->total_price }}</td>
-                    <td>{{ $t->items_count }} товаров</td>                                      
+                    <td>{{ $t->total_price }} uzs</td>
+                    <td>{{ $t->items_count }} товаров</td>
                     <td>{{ $t->payment_type }}</td>
-                    <td>{{ $t->paid_amount }}</td>
-                    <td>{{ $t->status }}</td>
+                    <td>
+                        @php
+                            $color =
+                                $t->status === 'complete'
+                                    ? 'success'
+                                    : ($t->status === 'incomplete'
+                                        ? 'warning'
+                                        : 'danger');
+
+                            $statusRu = match ($t->status) {
+                                'complete' => 'Завершен',
+                                'incomplete' => 'Не завершен',
+                                default => $t->status,
+                            };
+                        @endphp
+                        <span class="badge badge-{{ $color }}">
+                            {{ $statusRu }}
+                        </span>
+                    </td>
                     <td>
                         <a href="javascript:void(0);" title="view" data-id="{{ $t->id }}" data-bs-toggle="modal"
                             data-bs-target="#transactionDetailsModal" class="text-decoration-none view-transaction">
@@ -36,7 +52,8 @@
                             onclick="openModal(this)" class="text-decoration-none">
                             <i class="mdi mdi-pencil icon-sm text-primary"></i>
                         </a>
-                        <a href="{{ route('history.print', $t->id) }}" title="print" class="text-decoration-none">
+                        <a onclick="printTransactionCheque({{ $t->id }})" title="print"
+                            class="text-decoration-none">
                             <i class="mdi mdi-printer icon-sm"></i>
                         </a>
                     </td>
