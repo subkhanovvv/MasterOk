@@ -41,6 +41,7 @@ Route::middleware(['auth'])->group(function () {
     Route::controller(HistoryController::class)->group(function () {
         Route::get('history', 'index')->name('history.index');
         Route::get('/history/print/{id}', 'print')->name('history.print');
+        Route::patch('/history/{id}/status','updateStatus')->name('history.updateStatus');
     });
 
     Route::controller(BarcodeController::class)->group(function () {

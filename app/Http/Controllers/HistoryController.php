@@ -64,4 +64,19 @@ class HistoryController extends Controller
         $transaction = ProductActivity::with(['items.product', 'supplier'])->findOrFail($id);
         return view('pages.history.partials.history-print', compact('transaction'));
     }
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:complete,incomplete',
+        ]);
+
+        $transaction = ProductActivity::findOrFail($id);
+
+        if ($transaction->status === 'incomplete' && $request->status === 'complete') {
+            $transaction->status = 'complete';
+            $transaction->save();
+        }
+
+        return redirect()->back()->with('success', 'Статус обновлен');
+    }
 }

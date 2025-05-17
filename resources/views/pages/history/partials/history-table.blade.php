@@ -36,13 +36,27 @@
                                 default => $t->status,
                             };
                         @endphp
-                        <span class="badge badge-{{ $color }}">
-                            {{ $statusRu }}
-                        </span>
+
+                        @if ($t->status === 'incomplete')
+                            <form method="POST" action="{{ route('history.updateStatus', $t->id) }}" class="d-inline">
+                                @csrf
+                                @method('PATCH')
+                                <select name="status" onchange="this.form.submit()" class="badge badge-warning">
+                                    <option value="incomplete" selected>Не завершен</option>
+                                    <option value="complete">Завершен</option>
+                                </select>
+                            </form>
+                        @else
+                            <span class="badge badge-{{ $color }}">
+                                {{ $statusRu }}
+                            </span>
+                        @endif
                     </td>
+
                     <td>
-                        <a href="javascript:void(0);" title="view" data-id="{{ $t->id }}" data-bs-toggle="modal"
-                            data-bs-target="#transactionDetailsModal" class="text-decoration-none view-transaction">
+                        <a href="javascript:void(0);" title="view" data-id="{{ $t->id }}"
+                            data-bs-toggle="modal" data-bs-target="#transactionDetailsModal"
+                            class="text-decoration-none view-transaction">
                             <i class="mdi mdi-eye icon-sm text-success"></i>
                         </a>
                         <a href="javascript:void(0);" title="Редактировать" data-bs-toggle="modal"
