@@ -5,7 +5,7 @@
     <div class="d-flex justify-content-between align-items-center gap-2">
         <form action="{{ route('categories.index') }}" method="GET" class="d-flex">
             <input type="text" name="search" class="form-control rounded" placeholder="Поиск категории..."
-                style="height:45px; width:300px; border:2px solid black;" value="{{ request('search') }}"
+                style="height:45px; width:300px; border:1px solid black;" value="{{ request('search') }}"
                 autofocus>
         </form>
         <div class="dropdown">

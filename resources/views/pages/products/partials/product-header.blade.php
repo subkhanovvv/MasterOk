@@ -9,7 +9,7 @@
                     @csrf
                     <input type="text" class="form-control rounded" name="search" id="searchInput"
                         placeholder="Поиск..." value="{{ request('search') }}" autofocus
-                        style="height:45px; width:300px ; border:2px solid black" />
+                        style="height:45px; width:300px ; border:1px solid black" />
                 </form>
             </div>
             <div class="dropdown">
