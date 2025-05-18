@@ -1,87 +1,44 @@
 <!-- Modal -->
 <div class="modal fade" id="transactionDetailsModal" tabindex="-1" aria-labelledby="transactionDetailsLabel" aria-hidden="true">
-  <div class="modal-dialog ">
-    <div class="modal-content border-0" style="border-radius: 8px; font-family: 'Courier New', monospace;">
-      <!-- Header -->
-      <div class="modal-header border-bottom-0 pb-0 pt-3 px-4">
-        <div class="w-100 text-center">
-          <h5 class="modal-title fs-6 fw-bold mb-1">ТРАНЗАКЦИЯ</h5>
-          <div class="d-flex justify-content-between align-items-center small">
-            <span id="modalCreatedAt" class="text-muted"></span>
-            <span class="badge rounded-pill px-2 py-1" id="modalStatus"></span>
-          </div>
-          <div class="text-muted small">№ <span id="modalId" class="fw-bold"></span></div>
-        </div>
+  <div class="modal-dialog modal-md">
+    <div class="modal-content p-3" style="font-family: monospace; max-width: 400px; margin: auto;">
+      <div class="modal-header border-0 pb-1">
+        <h5 class="modal-title" id="transactionDetailsLabel">Транзакция #<span id="modalId"></span></h5>
+        <button type="button" class="btn-close p-1" data-bs-dismiss="modal" aria-label="Закрыть"></button>
       </div>
-      
-      <!-- Body -->
-      <div class="modal-body px-4 py-2">
-        <!-- Amount Section -->
-        <div class="text-center border-bottom pb-2 mb-2">
-          <div class="fs-5 fw-bold" id="modalTotalPrice"></div>
-          <div class="small text-muted text-capitalize" id="modalType"></div>
+      <div class="modal-body" style="font-size: 0.9rem; line-height: 1.3;">
+
+        <div style="border-bottom: 1px dashed #ccc; padding-bottom: 8px; margin-bottom: 8px;">
+          <div><strong>Дата создания:</strong> <span id="modalCreatedAtFull"></span></div>
+          <div><strong>Дата обновления:</strong> <span id="modalUpdatedAt"></span></div>
+          <div><strong>Тип:</strong> <span id="modalType"></span></div>
+          <div><strong>Клиент:</strong> <span id="modalClientName"></span></div>
+          <div><strong>Телефон:</strong> <span id="modalClientPhone"></span></div>
+          <div><strong>Статус:</strong> <span id="modalStatus"></span></div>
+          <div><strong>Заем:</strong> <span id="modalLoanDirection"></span></div>
+          <div><strong>Поставщик:</strong> <span id="modalSupplier"></span></div>
         </div>
-        
-        <!-- Client Info - Only shows if data exists -->
-        <div id="clientInfoSection" class="border-bottom pb-2 mb-2 d-none">
-          <div class="d-flex justify-content-between small">
-            <span class="text-muted">Клиент:</span>
-            <span class="fw-medium text-end" id="modalClientName"></span>
-          </div>
-          <div class="d-flex justify-content-between small">
-            <span class="text-muted">Телефон:</span>
-            <span class="text-end" id="modalClientPhone"></span>
-          </div>
+
+        <div style="border-bottom: 1px dashed #ccc; padding-bottom: 8px; margin-bottom: 8px;">
+          <div><strong>Всего:</strong> <span id="modalTotalPrice"></span></div>
+          <div><strong>Оплата:</strong> <span id="modalPaymentType"></span></div>
+          <div><strong>Оплачено:</strong> <span id="modalPaidAmount"></span></div>
+          <div><strong>Остаток займа:</strong> <span id="modalLoanDueTo"></span></div>
+          <div><strong>Причина возврата:</strong> <span id="modalReturnReason"></span></div>
+          <div><strong>Примечание:</strong> <span id="modalNote"></span></div>
         </div>
-        
-        <!-- Payment Info -->
-        <div class="border-bottom pb-2 mb-2">
-          <div class="d-flex justify-content-between small">
-            <span class="text-muted">Оплата:</span>
-            <span class="text-capitalize" id="modalPaymentType"></span>
-          </div>
-          <div class="d-flex justify-content-between small">
-            <span class="text-muted">Оплачено:</span>
-            <span class="fw-medium" id="modalPaidAmount"></span>
-          </div>
-          <div class="d-flex justify-content-between small">
-            <span class="text-muted">Остаток:</span>
-            <span class="fw-medium text-danger" id="modalLoanDueTo"></span>
-          </div>
+
+        <div style="text-align:center; margin-bottom: 12px;">
+          <div id="modalQrCode"></div>
         </div>
-        
-        <!-- Additional Info - Only shows if data exists -->
-        <div id="additionalInfoSection" class="border-bottom pb-2 mb-2 d-none">
-          <div class="d-flex justify-content-between small" id="loanDirectionRow">
-            <span class="text-muted">Направление:</span>
-            <span class="text-capitalize" id="modalLoanDirection"></span>
-          </div>
-          <div class="d-flex justify-content-between small" id="supplierRow">
-            <span class="text-muted">Поставщик:</span>
-            <span id="modalSupplier"></span>
-          </div>
+
+        <div style="border-top: 1px dashed #ccc; padding-top: 6px;">
+          <strong>Товары:</strong>
+          <ul id="modalItemsList" style="list-style:none; padding-left:0; max-height: 180px; overflow-y:auto; margin-top:6px; font-size:0.85rem;">
+            <!-- Items here -->
+          </ul>
         </div>
-        
-        <!-- Notes Section - Only shows if data exists -->
-        <div id="notesSection" class="border-bottom pb-2 mb-2 d-none">
-          <div class="small" id="modalNote"></div>
-          <div class="small fst-italic" id="modalReturnReason"></div>
-        </div>
-        
-        <!-- Items List -->
-        <h6 class="text-center small fw-bold my-2">ТОВАРЫ</h6>
-        <div id="modalItemsList" class="mb-2" style="max-height: 200px; overflow-y: auto;">
-          <!-- Items will be appended here -->
-        </div>
-        
-        <!-- Footer -->
-        <div class="text-center small text-muted mt-3">
-          <div id="qrCodeSection">
-            <div id="modalQrCode"></div>
-          </div>
-          <div class="mt-1">Создано: <span id="modalCreatedAtFull"></span></div>
-          <div>Обновлено: <span id="modalUpdatedAt"></span></div>
-        </div>
+
       </div>
     </div>
   </div>

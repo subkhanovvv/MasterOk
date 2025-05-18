@@ -17,7 +17,9 @@
             }, 500);
         };
     }
-    const transactionDetailsModal = document.getElementById('transactionDetailsModal');
+</script>
+<script>
+  const transactionDetailsModal = document.getElementById('transactionDetailsModal');
   transactionDetailsModal.addEventListener('show.bs.modal', function (event) {
     const button = event.relatedTarget;
 
@@ -25,54 +27,75 @@
     const itemsList = transactionDetailsModal.querySelector('#modalItemsList');
     itemsList.innerHTML = '';
 
-    // Set transaction main info
-    transactionDetailsModal.querySelector('#modalId').textContent = button.dataset.id || '-';
-    transactionDetailsModal.querySelector('#modalCreatedAt').textContent = button.dataset.created_at ? new Date(button.dataset.created_at).toLocaleDateString() : '-';
-    transactionDetailsModal.querySelector('#modalCreatedAtFull').textContent = button.dataset.created_at ? new Date(button.dataset.created_at).toLocaleString() : '-';
-    transactionDetailsModal.querySelector('#modalUpdatedAt').textContent = button.dataset.updated_at ? new Date(button.dataset.updated_at).toLocaleString() : '-';
-    transactionDetailsModal.querySelector('#modalType').textContent = button.dataset.type || '-';
-    transactionDetailsModal.querySelector('#modalClientName').textContent = button.dataset.client_name || '-';
-    transactionDetailsModal.querySelector('#modalClientPhone').textContent = button.dataset.client_phone || '-';
-    transactionDetailsModal.querySelector('#modalStatus').textContent = button.dataset.status || '-';
-    transactionDetailsModal.querySelector('#modalLoanDirection').textContent = button.dataset.loan_direction || '-';
-    transactionDetailsModal.querySelector('#modalTotalPrice').textContent = button.dataset.total_price ? `${button.dataset.total_price} uzs` : '-';
-    transactionDetailsModal.querySelector('#modalPaymentType').textContent = button.dataset.payment_type || '-';
-    transactionDetailsModal.querySelector('#modalPaidAmount').textContent = button.dataset.paid_amount ? `${button.dataset.paid_amount} uzs` : '-';
-    transactionDetailsModal.querySelector('#modalLoanDueTo').textContent = button.dataset.loan_due_to ? `${button.dataset.loan_due_to} uzs` : '-';
-    transactionDetailsModal.querySelector('#modalReturnReason').textContent = button.dataset.return_reason || '-';
-    transactionDetailsModal.querySelector('#modalNote').textContent = button.dataset.note || '-';
-    transactionDetailsModal.querySelector('#modalSupplier').textContent = button.dataset.supplier || '-';
+    // Translation maps
+    const typeMap = {
+      consume: 'Расход',
+      loan: 'Заем',
+      return: 'Возврат',
+      intake: 'Приемка',
+      intake_loan: 'Приемка займа',
+      intake_return: 'Приемка возврата'
+    };
 
-    // QR Code image
+    const statusMap = {
+      complete: 'Завершен',
+      incomplete: 'Не завершен'
+    };
+
+    const paymentTypeMap = {
+      cash: 'Наличные',
+      card: 'Карта',
+      bank_transfer: 'Банковский перевод'
+    };
+
+    // Helper to get translated text or fallback to raw value
+    const translate = (map, key) => map[key] || key || '-';
+
+    // Fill modal main info helper
+    const setText = (id, value) => {
+      transactionDetailsModal.querySelector('#' + id).textContent = value || '-';
+    };
+
+    setText('modalId', button.dataset.id);
+    setText('modalCreatedAtFull', button.dataset.created_at ? new Date(button.dataset.created_at).toLocaleString() : '-');
+    setText('modalUpdatedAt', button.dataset.updated_at ? new Date(button.dataset.updated_at).toLocaleString() : '-');
+    setText('modalType', translate(typeMap, button.dataset.type));
+    setText('modalClientName', button.dataset.client_name);
+    setText('modalClientPhone', button.dataset.client_phone);
+    setText('modalStatus', translate(statusMap, button.dataset.status));
+    setText('modalLoanDirection', button.dataset.loan_direction);
+    setText('modalTotalPrice', button.dataset.total_price ? button.dataset.total_price + ' uzs' : '-');
+    setText('modalPaymentType', translate(paymentTypeMap, button.dataset.payment_type));
+    setText('modalPaidAmount', button.dataset.paid_amount ? button.dataset.paid_amount + ' uzs' : '-');
+    setText('modalLoanDueTo', button.dataset.loan_due_to ? button.dataset.loan_due_to + ' uzs' : '-');
+    setText('modalReturnReason', button.dataset.return_reason);
+    setText('modalNote', button.dataset.note);
+    setText('modalSupplier', button.dataset.supplier);
+
+    // QR code image
     const qrCodeContainer = transactionDetailsModal.querySelector('#modalQrCode');
     if (button.dataset.qr_code) {
-      qrCodeContainer.innerHTML = `<img src="${button.dataset.qr_code}" alt="QR Code" style="max-width: 150px; border: 1px solid #ddd; border-radius: 6px;">`;
+      qrCodeContainer.innerHTML = `<img src="${button.dataset.qr_code}" alt="QR Code" style="max-width: 130px; border-radius: 5px;">`;
     } else {
       qrCodeContainer.textContent = 'Нет QR кода';
     }
 
-    // Load product activity items (JSON string expected)
-    const itemsJson = button.dataset.items || '[]';
-    const items = JSON.parse(itemsJson);
-
+    // Load items JSON
+    const items = JSON.parse(button.dataset.items || '[]');
     if (items.length === 0) {
-      itemsList.innerHTML = '<p class="text-muted fst-italic">Товары отсутствуют</p>';
+      itemsList.innerHTML = `<li style="text-align:center; color:#888; font-style:italic;">Товары отсутствуют</li>`;
     } else {
       items.forEach(item => {
-        const itemDiv = document.createElement('div');
-        itemDiv.classList.add('d-flex', 'justify-content-between', 'align-items-center', 'border', 'rounded', 'p-2', 'shadow-sm');
-        itemDiv.style.backgroundColor = '#f9f9f9';
-
-        itemDiv.innerHTML = `
-          <div>
-            <strong>${item.product_name || 'Без названия'}</strong><br>
-            <small class="text-muted">${item.unit} x ${item.qty}</small>
-          </div>
-          <div class="text-end fw-semibold">${item.price ? item.price + ' uzs' : '-'}</div>
+        const li = document.createElement('li');
+        li.style.borderBottom = '1px dashed #ddd';
+        li.style.padding = '4px 0';
+        li.innerHTML = `
+          <div><strong>${item.product_name || '-'}</strong></div>
+          <div>Кол-во: ${item.qty} ${item.unit} | Цена: ${item.price ? item.price + ' uzs' : '-'}</div>
         `;
-
-        itemsList.appendChild(itemDiv);
+        itemsList.appendChild(li);
       });
     }
   });
 </script>
+

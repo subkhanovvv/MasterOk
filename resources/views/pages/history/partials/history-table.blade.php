@@ -68,7 +68,7 @@
                             data-qr_code="{{ asset($t->qr_code) }}"
                             data-items="{{ $t->items->map(function ($item) {
                                     return [
-                                        'product_name' => $item->product->name ?? 'Без названия',
+                                        'product_name' => $item->product->name ?? '-',
                                         'qty' => $item->qty,
                                         'unit' => $item->unit,
                                         'price' => $item->price,
