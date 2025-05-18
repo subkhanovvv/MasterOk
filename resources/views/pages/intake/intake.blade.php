@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container">
-        <h1 class="mb-4">📦 Product Intake</h1>
+        <h1 class="mb-4"> Product Intake</h1>
 
         @if (session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
@@ -305,7 +305,7 @@
 
             const product = productsFromDb.find(p => p.barcode_value === code);
             barcodeInput.value = '';
-            barcodeInput.focus();
+            // barcodeInput.focus();
 
             if (!product) {
                 alert("❌ Product not found for barcode: " + code);
