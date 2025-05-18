@@ -55,7 +55,10 @@ Route::middleware(['auth'])->group(function () {
 
     Route::controller(IntakeController::class)->group(function () {
         Route::get('/intake', 'index')->name('intake.index');
-        Route::post('/intake/store', 'store')->name('intake.store');
+        // Route::post('/intake/store', 'store')->name('intake.store');
+        Route::post('/intake', 'storeIntake')->name('product-activities.store');
+        Route::post('/intake/add-product', 'addProduct')->name('product-activities.intake.add-product');
+        Route::post('/intake/remove-product/{index}', 'removeProduct')->name('product-activities.intake.remove-product');
     });
 
     Route::controller(AuthController::class)->group(function () {

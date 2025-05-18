@@ -1,355 +1,206 @@
 @extends('layouts.admin')
 
 @section('content')
-    <div class="container">
-        <h1 class="mb-4"> Product Intake</h1>
-
-        @if (session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
-
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        <form method="POST" action="{{ route('intake.store') }}">
-            @csrf
-
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="supplier_id" class="form-label">Supplier</label>
-                    <select class="form-select" id="supplier_id" name="supplier_id" required>
-                        <option value="">Select Supplier</option>
-                        @foreach ($suppliers as $supplier)
-                            <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
-                        @endforeach
-                    </select>
+<div class="container">
+    <h1>Product Intake</h1>
+    
+    <form method="POST" action="{{ route('product-activities.store') }}">
+        @csrf
+        
+        <div class="card mb-4">
+            <div class="card-header">Intake Information</div>
+            <div class="card-body">
+                <!-- Intake Type Selection -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="type" class="form-label">Intake Type*</label>
+                        <select class="form-select" name="type" id="type" required>
+                            <option value="intake">Regular Intake</option>
+                            <option value="intake_loan">Loan Intake</option>
+                            <option value="intake_return">Return Intake</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <label for="payment_type" class="form-label">Payment Type</label>
-                    <select class="form-select" id="payment_type" name="payment_type" required>
-                        <option value="cash">Cash</option>
-                        <option value="card">Card</option>
-                    </select>
+                
+                <!-- Loan Information (shown only for intake_loan) -->
+                <div id="loan-info" style="display:none;">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="loan_direction" class="form-label">Loan Direction*</label>
+                            <select class="form-select" name="loan_direction" id="loan_direction">
+                                <option value="given">Given (to client)</option>
+                                <option value="taken">Taken (from individual)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="client_name" class="form-label">Client Name</label>
+                            <input type="text" class="form-control" name="client_name" id="client_name">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="client_phone" class="form-label">Client Phone</label>
+                            <input type="text" class="form-control" name="client_phone" id="client_phone">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="loan_amount" class="form-label">Loan Amount</label>
+                            <input type="number" step="0.01" class="form-control" name="loan_amount" id="loan_amount">
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <label for="type" class="form-label">Transaction Type</label>
-                    <select class="form-select" id="type" name="type" required>
-                        <option value="intake">Intake</option>
-                        <option value="intake_loan">Loan</option>
-                        <option value="intake_return">Return</option>
-                    </select>
+                
+                <!-- Return Information (shown only for intake_return) -->
+                <div id="return-info" style="display:none;">
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="return_reason" class="form-label">Return Reason</label>
+                            <input type="text" class="form-control" name="return_reason" id="return_reason">
+                        </div>
+                    </div>
                 </div>
-            </div>
-
-            <!-- Additional fields that will show/hide based on transaction type -->
-            <div id="return-fields" class="row mb-3" style="display: none;">
-                <div class="col-md-12">
-                    <label for="return_reason" class="form-label">Return Reason</label>
-                    <textarea class="form-control" name="return_reason" id="return_reason" rows="2"></textarea>
+                
+                <!-- Payment Information -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="payment_type" class="form-label">Payment Type*</label>
+                        <select class="form-select" name="payment_type" id="payment_type" required>
+                            <option value="cash">Cash</option>
+                            <option value="card">Card</option>
+                            <option value="bank_transfer">Bank Transfer</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="paid_amount" class="form-label">Paid Amount</label>
+                        <input type="number" step="0.01" class="form-control" name="paid_amount" id="paid_amount" required>
+                    </div>
                 </div>
-            </div>
-
-            <div id="loan-fields" class="row mb-3" style="display: none;">
-                <div class="col-md-6">
-                    <label for="loan_amount" class="form-label">Loan Amount (UZS)</label>
-                    <input type="number" class="form-control" name="loan_amount" id="loan_amount" step="0.01">
-                </div>
-                <div class="col-md-6">
-                    <label for="loan_direction" class="form-label">Loan direction</label>
-                    <select name="loan_direction" id="loan_direction">
-                        <option value="given">Given</option>
-                        <option value="taken">Taken</option>
-                    </select>
-                </div>
-                <div class="col-md-6">
-                    <label for="due_date" class="form-label">Due Date</label>
-                    <input type="date" class="form-control" name="due_date" id="due_date">
-                </div>
-            </div>
-
-            <div class="mb-3">
-                <label for="note" class="form-label">Note</label>
-                <textarea class="form-control" name="note" id="note" rows="2"></textarea>
-            </div>
-
-            <!-- Barcode scanner input with button -->
-            <div class="mb-4 d-flex gap-2">
-                <input type="text" id="barcode" class="form-control" placeholder="Scan or enter barcode..."
-                    autocomplete="off" autofocus>
-                <button type="button" class="btn btn-success" id="scan-button">Scan</button>
-            </div>
-
-            <h4 class="mb-3">🧾 Product List</h4>
-
-            <div id="products-container" class="mb-3">
-                <div class="product-row row g-2 mb-2">
-                    <div class="col-md-4">
-                        <select class="form-select product-select" name="products[0][product_id]" required>
-                            <option value="">Select Product</option>
-                            @foreach ($products as $product)
-                                <option value="{{ $product->id }}" data-name="{{ $product->name }}"
-                                    data-unit="{{ $product->unit }}" data-price-uzs="{{ $product->price_uzs }}"
-                                    data-price-usd="{{ $product->price_usd }}"
-                                    data-barcode="{{ $product->barcode_value }}">
-                                    {{ $product->name }}
-                                </option>
+                
+                <!-- Supplier Information -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="supplier_id" class="form-label">Supplier</label>
+                        <select class="form-select" name="supplier_id" id="supplier_id">
+                            <option value="">Select Supplier</option>
+                            @foreach($suppliers as $supplier)
+                                <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-2 d-flex">
-                        <button type="button" class="btn btn-outline-secondary qty-btn" data-action="decrease">-</button>
-                        <input type="number" class="form-control qty" name="products[0][qty]" min="1"
-                            value="1" required>
-                        <button type="button" class="btn btn-outline-secondary qty-btn"
-                            data-action="increase">+</button>
-                    </div>
-                    <div class="col-md-2">
-                        <input type="text" class="form-control unit" name="products[0][unit]" readonly>
-                    </div>
-                    <div class="col-md-2">
-                        <input type="number" class="form-control price-uzs" name="products[0][price_uzs]"
-                            step="0.01" required>
-                    </div>
-                    <div class="col-md-1">
-                        <input type="number" class="form-control price-usd" name="products[0][price_usd]"
-                            step="0.01" required>
-                    </div>
-                    <div class="col-md-1">
-                        <button type="button" class="btn btn-danger remove-product">×</button>
+                </div>
+                
+                <!-- Notes -->
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label for="note" class="form-label">Notes</label>
+                        <textarea class="form-control" name="note" id="note" rows="3"></textarea>
                     </div>
                 </div>
             </div>
-
-            <div class="mb-3 d-flex justify-content-between">
-                <button type="button" class="btn btn-secondary" id="add-product">➕ Add Product</button>
-                <div>
-                    <strong>Total UZS:</strong> <span id="total-uzs">0</span> |
-                    <strong>Total USD:</strong> <span id="total-usd">0</span>
+        </div>
+        
+        <!-- Products Section -->
+        <div class="card mb-4">
+            <div class="card-header">Products</div>
+            <div class="card-body">
+                <!-- Barcode Input -->
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <label for="barcode" class="form-label">Scan Barcode</label>
+                        <input type="text" class="form-control" name="barcode" id="barcode" placeholder="Scan or enter barcode">
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary" name="action" value="add_barcode">Add Product</button>
+                    </div>
                 </div>
+                
+                <!-- Manual Product Add -->
+                <div class="row mb-4">
+                    <div class="col-md-5">
+                        <label for="product_name" class="form-label">Product Name</label>
+                        <input type="text" class="form-control" name="product_name" id="product_name">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="product_qty" class="form-label">Quantity</label>
+                        <input type="number" step="0.01" class="form-control" name="product_qty" id="product_qty">
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-secondary" name="action" value="add_manual">Add Product</button>
+                    </div>
+                </div>
+                
+                <!-- Products Table -->
+                @if(session('products'))
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Product Name</th>
+                                    <th>Quantity</th>
+                                    <th>Unit</th>
+                                    <th>Price (UZS)</th>
+                                    <th>Total</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach(session('products') as $index => $product)
+                                <tr>
+                                    <td>{{ $product['name'] }}</td>
+                                    <td>{{ $product['qty'] }}</td>
+                                    <td>{{ $product['unit'] }}</td>
+                                    <td>{{ number_format($product['price_uzs'], 2) }}</td>
+                                    <td>{{ number_format($product['qty'] * $product['price_uzs'], 2) }}</td>
+                                    <td>
+                                        <button type="submit" class="btn btn-sm btn-danger" name="action" value="remove_{{ $index }}">Remove</button>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    <p>No products added yet.</p>
+                @endif
             </div>
+        </div>
+        
+        <!-- Submit Button -->
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-success btn-lg" name="action" value="submit">Complete Intake</button>
+        </div>
+    </form>
+</div>
 
-            <button type="submit" class="btn btn-primary w-100">✅ Submit Intake</button>
-        </form>
-    </div>
+<!-- Simple CSS-based show/hide for loan/return sections -->
+<style>
+    #type[value="intake_loan"] ~ #loan-info,
+    #type[value="intake_return"] ~ #return-info {
+        display: block;
+    }
+</style>
 
-    <script>
-        // Convert the products collection to a proper JavaScript array
-        const productsFromDb = @json($products->values());
-        let rowIndex = 1;
-        const audio = new Audio('{{ asset('admin/beep.mp3') }}');
-
-        const barcodeInput = document.getElementById('barcode');
-        const scanButton = document.getElementById('scan-button');
-        const productsContainer = document.getElementById('products-container');
-        const transactionType = document.getElementById('type');
-        const returnFields = document.getElementById('return-fields');
-        const loanFields = document.getElementById('loan-fields');
-
-        // Show/hide additional fields based on transaction type
-        transactionType.addEventListener('change', function() {
-            const selectedType = this.value;
-
-            // Hide all first
-            returnFields.style.display = 'none';
-            loanFields.style.display = 'none';
-
-            // Show relevant fields
-            if (selectedType === 'intake_return') {
-                returnFields.style.display = 'block';
-            } else if (selectedType === 'intake_loan') {
-                loanFields.style.display = 'block';
-            }
-        });
-
-        function recalculateTotals() {
-            let uzs = 0,
-                usd = 0;
-            document.querySelectorAll('.product-row').forEach(row => {
-                if (row.style.display !== 'none') {
-                    const qty = parseFloat(row.querySelector('.qty')?.value || 0);
-                    const pUzs = parseFloat(row.querySelector('.price-uzs')?.value || 0);
-                    const pUsd = parseFloat(row.querySelector('.price-usd')?.value || 0);
-                    uzs += qty * pUzs;
-                    usd += qty * pUsd;
-                }
-            });
-            document.getElementById('total-uzs').textContent = uzs.toLocaleString();
-            document.getElementById('total-usd').textContent = usd.toLocaleString();
+<!-- Simple form handling for showing/hiding sections -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const typeSelect = document.getElementById('type');
+    const loanInfo = document.getElementById('loan-info');
+    const returnInfo = document.getElementById('return-info');
+    
+    function toggleSections() {
+        if (typeSelect.value === 'intake_loan') {
+            loanInfo.style.display = 'block';
+            returnInfo.style.display = 'none';
+        } else if (typeSelect.value === 'intake_return') {
+            loanInfo.style.display = 'none';
+            returnInfo.style.display = 'block';
+        } else {
+            loanInfo.style.display = 'none';
+            returnInfo.style.display = 'none';
         }
-
-        function addProductRow(product = null) {
-            // Create a new row from scratch instead of cloning
-            const newRow = document.createElement('div');
-            newRow.className = 'product-row row g-2 mb-2';
-            newRow.innerHTML = `
-            <div class="col-md-4">
-                <select class="form-select product-select" name="products[${rowIndex}][product_id]" required>
-                    <option value="">Select Product</option>
-                    @foreach ($products as $product)
-                        <option value="{{ $product->id }}"
-                                data-name="{{ $product->name }}"
-                                data-unit="{{ $product->unit }}"
-                                data-price-uzs="{{ $product->price_uzs }}"
-                                data-price-usd="{{ $product->price_usd }}"
-                                data-barcode="{{ $product->barcode_value }}">
-                            {{ $product->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-md-2 d-flex">
-                <button type="button" class="btn btn-outline-secondary qty-btn" data-action="decrease">-</button>
-                <input type="number" class="form-control qty" name="products[${rowIndex}][qty]" min="1" value="1" required>
-                <button type="button" class="btn btn-outline-secondary qty-btn" data-action="increase">+</button>
-            </div>
-            <div class="col-md-2">
-                <input type="text" class="form-control unit" name="products[${rowIndex}][unit]" readonly>
-            </div>
-            <div class="col-md-2">
-                <input type="number" class="form-control price-uzs" name="products[${rowIndex}][price_uzs]" step="0.01" required>
-            </div>
-            <div class="col-md-1">
-                <input type="number" class="form-control price-usd" name="products[${rowIndex}][price_usd]" step="0.01" required>
-            </div>
-            <div class="col-md-1">
-                <button type="button" class="btn btn-danger remove-product">×</button>
-            </div>
-        `;
-
-            if (product) {
-                const select = newRow.querySelector('.product-select');
-                select.value = product.id;
-                newRow.querySelector('.unit').value = product.unit;
-                newRow.querySelector('.price-uzs').value = product.price_uzs;
-                newRow.querySelector('.price-usd').value = product.price_usd;
-            }
-
-            productsContainer.appendChild(newRow);
-            rowIndex++;
-            recalculateTotals();
-            audio.play();
-
-            // Hide the default empty row if this is the first product being added
-            const defaultRow = document.querySelector('.product-row[style*="display: none"]');
-            if (!defaultRow && document.querySelectorAll('.product-row').length > 1) {
-                productsContainer.querySelector('.product-row').style.display = 'none';
-            }
-        }
-
-        // Add product row on button click
-        document.getElementById('add-product').addEventListener('click', () => {
-            addProductRow();
-        });
-
-        // Update fields when product selected from dropdown
-        productsContainer.addEventListener('change', e => {
-            if (e.target.classList.contains('product-select')) {
-                const selected = e.target.options[e.target.selectedIndex];
-                const row = e.target.closest('.product-row');
-
-                row.querySelector('.unit').value = selected.dataset.unit;
-                row.querySelector('.price-uzs').value = selected.dataset.priceUzs;
-                row.querySelector('.price-usd').value = selected.dataset.priceUsd;
-                audio.play();
-                recalculateTotals();
-            }
-        });
-
-        // Handle + / - qty buttons
-        productsContainer.addEventListener('click', e => {
-            if (e.target.classList.contains('qty-btn')) {
-                const row = e.target.closest('.product-row');
-                const qtyInput = row.querySelector('.qty');
-                let qty = parseInt(qtyInput.value) || 0;
-
-                if (e.target.dataset.action === 'increase') {
-                    qty++;
-                } else if (e.target.dataset.action === 'decrease' && qty > 1) {
-                    qty--;
-                }
-
-                qtyInput.value = qty;
-                recalculateTotals();
-                audio.play();
-            }
-
-            // Remove product row
-            if (e.target.classList.contains('remove-product')) {
-                const rows = document.querySelectorAll('.product-row:not([style*="display: none"])');
-                if (rows.length > 1) {
-                    e.target.closest('.product-row').remove();
-                    recalculateTotals();
-                    audio.play();
-                }
-            }
-        });
-
-        // Barcode scan functionality
-        function handleBarcodeScan() {
-            const code = barcodeInput.value.trim();
-            if (!code) return;
-
-            // Make sure productsFromDb is an array
-            if (!Array.isArray(productsFromDb)) {
-                console.error('productsFromDb is not an array:', productsFromDb);
-                alert("Error: Product data not loaded properly");
-                return;
-            }
-
-            const product = productsFromDb.find(p => p.barcode_value === code);
-            barcodeInput.value = '';
-            // barcodeInput.focus();
-
-            if (!product) {
-                alert("❌ Product not found for barcode: " + code);
-                return;
-            }
-
-            // Check if product already exists in the list
-            const existingRow = findProductRow(product.id);
-            if (existingRow) {
-                // Increment quantity if product exists
-                const qtyInput = existingRow.querySelector('.qty');
-                qtyInput.value = parseInt(qtyInput.value) + 1;
-                audio.play();
-                recalculateTotals();
-            } else {
-                // Add new row if product doesn't exist
-                addProductRow(product);
-            }
-        }
-
-        // Helper function to find existing product row
-        function findProductRow(productId) {
-            const rows = document.querySelectorAll('.product-row:not([style*="display: none"])');
-            for (const row of rows) {
-                const select = row.querySelector('.product-select');
-                if (select && select.value == productId) {
-                    return row;
-                }
-            }
-            return null;
-        }
-
-        scanButton.addEventListener('click', handleBarcodeScan);
-
-        barcodeInput.addEventListener('keydown', e => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                handleBarcodeScan();
-            }
-        });
-
-        // Auto-focus barcode input on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            barcodeInput.focus();
-        });
-    </script>
+    }
+    
+    typeSelect.addEventListener('change', toggleSections);
+    toggleSections(); // Initialize on page load
+});
+</script>
 @endsection

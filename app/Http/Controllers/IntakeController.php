@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\ProductActivity;
 use App\Models\ProductActivityItems;
 use App\Models\Supplier;
+use Illuminate\Support\Facades\Session;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,103 +19,154 @@ class IntakeController extends Controller
     {
         $products = Product::orderBy('name')->get();
         $suppliers = Supplier::orderBy('name')->get();
-
         return view('pages.intake.intake', compact('products', 'suppliers'));
     }
-   public function store(Request $request)
-{
-    $validated = $request->validate([
-        'supplier_id' => 'required_if:type,intake,intake_loan|exists:suppliers,id',
-        'payment_type' => 'required|in:cash,card,bank_transfer',
-        'products' => 'required|array|min:1',
-        'type' => 'required|in:intake,intake_loan,intake_return',
+    public function addProduct(Request $request)
+    {
+        $request->validate([
+            'action' => 'required|in:add_barcode,add_manual'
+        ]);
 
-        // Loan-specific fields
-        // 'loan_amount' => 'required_if:type,intake_loan|numeric|min:0',
-        // 'loan_due_to' => 'required_if:type,intake_loan|date|after_or_equal:today',
+        $products = Session::get('products', []);
 
-        // Product item validations
-        'products.*.product_id' => 'required|exists:products,id',
-        'products.*.qty' => 'required|numeric|min:0.01',
-        'products.*.unit' => 'required|string',
-        'products.*.price_uzs' => 'required|numeric|min:0',
-        'products.*.price_usd' => 'required|numeric|min:0',
+        if ($request->action === 'add_barcode' && $request->filled('barcode')) {
+            $product = Product::where('barcode', $request->barcode)->first();
 
-        'note' => 'nullable|string',
-    ]);
+            if (!$product) {
+                return back()->with('error', 'Product not found with this barcode');
+            }
 
-    DB::beginTransaction();
-
-    try {
-        $totalPrice = collect($validated['products'])->sum(function ($product) {
-            return $product['price_uzs'] * $product['qty'];
-        });
-
-        // Determine status
-        $status = $validated['type'] === 'intake_loan' ? 'incomplete' : 'complete';
-
-        // Base activity data
-        $activityData = [
-            'type' => $validated['type'],
-            'payment_type' => $validated['payment_type'],
-            'total_price' => $totalPrice,
-            'supplier_id' => in_array($validated['type'], ['intake', 'intake_loan']) ? $validated['supplier_id'] : null,
-            'note' => $validated['note'] ?? null,
-            'status' => $status,
-        ];
-
-        // Add loan-specific fields if applicable
-        if ($validated['type'] === 'intake_loan') {
-            $activityData['loan_amount'] = $validated['loan_amount'];
-            $activityData['loan_due_to'] = $validated['loan_due_to'];
-            $activityData['paid_amount'] = $validated['loan_amount'] - $totalPrice;
+            $products[] = [
+                'id' => $product->id,
+                'name' => $product->name,
+                'qty' => 1, // Default quantity
+                'unit' => $product->unit,
+                'price_uzs' => $product->price_uzs
+            ];
+        } elseif ($request->action === 'add_manual' && $request->filled('product_name')) {
+            $products[] = [
+                'id' => null, // Will be looked up or created on final submission
+                'name' => $request->product_name,
+                'qty' => $request->product_qty ?? 1,
+                'unit' => 'шт', // Default unit
+                'price_uzs' => 0 // Will be set on final submission
+            ];
+        } else {
+            return back()->with('error', 'Please provide product information');
         }
 
-        $productActivity = ProductActivity::create($activityData);
+        Session::put('products', $products);
+        return back();
+    }
 
-        // Generate and save QR code
-        $qrContent = "Intake ID: {$productActivity->id}\n";
-        $qrContent .= "Type: " . ucfirst(str_replace('_', ' ', $productActivity->type)) . "\n";
-        $qrContent .= "Date: " . now()->format('Y-m-d H:i') . "\n";
-        $qrContent .= "Total: " . number_format($totalPrice, 2) . " UZS";
+    // Remove product from session
+    public function removeProduct($index)
+    {
+        $products = Session::get('products', []);
 
-        $qrCodeSvg = QrCode::format('svg')->size(150)->generate($qrContent);
-        $qrCodePath = 'qrcodes/intake_' . $productActivity->id . '.svg';
-        Storage::disk('public')->put($qrCodePath, $qrCodeSvg);
-        $productActivity->update(['qr_code' => $qrCodePath]);
+        if (isset($products[$index])) {
+            unset($products[$index]);
+            Session::put('products', array_values($products)); // Reindex array
+        }
 
-        // Save product items and update stock
-        foreach ($validated['products'] as $item) {
-            $product = Product::findOrFail($item['product_id']);
+        return back();
+    }
 
-            ProductActivityItems::create([
-                'product_activity_id' => $productActivity->id,
-                'product_id' => $product->id,
-                'qty' => $item['qty'],
-                'unit' => $item['unit'],
-                'price' => $item['price_uzs'],
-                'price_usd' => $item['price_usd'],
+    // Store the final intake
+    public function storeIntake(Request $request)
+    {
+        $request->validate([
+            'type' => 'required|in:intake,intake_loan,intake_return',
+            'payment_type' => 'required|in:cash,card,bank_transfer',
+            'paid_amount' => 'required|numeric|min:0'
+        ]);
+
+        $products = Session::get('products', []);
+
+        if (empty($products)) {
+            return back()->with('error', 'Please add at least one product');
+        }
+
+        DB::transaction(function () use ($request, $products) {
+            // Calculate total price
+            $totalPrice = collect($products)->sum(function ($product) {
+                return $product['qty'] * $product['price_uzs'];
+            });
+
+            // Create the product activity
+            $activity = ProductActivity::create([
+                'type' => $request->type,
+                'loan_direction' => $request->type === 'intake_loan' ? $request->loan_direction : null,
+                'client_name' => $request->client_name,
+                'client_phone' => $request->client_phone,
+                'status' => 'incomplete',
+                'loan_amount' => $request->loan_amount ?? 0,
+                'loan_due_to' => $request->type === 'intake_loan'
+                    ? $totalPrice - ($request->loan_amount ?? 0)
+                    : null,
+                'payment_type' => $request->payment_type,
+                'paid_amount' => $request->paid_amount,
+                'total_price' => $totalPrice,
+                'return_reason' => $request->type === 'intake_return' ? $request->return_reason : null,
+                'note' => $request->note,
+                'supplier_id' => $request->supplier_id
             ]);
 
-            // Stock adjustment
-            if ($validated['type'] === 'intake_return') {
-                $product->decrement('qty', $item['qty']);
-            } else {
-                $product->increment('qty', $item['qty']);
+            // Create activity items and update product quantities
+            foreach ($products as $productData) {
+                $product = $this->getOrCreateProduct($productData);
+
+                ProductActivityItems::create([
+                    'product_activity_id' => $activity->id,
+                    'product_id' => $product->id,
+                    'qty' => $productData['qty'],
+                    'unit' => $product->unit,
+                    'price' => $product->price_uzs
+                ]);
+
+                // Update product quantity based on intake type
+                $this->updateProductQuantity($product, $productData['qty'], $request->type);
             }
+        });
+
+        Session::forget('products');
+        return redirect()->route('product-activities.intake.create')
+            ->with('success', 'Product intake recorded successfully');
+    }
+
+    protected function getOrCreateProduct(array $productData)
+    {
+        if ($productData['id']) {
+            return Product::find($productData['id']);
         }
 
-        DB::commit();
-
-        return redirect()
-            ->route('intake.index')
-            ->with('success', 'Product intake recorded successfully!')
-            ->with('qr_code_path', $qrCodePath);
-
-    } catch (\Exception $e) {
-        DB::rollBack();
-        return back()->withInput()->with('error', 'Error: ' . $e->getMessage());
+        // Create new product if not found by barcode
+        return Product::create([
+            'name' => $productData['name'],
+            'qty' => 0,
+            'unit' => $productData['unit'],
+            'price_uzs' => $productData['price_uzs'] ?? 0,
+            'price_usd' => 0,
+            'category_id' => 1, // Default category
+            'brand_id' => 1, // Default brand
+            'status' => 'normal'
+        ]);
     }
-}
 
+    protected function updateProductQuantity(Product $product, $qty, $type)
+    {
+        switch ($type) {
+            case 'intake_return':
+                $product->decrement('qty', $qty);
+                break;
+            case 'intake':
+            case 'intake_loan':
+                $product->increment('qty', $qty);
+                break;
+        }
+
+        // Update status based on new quantity
+        $newStatus = $product->qty <= 0 ? 'out_of_stock' : ($product->qty < 10 ? 'low' : 'normal');
+        $product->update(['status' => $newStatus]);
+    }
 }
