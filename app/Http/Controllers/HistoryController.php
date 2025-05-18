@@ -12,6 +12,7 @@ class HistoryController extends Controller
         $sortOrder = $request->get('sort', 'desc');
 
         $transactions = ProductActivity::withCount('items')
+            ->with(['items.product'])
             // Поиск по имени клиента или номеру
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->search;

@@ -53,15 +53,31 @@
                         @endif
                     </td>
                     <td>
-                        <a href="javascript:void(0);" title="view" data-bs-toggle="modal"
-                            data-bs-target="#transactionDetailsModal" class="text-decoration-none view-transaction">
+                        <a href="javascript:void(0);" title="View Details" data-bs-toggle="modal"
+                            data-bs-target="#transactionDetailsModal" class="text-decoration-none"
+                            data-id="{{ $t->id }}" data-created_at="{{ $t->created_at }}"
+                            data-updated_at="{{ $t->updated_at }}" data-type="{{ $t->type }}"
+                            data-client_name="{{ $t->client_name ?? '-' }}"
+                            data-client_phone="{{ $t->client_phone ?? '-' }}" data-status="{{ $t->status }}"
+                            data-loan_direction="{{ $t->loan_direction ?? '-' }}"
+                            data-total_price="{{ $t->total_price }}" data-payment_type="{{ $t->payment_type }}"
+                            data-paid_amount="{{ $t->paid_amount ?? '-' }}"
+                            data-loan_due_to="{{ $t->loan_due_to ?? '-' }}"
+                            data-return_reason="{{ $t->return_reason ?? '-' }}" data-note="{{ $t->note ?? '-' }}"
+                            data-supplier="{{ $t->supplier ? $t->supplier->name : '-' }}"
+                            data-qr_code="{{ asset($t->qr_code) }}"
+                            data-items="{{ $t->items->map(function ($item) {
+                                    return [
+                                        'product_name' => $item->product->name ?? 'Без названия',
+                                        'qty' => $item->qty,
+                                        'unit' => $item->unit,
+                                        'price' => $item->price,
+                                    ];
+                                })->toJson() }}">
                             <i class="mdi mdi-eye icon-sm text-success"></i>
                         </a>
-                        <a href="javascript:void(0);" title="Редактировать" data-bs-toggle="modal"
-                            data-bs-target="#editCategoryModal" data-id="{{ $t->id }}"
-                            data-name="{{ $t->name }}"
-                            data-photo="{{ $t->photo ? Storage::url($c->photo) : asset('admin/assets/images/default_product.png') }}"
-                            onclick="openModal(this)" class="text-decoration-none">
+
+                        <a href="javascript:void(0);" title="Редактировать" class="text-decoration-none">
                             <i class="mdi mdi-pencil icon-sm text-primary"></i>
                         </a>
                         <a onclick="printTransactionCheque({{ $t->id }})" title="print"
