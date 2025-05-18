@@ -52,11 +52,9 @@
                             </span>
                         @endif
                     </td>
-
                     <td>
-                        <a href="javascript:void(0);" title="view" data-id="{{ $t->id }}"
-                            data-bs-toggle="modal" data-bs-target="#transactionDetailsModal"
-                            class="text-decoration-none view-transaction">
+                        <a href="javascript:void(0);" title="view" data-bs-toggle="modal"
+                            data-bs-target="#transactionDetailsModal" class="text-decoration-none view-transaction">
                             <i class="mdi mdi-eye icon-sm text-success"></i>
                         </a>
                         <a href="javascript:void(0);" title="Редактировать" data-bs-toggle="modal"

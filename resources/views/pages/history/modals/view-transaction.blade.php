@@ -1,45 +1,35 @@
-<div class="modal fade" id="transactionDetailsModal" tabindex="-1" aria-labelledby="transactionDetailsLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content border">
+<style>
+    /* #transactionDetailsModal .modal-content {
+        font-family: 'Courier New', Courier, monospace;
+        border: 1px dashed #333;
+        padding: 10px;
+    }
+
+    #transactionDetailsModal hr {
+        margin: 0.5rem 0;
+    } */
+</style><!-- Transaction Details Modal -->
+<div class="modal fade" id="transactionDetailsModal" tabindex="-1" aria-labelledby="transactionDetailsLabel"
+    aria-hidden="true">
+    <div class="modal-dialog  "> <!-- Smaller size like receipt -->
+        <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="transactionDetailsLabel">Чек транзакции</h5>
+                <h5 class="modal-title">Детали транзакции</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" id="transactionDetailsContent">
+                <!-- Filled via JavaScript -->
                 <div class="text-center">
-                    <h4 class="mb-1">MasterOK</h4>
-                    <p class="fw-bold mb-0">Транзакция №<span id="td_id"></span></p>
-                    <small class="text-muted" id="td_created_at"></small>
-                    <hr>
+                    <h6 class="mb-1">Магазин XYZ</h6>
+                    <p class="mb-0"><small>Дата: <span id="td-date"></span></small></p>
+                    <p class="mb-0"><small>Тип: <span id="td-type"></span></small></p>
                 </div>
-
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><strong>Тип:</strong> <span id="td_type"></span></li>
-                    <li class="list-group-item"><strong>Products:</strong> <span id="td_product"></span></li>
-                    <li class="list-group-item"><strong>Количество:</strong> <span id="td_qty"></span></li>
-                    <li class="list-group-item"><strong>Общая сумма:</strong> <span id="td_total_price"></span></li>
-                    <li class="list-group-item"><strong>Оплачено:</strong> <span id="td_paid_amount"></span></li>
-                    <li class="list-group-item" id="td_return_reason_row" style="display:none;">
-                        <strong>Причина возврата:</strong> <span id="td_return_reason"></span>
-                    </li>
-                    <li class="list-group-item" id="td_client_row" style="display:none;">
-                        <strong>Клиент:</strong> <span id="td_client"></span>
-                    </li>
-                    <li class="list-group-item">
-                        <strong>Примечание:</strong> <span id="td_note"></span>
-                    </li>
-                </ul>
-                
-                <div class="text-center mb-3" id="qrCodePreview">
-                    <!-- QR code will appear here -->
-                </div>
-                
-                <div class="text-center mt-3">
-                    <p>OOO "MasterOK" MCHJ</p>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                <hr>
+                <div id="td-items"></div>
+                <hr>
+                <p class="mb-0"><strong>Общая сумма:</strong> <span id="td-total"></span> uzs</p>
+                <p class="mb-0"><strong>Оплата:</strong> <span id="td-payment-type"></span></p>
+                <p class="mb-0"><strong>Статус:</strong> <span id="td-status"></span></p>
             </div>
         </div>
     </div>
