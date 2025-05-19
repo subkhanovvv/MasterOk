@@ -55,10 +55,13 @@ Route::middleware(['auth'])->group(function () {
 
     Route::controller(IntakeController::class)->group(function () {
         Route::get('/intake', 'index')->name('intake.index');
-        // Route::post('/intake/store', 'store')->name('intake.store');
-        Route::post('/intake', 'storeIntake')->name('product-activities.store');
-        Route::post('/intake/add-product', 'addProduct')->name('product-activities.intake.add-product');
-        Route::post('/intake/remove-product/{index}', 'removeProduct')->name('product-activities.intake.remove-product');
+        Route::post('/intake/store', 'store')->name('intake.store');
+        Route::post('/intake/add-product', 'addItem')->name('intake.addItem');
+        Route::post('/intake/remove-item/{productId}', 'removeItem')->name('intake.removeItem');
+        Route::post('/intake/clear-items', 'clearItems')->name('intake.clearItems');
+        Route::post('/intake/add-barcode', 'addItemByBarcode')->name('intake.addItemByBarcode');
+        Route::post('/intake/increment-item/{productId}', 'incrementItem')->name('intake.incrementItem');
+        Route::post('/intake/decrement-item/{productId}', 'decrementItem')->name('intake.decrementItem');
     });
 
     Route::controller(AuthController::class)->group(function () {
