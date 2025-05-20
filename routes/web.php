@@ -59,7 +59,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/intake/add-product', 'addItem')->name('intake.addItem');
         Route::post('/intake/remove-item/{productId}', 'removeItem')->name('intake.removeItem');
         Route::post('/intake/clear-items', 'clearItems')->name('intake.clearItems');
-        Route::post('/intake/add-barcode', 'addItemByBarcode')->name('intake.addItemByBarcode');
+        // Route::post('/intake/add-barcode', 'addItemByBarcode')->name('intake.addItemByBarcode');
         Route::post('/intake/increment-item/{productId}', 'incrementItem')->name('intake.incrementItem');
         Route::post('/intake/decrement-item/{productId}', 'decrementItem')->name('intake.decrementItem');
     });
