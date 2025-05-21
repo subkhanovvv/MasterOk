@@ -21,100 +21,55 @@ class IntakeController extends Controller
         $suppliers = Supplier::orderBy('name')->get();
         return view('pages.intake.intake', compact('products', 'suppliers'));
     }
-    public function addItem(Request $request)
-    {
-        $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'qty' => 'required|numeric|min:0.01',
-        ]);
-
-        $productId = $request->product_id;
-        $qty = $request->qty;
-
-        $items = session()->get('intake_products', []);
-
-        if (isset($items[$productId])) {
-            $items[$productId]['qty'] += $qty;
-        } else {
-            $items[$productId] = [
-                'product_id' => $productId,
-                'qty' => $qty,
-            ];
-        }
-
-        session(['intake_products' => $items]);
-        return redirect()->back();
-    }
-
-
-    public function incrementItem($productId)
-    {
-        $items = session()->get('intake_products', []);
-        if (isset($items[$productId])) {
-            $items[$productId]['qty'] += 1;
-        }
-        session(['intake_products' => $items]);
-        return redirect()->back();
-    }
-
-    public function decrementItem($productId)
-    {
-        $items = session()->get('intake_products', []);
-        if (isset($items[$productId])) {
-            $items[$productId]['qty'] -= 1;
-            if ($items[$productId]['qty'] <= 0) {
-                unset($items[$productId]);
-            }
-        }
-        session(['intake_products' => $items]);
-        return redirect()->back();
-    }
-
-    public function removeItem($productId)
-    {
-        $items = session()->get('intake_products', []);
-        unset($items[$productId]);
-        session(['intake_products' => $items]);
-        return redirect()->back();
-    }
-
-    public function clearItems()
-    {
-        session()->forget('intake_products');
-        return redirect()->back();
-    }
-
     public function store(Request $request)
     {
-        $request->validate([
-            'type' => 'required',
-            'payment_type' => 'required',
+        $validated = $request->validate([
+            'type' => 'required|in:consume,loan,return,intake,intake_loan,intake_return',
+            'products' => 'required|array',
+            'products.*.product_id' => 'required|exists:products,id',
+            'products.*.qty' => 'required|numeric|min:0.01',
+            'products.*.unit' => 'required|string',
+            'products.*.price' => 'nullable|numeric|min:0',
         ]);
 
         $activity = ProductActivity::create([
             'type' => $request->type,
-            'loan_direction' => $request->loan_direction,
-            'client_name' => $request->client_name,
-            'client_phone' => $request->client_phone,
-            'loan_amount' => $request->loan_amount,
-            'loan_due_to' => $request->loan_due_to,
-            'return_reason' => $request->return_reason,
-            'payment_type' => $request->payment_type,
-            'paid_amount' => $request->paid_amount,
+            'supplier_id' => $request->supplier_id,
             'note' => $request->note,
+            'status' => 'incomplete',
         ]);
 
-        foreach (session('intake_products', []) as $productId => $item) {
+        foreach ($request->products as $item) {
+            if (empty($item['product_id']) || $item['qty'] <= 0) {
+                continue; // Skip invalid product
+            }
+
+            $product = Product::find($item['product_id']);
+            if (!$product) continue;
+
+            // Save item
             ProductActivityItems::create([
                 'product_activity_id' => $activity->id,
-                'product_id' => $productId,
+                'product_id' => $item['product_id'],
                 'qty' => $item['qty'],
-                'unit' => Product::find($productId)?->unit ?? 'шт',
+                'unit' => $item['unit'],
+                'price' => $item['price'] ?? null,
             ]);
+
+            // Stock update logic
+            $multiplier = $product->unit_per_stock ?? 1; // optional: handle conversion
+
+            $adjustedQty = $item['qty'] * $multiplier;
+
+            if (in_array($activity->type, ['intake', 'intake_loan'])) {
+                $product->qty += $adjustedQty;
+            } elseif ($activity->type === 'intake_return') {
+                $product->qty -= $adjustedQty;
+            }
+
+            $product->save();
         }
 
-
-        session()->forget('intake_products');
-        return redirect()->route('intake.index')->with('success', 'Приход успешно сохранён.');
+        return back()->with('success', 'Saved successfully');
     }
 }
