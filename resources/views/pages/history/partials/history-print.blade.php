@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,43 +10,54 @@
             size: 80mm auto;
             margin: 0;
         }
+
         body {
             font-family: 'Courier New', monospace;
             width: 80mm;
             margin: 0;
             padding: 5mm;
         }
-        h2, h4, p {
+
+        h2,
+        h4,
+        p {
             margin: 4px 0;
         }
+
         hr {
             border: none;
             border-top: 1px dashed #000;
         }
+
         .line {
             display: flex;
             justify-content: space-between;
         }
+
         .item-line {
             display: flex;
             justify-content: space-between;
             margin-bottom: 2px;
         }
+
         .qr-container {
             text-align: center;
             margin: 10px 0;
         }
+
         .qr-code {
             width: 100px;
             height: 100px;
             margin: 0 auto;
         }
+
         .notes {
             margin-top: 5px;
             font-style: italic;
         }
     </style>
 </head>
+
 <body>
     <h2 style="text-align:center;">MasterOK</h2>
     <h4 style="text-align:center;">Чек №{{ $transaction->id }}</h4>
@@ -101,7 +113,7 @@
 
     <div class="qr-container">
         @if ($transaction->qr_code)
-            <img src="{{ $transaction->qr_code }}" alt="QR Code" class="qr-code">
+            <img src="{{ asset('storage/' . $transaction->qr_code) }}" alt="QR Code" class="qr-code">
             <p>Сканируйте QR-код для проверки</p>
         @endif
     </div>
@@ -113,4 +125,5 @@
         };
     </script>
 </body>
+
 </html>

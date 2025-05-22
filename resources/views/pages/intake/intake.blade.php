@@ -40,8 +40,9 @@
                 <div class="col-md-6">
                     <label for="payment_type" class="form-label">Payment Type</label>
                     <select class="form-select" id="payment_type" name="payment_type" required>
-                        <option value="cash" @selected(old('payment_type') == 'cash')>Cash</option>
-                        <option value="card" @selected(old('payment_type') == 'card')>Card</option>
+                        <option value="cash">Cash</option>
+                        <option value="card">Card</option>
+                        <option value="bank_transfer">bank transfer</option>
                     </select>
                 </div>
                 <div class="col-md-6">
@@ -65,14 +66,13 @@
             <div id="loan-fields" class="row mb-3" style="display: none;">
                 <div class="col-md-6">
                     <label for="loan_amount" class="form-label">Loan Amount (UZS)</label>
-                    <input type="number" class="form-control" name="loan_amount" id="loan_amount" step="0.01"
-                        value="{{ old('loan_amount') }}">
+                    <input type="number" class="form-control" name="loan_amount" id="loan_amount" step="0.01">
                 </div>
                 <div class="col-md-6">
                     <label for="loan_direction" class="form-label">Loan direction</label>
                     <select name="loan_direction" id="loan_direction" class="form-select">
-                        <option value="given" @selected(old('loan_direction') == 'given')>Given</option>
-                        <option value="taken" @selected(old('loan_direction') == 'taken')>Taken</option>
+                        <option value="given">Given</option>
+                        <option value="taken">Taken</option>
                     </select>
                 </div>
                 <div class="col-md-6">

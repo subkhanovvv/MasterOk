@@ -6,7 +6,7 @@ use App\Models\Product;
 use App\Models\ProductActivity;
 use App\Models\ProductActivityItems;
 use App\Models\Supplier;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Str;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -23,7 +23,7 @@ class IntakeController extends Controller
     }
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'type' => 'required|in:consume,loan,return,intake,intake_loan,intake_return',
             'products' => 'required|array',
             'products.*.product_id' => 'required|exists:products,id',
@@ -32,6 +32,7 @@ class IntakeController extends Controller
             'products.*.price' => 'nullable|numeric|min:0',
         ]);
 
+        // Step 1: Create activity (initially without QR)
         $activity = ProductActivity::create([
             'type' => $request->type,
             'supplier_id' => $request->supplier_id,
@@ -39,15 +40,40 @@ class IntakeController extends Controller
             'status' => 'incomplete',
         ]);
 
+        // Step 2: Prepare product lines for QR content
+        $productLines = '';
         foreach ($request->products as $item) {
-            if (empty($item['product_id']) || $item['qty'] <= 0) {
-                continue; // Skip invalid product
-            }
+            $productLines .= "- Product ID: {$item['product_id']} | Qty: {$item['qty']} | Unit: {$item['unit']} | Price: " . ($item['price'] ?? '0') . "\n";
+        }
+
+        // Step 3: Compose QR code content as readable text
+        $qrText = "Activity ID: {$activity->id}\n";
+        $qrText .= "Type: {$activity->type}\n";
+        $qrText .= "Supplier ID: " . ($request->supplier_id ?? 'N/A') . "\n";
+        $qrText .= "Status: incomplete\n";
+        $qrText .= "Note: " . ($request->note ?? '-') . "\n";
+        $qrText .= "Products:\n" . $productLines;
+
+        // Step 4: Generate and store QR code image
+        $fileName = 'qrcodes/activity_' . $activity->id . '_' . Str::random(6) . '.png';
+        $qrImage = QrCode::format('png')
+            ->encoding('UTF-8') // fixes Unicode characters like Russian/Uzbek
+            ->size(300)
+            ->generate($qrText);
+
+        Storage::disk('public')->put($fileName, $qrImage);
+
+        // Step 5: Save QR code path
+        $activity->qr_code = $fileName;
+        $activity->save();
+
+        // Step 6: Save product activity items & update stock
+        foreach ($request->products as $item) {
+            if (empty($item['product_id']) || $item['qty'] <= 0) continue;
 
             $product = Product::find($item['product_id']);
             if (!$product) continue;
 
-            // Save item
             ProductActivityItems::create([
                 'product_activity_id' => $activity->id,
                 'product_id' => $item['product_id'],
@@ -56,9 +82,7 @@ class IntakeController extends Controller
                 'price' => $item['price'] ?? null,
             ]);
 
-            // Stock update logic
-            $multiplier = $product->unit_per_stock ?? 1; // optional: handle conversion
-
+            $multiplier = $product->unit_per_stock ?? 1;
             $adjustedQty = $item['qty'] * $multiplier;
 
             if (in_array($activity->type, ['intake', 'intake_loan'])) {
@@ -70,6 +94,6 @@ class IntakeController extends Controller
             $product->save();
         }
 
-        return back()->with('success', 'Saved successfully');
+        return back()->with('success', 'Saved successfully with QR code');
     }
 }

@@ -65,7 +65,7 @@
                             data-loan_due_to="{{ $t->loan_due_to ?? '-' }}"
                             data-return_reason="{{ $t->return_reason ?? '-' }}" data-note="{{ $t->note ?? '-' }}"
                             data-supplier="{{ $t->supplier ? $t->supplier->name : '-' }}"
-                            data-qr_code="{{ asset($t->qr_code) }}"
+                            data-qr_code="{{ asset('storage/' . $t->qr_code) }}"
                             data-items="{{ $t->items->map(function ($item) {
                                     return [
                                         'product_name' => $item->product->name ?? '-',
@@ -81,7 +81,7 @@
                                 <i class="mdi mdi-pencil icon-sm text-primary"></i>
                             </a>
                         @else
-                        <i class="mdi mdi-lock text-danger" title="Редактирование заблокировано"></i>
+                            <i class="mdi mdi-lock text-danger" title="Редактирование заблокировано"></i>
                         @endif
                         <a onclick="printTransactionCheque({{ $t->id }})" title="print"
                             class="text-decoration-none">
