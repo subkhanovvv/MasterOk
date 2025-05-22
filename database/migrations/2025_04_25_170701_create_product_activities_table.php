@@ -21,12 +21,12 @@ return new class extends Migration
             $table->string('client_phone')->nullable();     // Optional contact info
             $table->enum('status', ['complete', 'incomplete'])->nullable();
             $table->decimal('loan_amount', 12, 2)->nullable();
-            $table->decimal('loan_due_to', 12, 2)->nullable(); // Remaining to be paid
+            $table->date('loan_due_to')->nullable(); // Remaining to be paid
 
             // PAYMENT
             $table->enum('payment_type', ['cash', 'card','bank_transfer'])->default('cash');
-            $table->decimal('paid_amount', 12, 2)->nullable();
             $table->decimal('total_price', 12, 2)->default(0);
+            $table->decimal('total_usd', 12, 2)->default(0);
 
             // OTHER
             $table->string('return_reason')->nullable();

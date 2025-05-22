@@ -16,8 +16,6 @@
                 $table->foreignId('product_activity_id')->constrained()->onDelete('cascade');
                 $table->foreignId('product_id')->constrained()->onDelete('cascade');
                 $table->decimal('qty', 10, 2);
-                $table->string('unit');
-                $table->decimal('price', 12, 2)->nullable();
                 $table->timestamps();
             });
         }

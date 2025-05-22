@@ -42,7 +42,7 @@
                     <select class="form-select" id="payment_type" name="payment_type" required>
                         <option value="cash">Cash</option>
                         <option value="card">Card</option>
-                        <option value="bank_transfer">bank transfer</option>
+                        <option value="bank_transfer">Bank transfer</option>
                     </select>
                 </div>
                 <div class="col-md-6">
@@ -76,8 +76,8 @@
                     </select>
                 </div>
                 <div class="col-md-6">
-                    <label for="due_date" class="form-label">Due Date</label>
-                    <input type="date" class="form-control" name="due_date" id="due_date" value="{{ old('due_date') }}">
+                    <label for="loan_due_to" class="form-label">Due Date</label>
+                    <input type="date" class="form-control" name="loan_due_to" id="loan_due_to">
                 </div>
             </div>
 
@@ -85,7 +85,9 @@
                 <label for="note" class="form-label">Note</label>
                 <textarea class="form-control" name="note" id="note" rows="2">{{ old('note') }}</textarea>
             </div>
-
+            <!-- Add this hidden field before your submit button -->
+            <input type="hidden" name="total_price" id="total-price-hidden" value="0">
+            <input type="hidden" name="total_usd" id="total-usd-hidden" value="0">
             <!-- Barcode scanner input with button -->
             <div class="mb-4 d-flex gap-2">
                 <input type="text" id="barcode" class="form-control" placeholder="Scan or enter barcode..."

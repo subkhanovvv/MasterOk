@@ -24,19 +24,28 @@
         transactionType.dispatchEvent(new Event('change'));
 
         function recalculateTotals() {
-            let uzs = 0,
-                usd = 0;
+            let totalUzs = 0;
+            let totalUsd = 0;
+            
             document.querySelectorAll('.product-row').forEach(row => {
                 if (row.style.display !== 'none') {
                     const qty = parseFloat(row.querySelector('.qty')?.value || 0);
-                    const pUzs = parseFloat(row.querySelector('.price-uzs')?.value || 0);
-                    const pUsd = parseFloat(row.querySelector('.price-usd')?.value || 0);
-                    uzs += qty * pUzs;
-                    usd += qty * pUsd;
+                    const priceUzs = parseFloat(row.querySelector('.price-uzs')?.value || 0);
+                    const priceUsd = parseFloat(row.querySelector('.price-usd')?.value || 0);
+                    totalUzs += qty * priceUzs;
+                    totalUsd += qty * priceUsd;
                 }
             });
-            document.getElementById('total-uzs').textContent = uzs.toLocaleString();
-            document.getElementById('total-usd').textContent = usd.toLocaleString();
+            
+            // Update display
+            document.getElementById('total-uzs').textContent = totalUzs.toLocaleString();
+            document.getElementById('total-usd').textContent = totalUsd.toLocaleString();
+            
+            // Update hidden fields for form submission
+            document.getElementById('total-price-hidden').value = totalUzs;
+            document.getElementById('total-usd-hidden').value = totalUsd;
+            
+            return { totalUzs, totalUsd };
         }
 
         function addProductRow(product = null) {
@@ -67,14 +76,14 @@
                         <input type="text" class="form-control unit" name="products[${rowIndex}][unit]" readonly>
                     </div>
                     <div class="col-md-2">
-                        <input type="number" class="form-control price-uzs" name="products[${rowIndex}][price_uzs]" step="0.01" required>
+                        <input type="number" class="form-control price-uzs" readonly>
                     </div>
                     <div class="col-md-1">
-                        <input type="number" class="form-control price-usd" name="products[${rowIndex}][price_usd]" step="0.01" required>
+                        <input type="number" class="form-control price-usd" readonly>
                     </div>
                     <div class="col-md-1">
                         <button type="button" class="btn btn-danger remove-product">
-                            <i class="fas fa-times"></i>
+                            <i class="mdi mdi-delete"></i>
                         </button>
                     </div>
                 `;
@@ -212,9 +221,13 @@
         // Auto-focus barcode input
         barcodeInput.focus();
     });
+    
     document.querySelector('form').addEventListener('submit', function(e) {
+        // Recalculate totals before submission
+        const totals = recalculateTotals();
+        
+        // Validate at least one product and positive totals
         let validProducts = 0;
-
         document.querySelectorAll('.product-row').forEach(row => {
             const productId = row.querySelector('.product-select')?.value;
             if (productId) {
@@ -225,6 +238,13 @@
         if (validProducts === 0) {
             e.preventDefault();
             alert('Please select at least one product before submitting.');
+            return;
+        }
+        
+        if (totals.totalUzs <= 0 && totals.totalUsd <= 0) {
+            e.preventDefault();
+            alert('Total amount must be greater than zero in at least one currency.');
+            return;
         }
     });
 </script>

@@ -26,6 +26,11 @@ class IntakeController extends Controller
         $request->validate([
             'type' => 'required|in:consume,loan,return,intake,intake_loan,intake_return',
             'return_reason' => 'nullable|string',
+            'loan_direction' => 'nullable|in:given,taken',
+            'loan_due_to' => 'nullable|date',            
+            'loan_amount' => 'nullable|numeric',
+            'total_price' => 'numeric',
+            'total_usd' => 'numeric',
             'products' => 'required|array',
             'products.*.product_id' => 'required|exists:products,id',
             'products.*.qty' => 'required|numeric|min:0.01',
@@ -36,8 +41,13 @@ class IntakeController extends Controller
         // Step 1: Create activity (initially without QR)
         $activity = ProductActivity::create([
             'type' => $request->type,
+            'loan_direction' => $request->loan_direction,
             'supplier_id' => $request->supplier_id ?? null,
             'note' => $request->note,
+            'total_price' => $request->total_price ?? 0,
+            'total_usd' => $request->total_usd ?? 0,
+            'loan_due_to' => $request->loan_due_to,
+            'loan_amount' => $request->loan_amount,
             'return_reason' => $request->return_reason,
             'status' => 'incomplete',
         ]);
@@ -80,8 +90,6 @@ class IntakeController extends Controller
                 'product_activity_id' => $activity->id,
                 'product_id' => $item['product_id'],
                 'qty' => $item['qty'],
-                'unit' => $item['unit'],
-                'price' => $item['price'] ?? null,
             ]);
 
             $multiplier = $product->unit_per_stock ?? 1;
