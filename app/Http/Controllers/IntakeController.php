@@ -25,6 +25,7 @@ class IntakeController extends Controller
     {
         $request->validate([
             'type' => 'required|in:consume,loan,return,intake,intake_loan,intake_return',
+            'return_reason' => 'nullable|string',
             'products' => 'required|array',
             'products.*.product_id' => 'required|exists:products,id',
             'products.*.qty' => 'required|numeric|min:0.01',
@@ -35,8 +36,9 @@ class IntakeController extends Controller
         // Step 1: Create activity (initially without QR)
         $activity = ProductActivity::create([
             'type' => $request->type,
-            'supplier_id' => $request->supplier_id,
+            'supplier_id' => $request->supplier_id ?? null,
             'note' => $request->note,
+            'return_reason' => $request->return_reason,
             'status' => 'incomplete',
         ]);
 

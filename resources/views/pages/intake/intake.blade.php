@@ -28,10 +28,10 @@
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="supplier_id" class="form-label">Supplier</label>
-                    <select class="form-select" id="supplier_id" name="supplier_id" required>
+                    <select class="form-select" id="supplier_id" name="supplier_id">
                         <option value="">Select Supplier</option>
                         @foreach ($suppliers as $supplier)
-                            <option value="{{ $supplier->id }}" @selected(old('supplier_id') == $supplier->id)>
+                            <option value="{{ $supplier->id }}">
                                 {{ $supplier->name }}
                             </option>
                         @endforeach
