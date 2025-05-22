@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BarcodeController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ConsumptionController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\IntakeController;
 use App\Http\Controllers\ProductController;
@@ -52,16 +53,14 @@ Route::middleware(['auth'])->group(function () {
         Route::get('barcode', 'index')->name('barcode.index');
     });
 
-
     Route::controller(IntakeController::class)->group(function () {
         Route::get('/intake', 'index')->name('intake.index');
         Route::post('/intake/store', 'store')->name('intake.store');
-        Route::post('/intake/add-product', 'addItem')->name('intake.addItem');
-        Route::post('/intake/remove-item/{productId}', 'removeItem')->name('intake.removeItem');
-        Route::post('/intake/clear-items', 'clearItems')->name('intake.clearItems');
-        // Route::post('/intake/add-barcode', 'addItemByBarcode')->name('intake.addItemByBarcode');
-        Route::post('/intake/increment-item/{productId}', 'incrementItem')->name('intake.incrementItem');
-        Route::post('/intake/decrement-item/{productId}', 'decrementItem')->name('intake.decrementItem');
+    });
+
+    Route::controller(ConsumptionController::class)->group(function () {
+        Route::get('/consumption', 'index')->name('consumption.index');
+        Route::post('/consumption/store', 'store')->name('consumption.store');
     });
 
     Route::controller(AuthController::class)->group(function () {
