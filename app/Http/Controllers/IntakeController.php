@@ -24,7 +24,7 @@ class IntakeController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'type' => 'required|in:consume,loan,return,intake,intake_loan,intake_return',
+            'type' => 'required|in:intake,intake_loan,intake_return',
             'return_reason' => 'nullable|string',
             'loan_direction' => 'nullable|in:given,taken',
             'loan_due_to' => 'nullable|date',
@@ -34,7 +34,6 @@ class IntakeController extends Controller
             'products' => 'required|array',
             'products.*.product_id' => 'required|exists:products,id',
             'products.*.qty' => 'required|numeric|min:0.01',
-            'products.*.unit' => 'required|string',
             'products.*.price' => 'nullable|numeric|min:0',
         ]);
 

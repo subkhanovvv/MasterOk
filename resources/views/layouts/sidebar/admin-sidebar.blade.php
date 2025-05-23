@@ -44,7 +44,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('consumption') }}">
+            <a class="nav-link" href="{{ route('consumption.index') }}">
                 <i class="menu-icon mdi mdi-database-minus"></i>
                 <span class="menu-title">Расход</span>
                 <i class="menu-arrow"></i>
@@ -65,7 +65,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('admin.reports.index') }}">
+            <a class="nav-link" href="#">
                 <i class="menu-icon mdi mdi-file-chart"></i>
                 <span class="menu-title">Отчёт</span>
                 <i class="menu-arrow"></i>

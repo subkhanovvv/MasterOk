@@ -15,22 +15,22 @@ class ConsumptionController extends Controller
     public function index()
     {
         $products = Product::orderBy('name')->get();
-        return view('pages.intake.intake', compact('products', 'suppliers'));
+        return view('pages.consumption.index', compact('products'));
     }
     public function store(Request $request)
     {
         $request->validate([
-            'type' => 'required|in:consume,loan,return,intake,intake_loan,intake_return',
+            'type' => 'required|in:consume,loan,return',
             'return_reason' => 'nullable|string',
             'loan_direction' => 'nullable|in:given,taken',
             'loan_due_to' => 'nullable|date',
+            'client_name' => 'nullable|string',
+            'client_phone' => 'nullable|numeric',
             'loan_amount' => 'nullable|numeric',
             'total_price' => 'numeric',
-            'total_usd' => 'numeric',
             'products' => 'required|array',
             'products.*.product_id' => 'required|exists:products,id',
             'products.*.qty' => 'required|numeric|min:0.01',
-            'products.*.unit' => 'required|string',
             'products.*.price' => 'nullable|numeric|min:0',
         ]);
 
@@ -40,8 +40,9 @@ class ConsumptionController extends Controller
             'supplier_id' => $request->supplier_id ?? null,
             'note' => $request->note,
             'total_price' => $request->total_price ?? 0,
-            'total_usd' => $request->total_usd ?? 0,
             'loan_due_to' => $request->loan_due_to,
+            'client_name' => $request->client_name,
+            'client_phone' => $request->client_phone,
             'loan_amount' => $request->loan_amount,
             'return_reason' => $request->return_reason,
             'status' => 'incomplete',
@@ -80,10 +81,11 @@ class ConsumptionController extends Controller
             $multiplier = $product->unit_per_stock ?? 1;
             $adjustedQty = $item['qty'] * $multiplier;
 
-            if (in_array($activity->type, ['intake', 'intake_loan'])) {
-                $product->qty += $adjustedQty;
-            } elseif ($activity->type === 'intake_return') {
-                $product->qty -= $adjustedQty;
+            // Update product quantity based on activity type
+            if ($activity->type === 'return') {
+                $product->increment('qty', $adjustedQty);
+            } elseif (in_array($activity->type, ['consume', 'loan'])) {
+                $product->decrement('qty', $adjustedQty);
             }
 
             $product->save();

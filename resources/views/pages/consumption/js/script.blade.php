@@ -16,87 +16,88 @@
         // Show/hide additional fields based on transaction type
         transactionType.addEventListener('change', function() {
             const selectedType = this.value;
-            returnFields.style.display = selectedType === 'intake_return' ? 'block' : 'none';
-            loanFields.style.display = selectedType === 'intake_loan' ? 'block' : 'none';
+            returnFields.style.display = selectedType === 'return' ? 'block' : 'none';
+            loanFields.style.display = selectedType === 'loan' ? 'block' : 'none';
+
+            if (selectedType !== 'loan') {
+                // Clear loan-related fields
+                document.getElementById('loan_amount').value = '';
+                document.getElementById('loan_direction').value = '';
+                document.getElementById('loan_due_to').value = '';
+                document.getElementById('client_name').value = '';
+                document.getElementById('client_phone').value = '';
+            }
+
+            if (selectedType !== 'return') {
+                document.getElementById('return_reason').value = '';
+            }
         });
+
 
         // Trigger change event to set initial state
         transactionType.dispatchEvent(new Event('change'));
 
         function recalculateTotals() {
-            let totalUzs = 0;
-            let totalUsd = 0;
+            let total = 0;
 
             document.querySelectorAll('.product-row').forEach(row => {
                 if (row.style.display !== 'none') {
                     const qty = parseFloat(row.querySelector('.qty')?.value || 0);
-                    const priceUzs = parseFloat(row.querySelector('.price-uzs')?.value || 0);
-                    const priceUsd = parseFloat(row.querySelector('.price-usd')?.value || 0);
-                    totalUzs += qty * priceUzs;
-                    totalUsd += qty * priceUsd;
+                    const price = parseFloat(row.querySelector('.price')?.value || 0);
+                    total += qty * price;
                 }
             });
 
             // Update display
-            document.getElementById('total-uzs').textContent = totalUzs.toLocaleString();
-            document.getElementById('total-usd').textContent = totalUsd.toLocaleString();
+            document.getElementById('total-uzs').textContent = total.toLocaleString();
 
-            // Update hidden fields for form submission
-            document.getElementById('total-price-hidden').value = totalUzs;
-            document.getElementById('total-usd-hidden').value = totalUsd;
+            // Update hidden field for form submission
+            document.getElementById('total-price-hidden').value = total;
 
-            return {
-                totalUzs,
-                totalUsd
-            };
+            return total;
         }
 
         function addProductRow(product = null) {
             const newRow = document.createElement('div');
             newRow.className = 'product-row row g-2 mb-2';
             newRow.innerHTML = `
-                    <div class="col-md-4">
-                        <select class="form-select product-select" name="products[${rowIndex}][product_id]" required>
-                            <option value="">Select Product</option>
-                            @foreach ($products as $product)
-                                <option value="{{ $product->id }}"
-                                    data-name="{{ $product->name }}"
-                                    data-unit="{{ $product->unit }}"
-                                    data-price-uzs="{{ $product->price_uzs }}"
-                                    data-price-usd="{{ $product->price_usd }}"
-                                    data-barcode="{{ $product->barcode_value }}">
-                                    {{ $product->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-2 d-flex">
-                        <button type="button" class="btn btn-outline-secondary qty-btn" data-action="decrease">-</button>
-                        <input type="number" class="form-control qty" name="products[${rowIndex}][qty]" min="1" value="1" required>
-                        <button type="button" class="btn btn-outline-secondary qty-btn" data-action="increase">+</button>
-                    </div>
-                    <div class="col-md-2">
-                        <input type="text" class="form-control unit" name="products[${rowIndex}][unit]" readonly>
-                    </div>
-                    <div class="col-md-2">
-                        <input type="number" class="form-control price-uzs" readonly>
-                    </div>
-                    <div class="col-md-1">
-                        <input type="number" class="form-control price-usd" readonly>
-                    </div>
-                    <div class="col-md-1">
-                        <button type="button" class="btn btn-danger remove-product">
-                            <i class="mdi mdi-delete"></i>
-                        </button>
-                    </div>
-                `;
+                <div class="col-md-5">
+                    <select class="form-select product-select" name="products[${rowIndex}][product_id]" required>
+                        <option value="">Select Product</option>
+                        @foreach ($products as $product)
+                            <option value="{{ $product->id }}"
+                                data-name="{{ $product->name }}"
+                                data-unit="{{ $product->unit }}"
+                                data-price="{{ $product->sale_price }}"
+                                data-barcode="{{ $product->barcode_value }}">
+                                {{ $product->name }} ({{ $product->sale_price }} UZS)
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex">
+                    <button type="button" class="btn btn-outline-secondary qty-btn" data-action="decrease">-</button>
+                    <input type="number" class="form-control qty" name="products[${rowIndex}][qty]" min="1" value="1" required>
+                    <button type="button" class="btn btn-outline-secondary qty-btn" data-action="increase">+</button>
+                </div>
+                <div class="col-md-2">
+                    <input type="text" class="form-control unit" name="products[${rowIndex}][unit]" readonly>
+                </div>
+                <div class="col-md-2">
+                    <input type="number" class="form-control price" name="products[${rowIndex}][price]" readonly>
+                </div>
+                <div class="col-md-1">
+                    <button type="button" class="btn btn-danger remove-product">
+                        <i class="mdi mdi-delete"></i>
+                    </button>
+                </div>
+            `;
 
             if (product) {
                 const select = newRow.querySelector('.product-select');
                 select.value = product.id;
                 newRow.querySelector('.unit').value = product.unit;
-                newRow.querySelector('.price-uzs').value = product.price_uzs;
-                newRow.querySelector('.price-usd').value = product.price_usd;
+                newRow.querySelector('.price').value = product.sale_price;
             }
 
             productsContainer.appendChild(newRow);
@@ -118,8 +119,7 @@
 
                 if (selected.value) {
                     row.querySelector('.unit').value = selected.dataset.unit;
-                    row.querySelector('.price-uzs').value = selected.dataset.priceUzs;
-                    row.querySelector('.price-usd').value = selected.dataset.priceUsd;
+                    row.querySelector('.price').value = selected.dataset.price;
                     audio.play().catch(e => console.log('Audio play failed:', e));
                     recalculateTotals();
                 }
@@ -161,8 +161,7 @@
                     select.value = '';
                     qty.value = 1;
                     row.querySelector('.unit').value = '';
-                    row.querySelector('.price-uzs').value = '';
-                    row.querySelector('.price-usd').value = '';
+                    row.querySelector('.price').value = '';
                     recalculateTotals();
                 }
             }
@@ -227,9 +226,9 @@
 
     document.querySelector('form').addEventListener('submit', function(e) {
         // Recalculate totals before submission
-        const totals = recalculateTotals();
+        const total = recalculateTotals();
 
-        // Validate at least one product and positive totals
+        // Validate at least one product and positive total
         let validProducts = 0;
         document.querySelectorAll('.product-row').forEach(row => {
             const productId = row.querySelector('.product-select')?.value;
@@ -244,9 +243,9 @@
             return;
         }
 
-        if (totals.totalUzs <= 0 && totals.totalUsd <= 0) {
+        if (total <= 0) {
             e.preventDefault();
-            alert('Total amount must be greater than zero in at least one currency.');
+            alert('Total amount must be greater than zero.');
             return;
         }
     });

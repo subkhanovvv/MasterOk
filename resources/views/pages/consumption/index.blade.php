@@ -2,41 +2,12 @@
 
 @section('content')
     <div class="container">
-        <h1 class="mb-4">📦 Product Intake</h1>
+        <h1 class="mb-4">📦 Product consume</h1>
 
-        @if (session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
-
-        @if (session('error'))
-            <div class="alert alert-danger">{{ session('error') }}</div>
-        @endif
-
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        <form method="POST" action="{{ route('intake.store') }}">
+        <form method="POST" action="{{ route('consumption.store') }}">
             @csrf
 
             <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="supplier_id" class="form-label">Supplier</label>
-                    <select class="form-select" id="supplier_id" name="supplier_id">
-                        <option value="">Select Supplier</option>
-                        @foreach ($suppliers as $supplier)
-                            <option value="{{ $supplier->id }}">
-                                {{ $supplier->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
                 <div class="col-md-6">
                     <label for="payment_type" class="form-label">Payment Type</label>
                     <select class="form-select" id="payment_type" name="payment_type" required>
@@ -48,9 +19,9 @@
                 <div class="col-md-6">
                     <label for="type" class="form-label">Transaction Type</label>
                     <select class="form-select" id="type" name="type" required>
-                        <option value="intake">Intake</option>
-                        <option value="intake_loan">Loan</option>
-                        <option value="intake_return">Return</option>
+                        <option value="consume">consume</option>
+                        <option value="loan">Loan</option>
+                        <option value="return">Return</option>
                     </select>
                 </div>
             </div>
@@ -79,6 +50,14 @@
                     <label for="loan_due_to" class="form-label">Due Date</label>
                     <input type="date" class="form-control" name="loan_due_to" id="loan_due_to">
                 </div>
+                <div class="col-md-6">
+                    <label for="client_name" class="form-label">client_name</label>
+                    <input type="text" class="form-control" name="client_name" id="client_name">
+                </div>
+                <div class="col-md-6">
+                    <label for="client_phone" class="form-label">client_phone</label>
+                    <input type="number" class="form-control" name="client_phone" id="client_phone">
+                </div>
             </div>
 
             <div class="mb-3">
@@ -87,7 +66,6 @@
             </div>
             <!-- Add this hidden field before your submit button -->
             <input type="hidden" name="total_price" id="total-price-hidden" value="0">
-            <input type="hidden" name="total_usd" id="total-usd-hidden" value="0">
             <!-- Barcode scanner input with button -->
             <div class="mb-4 d-flex gap-2">
                 <input type="text" id="barcode" class="form-control" placeholder="Scan or enter barcode..."
@@ -108,8 +86,7 @@
                     <i class="fas fa-plus"></i> Add Product
                 </button>
                 <div>
-                    <strong>Total UZS:</strong> <span id="total-uzs">0</span> |
-                    <strong>Total USD:</strong> <span id="total-usd">0</span>
+                    <strong>Total UZS:</strong> <span id="total-uzs">0</span>
                 </div>
             </div>
 

@@ -16,8 +16,22 @@
         // Show/hide additional fields based on transaction type
         transactionType.addEventListener('change', function() {
             const selectedType = this.value;
+
             returnFields.style.display = selectedType === 'intake_return' ? 'block' : 'none';
             loanFields.style.display = selectedType === 'intake_loan' ? 'block' : 'none';
+
+            if (selectedType !== 'intake_loan') {
+                // Clear loan-related fields
+                document.getElementById('loan_amount').value = '';
+                document.getElementById('loan_direction').value = '';
+                document.getElementById('loan_due_to').value = '';
+                document.getElementById('client_name').value = '';
+                document.getElementById('client_phone').value = '';
+            }
+
+            if (selectedType !== 'intake_return') {
+                document.getElementById('return_reason').value = '';
+            }
         });
 
         // Trigger change event to set initial state
@@ -26,7 +40,7 @@
         function recalculateTotals() {
             let totalUzs = 0;
             let totalUsd = 0;
-            
+
             document.querySelectorAll('.product-row').forEach(row => {
                 if (row.style.display !== 'none') {
                     const qty = parseFloat(row.querySelector('.qty')?.value || 0);
@@ -36,16 +50,19 @@
                     totalUsd += qty * priceUsd;
                 }
             });
-            
+
             // Update display
             document.getElementById('total-uzs').textContent = totalUzs.toLocaleString();
             document.getElementById('total-usd').textContent = totalUsd.toLocaleString();
-            
+
             // Update hidden fields for form submission
             document.getElementById('total-price-hidden').value = totalUzs;
             document.getElementById('total-usd-hidden').value = totalUsd;
-            
-            return { totalUzs, totalUsd };
+
+            return {
+                totalUzs,
+                totalUsd
+            };
         }
 
         function addProductRow(product = null) {
@@ -221,11 +238,11 @@
         // Auto-focus barcode input
         barcodeInput.focus();
     });
-    
+
     document.querySelector('form').addEventListener('submit', function(e) {
         // Recalculate totals before submission
         const totals = recalculateTotals();
-        
+
         // Validate at least one product and positive totals
         let validProducts = 0;
         document.querySelectorAll('.product-row').forEach(row => {
@@ -240,7 +257,7 @@
             alert('Please select at least one product before submitting.');
             return;
         }
-        
+
         if (totals.totalUzs <= 0 && totals.totalUsd <= 0) {
             e.preventDefault();
             alert('Total amount must be greater than zero in at least one currency.');
