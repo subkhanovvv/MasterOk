@@ -16,5 +16,6 @@
     </div>
     {{-- Modals & Js --}}
     @include('pages.history.modals.view-transaction')
+    @include('pages.history.modals.edit-transaction')
     @include('pages.history.js.script')
 @endsection
