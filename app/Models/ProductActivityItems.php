@@ -13,7 +13,12 @@ class ProductActivityItems extends Model
 
     public function product()
 {
-    return $this->belongsTo(\App\Models\Product::class);
+    return $this->belongsTo(Product::class);
 }
+     public function productActivity()
+    {
+        return $this->belongsTo(ProductActivity::class);
+    }
+
 
 }

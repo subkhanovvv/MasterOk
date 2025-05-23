@@ -69,19 +69,10 @@ Route::middleware(['auth'])->group(function () {
         Route::post('profile.update', 'update')->name('profile.update');
     });
 
-    // Route::controller(TransactionController::class)->group(function () {
-    //     Route::get('consumption', 'consumption')->name('consumption');
-    //     Route::get('consumption.products', 'getProducts')->name('consumption.products');
-    //     Route::post('consumption.store', 'store')->name('consumption.store');
-    //     Route::post('consumption.create', 'create')->name('consumption.create');
-    //     Route::post('consumption.remove/{id}', 'remove')->name('consumption.remove');
-    //     Route::post('consumption.add', 'add')->name('consumption.add');
-    //     Route::post('consumption.history', 'history')->name('consumption.history');
-    //     Route::post('consumption.show/{id}', 'show')->name('consumption.show');
-    //     Route::post('consumption/{id}/print', 'print')->name('consumption.print');
-
-    //     Route::get('report', 'report')->name('admin.reports.index');
-    // });
+    Route::controller(TransactionController::class)->group(function () {
+        Route::get('/report', 'index')->name('report.index');
+        Route::get('/download', 'download')->name('reports.download');
+    });
 });
 
 Route::middleware(['guest'])->controller(AuthController::class)->group(function () {

@@ -29,6 +29,10 @@ class Product extends Model
         return $this->hasOne(Barcode::class);
     }
 
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class);
+    }
     protected static function booted()
     {
         static::saving(function ($product) {

@@ -65,7 +65,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{{ route('report.index') }}">
                 <i class="menu-icon mdi mdi-file-chart"></i>
                 <span class="menu-title">Отчёт</span>
                 <i class="menu-arrow"></i>
