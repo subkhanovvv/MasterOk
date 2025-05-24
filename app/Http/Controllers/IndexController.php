@@ -68,10 +68,18 @@ class IndexController extends Controller
         $startOfWeek = Carbon::now()->startOfWeek();
         $endOfWeek = Carbon::now()->endOfWeek();
 
-        $activities = ProductActivity::whereNotNull('loan_due_to')
-            ->whereBetween('loan_due_to', [$startOfWeek, $endOfWeek])
+        $activities = ProductActivity::where(function ($query) use ($startOfWeek, $endOfWeek) {
+            $query->whereBetween('loan_due_to', [$startOfWeek, $endOfWeek])
+                ->orWhere(function ($q) use ($startOfWeek) {
+                    $q->where('loan_due_to', '<', $startOfWeek)
+                        ->where('status', '!=', 'complete');
+                });
+        })
             ->where('status', '!=', 'complete')
+            ->orderByRaw("CASE WHEN loan_due_to < ? THEN 0 ELSE 1 END", [$startOfWeek]) // overdue first
+            ->orderBy('loan_due_to', 'asc')
             ->get();
+
 
         // --- Top 5 consumed products in the last 7 days ---
         $sevenDaysAgo = Carbon::now()->subDays(7);
