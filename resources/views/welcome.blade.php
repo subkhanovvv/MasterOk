@@ -7,8 +7,6 @@
     <title>Document</title>
 </head>
 <body>
-    login
-    register
-    <a href="{{route('index')}}">dashboard</a>
+    <a href="{{route('login')}}">Login</a>
 </body>
 </html>

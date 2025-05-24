@@ -73,15 +73,16 @@
         .signup-link a {
             text-decoration: underline;
         }
-        img{
+
+        img {
             width: 60%
         }
-        .login-title{
+
+        .login-title {
             color: #4F46E5;
         }
     </style>
-    <link rel="shortcut icon" href="{{ asset('images/favi.ico') }}">
-    <link rel="apple-touch-icon-precomposed" href="{{ asset('images/favi.ico') }}">
+    <link rel="shortcut icon" href="{{ asset('admin/assets/images/ico.png') }}" />
 </head>
 
 <body>
