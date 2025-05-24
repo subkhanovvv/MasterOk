@@ -65,12 +65,14 @@
                                         <div class="card-body">
                                             <div class="d-sm-flex justify-content-between align-items-start">
                                                 <div>
-                                                    <h4 class="card-title card-title-dash">Undone Loans week</h4>
-                                                    <p class="card-subtitle card-subtitle-dash">You have 50+ new requests
+                                                    <h4 class="card-title card-title-dash">Незавершённые займы</h4>
+                                                    <p class="card-subtitle card-subtitle-dash">Займы с просрочкой или
+                                                        сроком оплаты на этой неделе
                                                     </p>
                                                 </div>
                                                 <div>
-                                                    <a href="#" class="fw-bold text-primary">Show all <i
+                                                    <a href="{{ route('history.index', array_merge(request()->all(), ['loan_filter' => 'all', 'status' => 'incomplete'])) }}"
+                                                        class="fw-bold text-primary">Показать все<i
                                                             class="mdi mdi-arrow-right ms-2"></i></a>
                                                 </div>
                                             </div>
@@ -78,11 +80,12 @@
                                                 <table class="table select-table">
                                                     <thead>
                                                         <tr>
-                                                            <th>Name</th>
-                                                            <th>phone</th>
-                                                            <th>Loan by</th>
-                                                            <th>loan amount</th>
-                                                            <th>due to</th>
+                                                            <th>Имя</th>
+                                                            <th>Телефон</th>
+                                                            <th>Заем</th>
+                                                            <th>Сумма Заемa</th>
+                                                            <th>Дата окончания</th>
+                                                            <th>Действие</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -95,13 +98,19 @@
                                                                     {{ $a->client_phone ?? ($a->supplier?->brand?->phone ?? 'N/A') }}
                                                                 </td>
                                                                 <td>
-                                                                    {{ $a->loan_direction ?? 'no loan officer' }}
+                                                                    @if ($a->loan_direction === 'given')
+                                                                        Выдан
+                                                                    @elseif($a->loan_direction === 'taken')
+                                                                        Получен
+                                                                    @else
+                                                                        —
+                                                                    @endif
                                                                 </td>
                                                                 <td>
-                                                                    {{ $a->loan_amount ?? 'no amount' }}
+                                                                    {{ $a->loan_amount ?? 'не выбрано' }}
                                                                 </td>
                                                                 <td>
-                                                                    {{ $a->loan_due_to ?? 'no due date' }}
+                                                                    {{ $a->loan_due_to ?? 'не выбрано' }}
                                                                 </td>
                                                                 <td>
                                                                     @php
@@ -142,7 +151,9 @@
                                                             </tr>
                                                         @empty
                                                             <tr>
-                                                                <td colspan="4" class="text-center">No activities found
+                                                                <td>
+                                                                    <p class="text-muted text-center">Нет незавершённых
+                                                                        займов</p>
                                                                 </td>
                                                             </tr>
                                                         @endforelse

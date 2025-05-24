@@ -13,7 +13,7 @@ class HistoryController extends Controller
 
         $transactions = ProductActivity::withCount('items')
             ->with(['items.product'])
-            // Поиск по имени клиента или номеру
+
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->search;
                 $query->where(function ($q) use ($search) {
@@ -22,12 +22,25 @@ class HistoryController extends Controller
                 });
             })
 
-            // Фильтрация по типу операции
-            ->when($request->filled('type'), function ($query) use ($request) {
-                $query->where('type', $request->type);
+            // Handle loan_filter first, if given
+            ->when($request->filled('loan_filter'), function ($query) use ($request) {
+                if ($request->loan_filter === 'all') {
+                    $query->whereIn('type', ['loan', 'intake_loan']);
+                } elseif (in_array($request->loan_filter, ['loan', 'intake_loan'])) {
+                    $query->where('type', $request->loan_filter);
+                }
+                // else no loan filter applied
             })
 
-            // Фильтрация по стороне операции
+            // Otherwise filter by multiple types if loan_filter not used
+            ->unless($request->filled('loan_filter'), function ($query) use ($request) {
+                if ($request->filled('type')) {
+                    $types = is_array($request->type) ? $request->type : explode(',', $request->type);
+                    $query->whereIn('type', $types);
+                }
+            })
+
+            // The rest of filters remain unchanged
             ->when($request->filled('side'), function ($query) use ($request) {
                 if ($request->side === 'consume') {
                     $query->whereIn('type', ['consume', 'loan', 'return']);
@@ -36,30 +49,26 @@ class HistoryController extends Controller
                 }
             })
 
-            // Фильтрация по статусу займа
             ->when($request->filled('status'), function ($query) use ($request) {
                 $query->where('status', $request->status);
             })
 
-            // Фильтрация по направлению займа
             ->when($request->filled('loan_direction'), function ($query) use ($request) {
                 $query->where('loan_direction', $request->loan_direction);
             })
 
-            // Фильтрация по типу оплаты
             ->when($request->filled('payment_type'), function ($query) use ($request) {
                 $query->where('payment_type', $request->payment_type);
             })
 
-            // Сортировка
             ->orderBy('id', $sortOrder)
-
-            // Пагинация и сохранение параметров фильтра
             ->paginate(10)
             ->appends($request->except('page'));
 
         return view('pages.history.index', compact('transactions'));
     }
+
+
     public function print($id)
     {
         $transaction = ProductActivity::with(['items.product', 'supplier'])->findOrFail($id);
