@@ -6,6 +6,7 @@ use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ConsumptionController;
 use App\Http\Controllers\HistoryController;
+use App\Http\Controllers\IndexController;
 use App\Http\Controllers\IntakeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SupplierController;
@@ -28,8 +29,8 @@ use Illuminate\Support\Facades\Route;
 Route::redirect('/', '/index');
 
 Route::middleware(['auth'])->group(function () {
-
-    Route::view('/index', 'pages.index')->name('index');
+    
+    Route::get('/index', [IndexController::class, 'index'])->name('index');
 
     Route::resources([
         'brands' => BrandController::class,
