@@ -116,7 +116,7 @@
             productsContainer.appendChild(newRow);
             rowIndex++;
             recalculateTotals();
-           
+
         }
 
         // Add product row on button click
@@ -157,7 +157,7 @@
 
                 qtyInput.value = qty;
                 recalculateTotals();
-               
+
             }
 
             // Remove product row
@@ -185,10 +185,7 @@
             const code = barcodeInput.value.trim();
             if (!code) return;
 
-            // Try to find exact match first
             let product = productsFromDb.find(p => p.barcode_value === code);
-
-            // If no exact match, try to find by product ID as fallback
             if (!product) {
                 product = productsFromDb.find(p => p.id == code);
             }
@@ -201,17 +198,25 @@
                 return;
             }
 
-            // Check if product already exists in the list
             const existingRow = findProductRow(product.id);
             if (existingRow) {
                 const qtyInput = existingRow.querySelector('.qty');
                 qtyInput.value = parseInt(qtyInput.value) + 1;
-               
                 recalculateTotals();
             } else {
+                // Remove default empty row if it exists
+                const rows = document.querySelectorAll('.product-row');
+                if (rows.length === 1) {
+                    const select = rows[0].querySelector('.product-select');
+                    if (!select.value) {
+                        rows[0].remove(); // remove empty row
+                    }
+                }
+
                 addProductRow(product);
             }
         }
+
 
         // Helper function to find existing product row
         function findProductRow(productId) {
