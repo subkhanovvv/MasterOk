@@ -14,7 +14,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($products as $p)
+            @forelse ($products as $p)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $p->name }}</td>
@@ -88,8 +88,11 @@
                         </div>
                     </td>
                 </tr>
-            @endforeach
+            @empty
+                <tr>
+                    <td colspan="9" class="text-center py-4">Нет product</td>
+                </tr>
+            @endforelse
         </tbody>
     </table>
 </div>
-

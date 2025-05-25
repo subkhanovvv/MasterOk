@@ -58,7 +58,6 @@
     @forelse ($barcodes as $barcode)
         <div class="barcode-item">
 
-
             <strong>{{ $barcode->name }} ({{ $barcode->qty }} {{ $barcode->unit }})</strong>
 
             <img src="{{ asset('storage/' . $barcode->barcode) }}" alt="Barcode Image">
@@ -71,6 +70,8 @@
             </div>
         </div>
     @empty
-        <div>No barcodes found matching your criteria.</div>
+        <div style="grid-column: 1 / -1; display: flex; justify-content: center; align-items: center;">
+            <p class="text-center m-0">Нет barcodes</p>
+        </div>
     @endforelse
 </div>

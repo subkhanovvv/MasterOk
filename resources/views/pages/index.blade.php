@@ -151,9 +151,9 @@
                                                             </tr>
                                                         @empty
                                                             <tr>
-                                                                <td>
-                                                                    <p class="text-muted text-center">Нет незавершённых
-                                                                        займов</p>
+                                                                <td colspan="6" class="text-center py-4">
+                                                                    Нет незавершённых
+                                                                    займов
                                                                 </td>
                                                             </tr>
                                                         @endforelse
