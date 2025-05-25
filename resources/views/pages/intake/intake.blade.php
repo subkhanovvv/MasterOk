@@ -2,119 +2,109 @@
 
 @section('content')
     <div class="container">
-        <h1 class="mb-4">📦 Product Intake</h1>
-
-        @if (session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
-
-        @if (session('error'))
-            <div class="alert alert-danger">{{ session('error') }}</div>
-        @endif
-
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
         <form method="POST" action="{{ route('intake.store') }}">
             @csrf
+            <div class="card mb-3 border-0">
+                <div class="card-body row g-3 p-0">
+                    <div class="col-md-4">
+                        <label for="supplier_id" class="form-label">Поставщик</label>
+                        <select class="form-select form-select-sm" id="supplier_id" name="supplier_id">
+                            <option value="">Выберите поставщика</option>
+                            @foreach ($suppliers as $supplier)
+                                <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
 
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="supplier_id" class="form-label">Supplier</label>
-                    <select class="form-select" id="supplier_id" name="supplier_id">
-                        <option value="">Select Supplier</option>
-                        @foreach ($suppliers as $supplier)
-                            <option value="{{ $supplier->id }}">
-                                {{ $supplier->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-6">
-                    <label for="payment_type" class="form-label">Payment Type</label>
-                    <select class="form-select" id="payment_type" name="payment_type" required>
-                        <option value="cash">Cash</option>
-                        <option value="card">Card</option>
-                        <option value="bank_transfer">Bank transfer</option>
-                    </select>
-                </div>
-                <div class="col-md-6">
-                    <label for="type" class="form-label">Transaction Type</label>
-                    <select class="form-select" id="type" name="type" required>
-                        <option value="intake">Intake</option>
-                        <option value="intake_loan">Loan</option>
-                        <option value="intake_return">Return</option>
-                    </select>
+                    <div class="col-md-4">
+                        <label for="payment_type" class="form-label">Тип оплаты</label>
+                        <select class="form-select form-select-sm" id="payment_type" name="payment_type" required>
+                            <option value="cash">Наличные</option>
+                            <option value="card">Карта</option>
+                            <option value="bank_transfer">Банковский перевод</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="type" class="form-label">Тип транзакции</label>
+                        <select class="form-select form-select-sm" id="type" name="type" required>
+                            <option value="intake">Поступление</option>
+                            <option value="intake_loan">В долг</option>
+                            <option value="intake_return">Возврат</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12">
+                        <label for="note" class="form-label">Заметка</label>
+                        <textarea class="form-control form-control-sm" name="note" id="note" rows="2">{{ old('note') }}</textarea>
+                    </div>
                 </div>
             </div>
 
-            <!-- Additional fields that will show/hide based on transaction type -->
-            <div id="return-fields" class="row mb-3" style="display: none;">
-                <div class="col-md-12">
-                    <label for="return_reason" class="form-label">Return Reason</label>
-                    <textarea class="form-control" name="return_reason" id="return_reason" rows="2">{{ old('return_reason') }}</textarea>
+            <!-- Поля для возврата -->
+            <div id="return-fields" class="mb-3" style="display: none;">
+                <div class="card border-0">
+                    <div class="card-body p-2">
+                        <label for="return_reason" class="form-label">Причина возврата</label>
+                        <textarea class="form-control form-control-sm" name="return_reason" id="return_reason" rows="2">{{ old('return_reason') }}</textarea>
+                    </div>
                 </div>
             </div>
 
-            <div id="loan-fields" class="row mb-3" style="display: none;">
-                <div class="col-md-6">
-                    <label for="loan_amount" class="form-label">Loan Amount (UZS)</label>
-                    <input type="number" class="form-control" name="loan_amount" id="loan_amount" step="0.01">
-                </div>
-                <div class="col-md-6">
-                    <label for="loan_direction" class="form-label">Loan direction</label>
-                    <select name="loan_direction" id="loan_direction" class="form-select">
-                        <option value="given">Given</option>
-                        <option value="taken">Taken</option>
-                    </select>
-                </div>
-                <div class="col-md-6">
-                    <label for="loan_due_to" class="form-label">Due Date</label>
-                    <input type="date" class="form-control" name="loan_due_to" id="loan_due_to">
+            <!-- Поля для долга -->
+            <div id="loan-fields" class="mb-3" style="display: none;">
+                <div class="card border-0">
+                    <div class="card-body row g-3 p-0">
+                        <div class="col-md-4">
+                            <label for="loan_amount" class="form-label">Сумма долга (сум)</label>
+                            <input type="number" class="form-control form-control-sm" name="loan_amount" id="loan_amount" step="0.01">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="loan_direction" class="form-label">Направление долга</label>
+                            <select name="loan_direction" id="loan_direction" class="form-select form-select-sm">
+                                <option value="given">Выдан</option>
+                                <option value="taken">Получен</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="loan_due_to" class="form-label">Срок погашения</label>
+                            <input type="date" class="form-control form-control-sm" name="loan_due_to" id="loan_due_to">
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="mb-3">
-                <label for="note" class="form-label">Note</label>
-                <textarea class="form-control" name="note" id="note" rows="2">{{ old('note') }}</textarea>
-            </div>
-            <!-- Add this hidden field before your submit button -->
+            <!-- Скрытые поля -->
             <input type="hidden" name="total_price" id="total-price-hidden" value="0">
             <input type="hidden" name="total_usd" id="total-usd-hidden" value="0">
-            <!-- Barcode scanner input with button -->
-            <div class="mb-4 d-flex gap-2">
-                <input type="text" id="barcode" class="form-control" placeholder="Scan or enter barcode..."
-                    autocomplete="off" autofocus>
-                <button type="button" class="btn btn-success" id="scan-button">
-                    <i class="fas fa-barcode"></i> Scan
+
+            <!-- Сканер штрих-кода -->
+            <div class="mb-3 d-flex gap-2">
+                <input type="text" id="barcode" class="form-control form-control-sm" placeholder="Сканируйте или введите штрихкод..." autocomplete="off" autofocus>
+                <button type="button" class="btn btn-outline-success btn-sm" id="scan-button">
+                    <i class="fas fa-barcode"></i> Сканировать
                 </button>
             </div>
 
-            <h4 class="mb-3">🧾 Product List</h4>
-
+            <!-- Таблица товаров -->
             <div id="products-container" class="mb-3">
-                <!-- Dynamic rows will be added here -->
+                <!-- JavaScript отобразит здесь таблицу -->
             </div>
 
-            <div class="mb-3 d-flex justify-content-between">
-                <button type="button" class="btn btn-secondary" id="add-product">
-                    <i class="fas fa-plus"></i> Add Product
+            <!-- Действия -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <button type="button" class="btn btn-outline-primary btn-sm" id="add-product">
+                    <i class="fas fa-plus"></i> Добавить товар
                 </button>
-                <div>
-                    <strong>Total UZS:</strong> <span id="total-uzs">0</span> |
-                    <strong>Total USD:</strong> <span id="total-usd">0</span>
+                <div class="text-muted small">
+                    <strong>Итого (сум):</strong> <span id="total-uzs">0</span> |
+                    <strong>Итого (доллар):</strong> <span id="total-usd">0</span>
                 </div>
             </div>
 
+            <!-- Кнопка отправки -->
             <button type="submit" class="btn btn-primary w-100">
-                <i class="fas fa-check"></i> Submit Intake
+                <i class="fas fa-check"></i> Сохранить поступление
             </button>
         </form>
     </div>
