@@ -67,6 +67,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="col-md-12 justify-content-end d-flex gap-2">
                         <input class="form-check-input" type="checkbox" id="print-checkbox" name="print" checked>
                         <label class="form-check-label" for="print-checkbox">
@@ -76,14 +77,11 @@
                 </div>
             </div>
         </div>
-
         <input type="hidden" name="total_price" id="total-price-hidden" value="0">
         <input type="hidden" name="total_usd" id="total-usd-hidden" value="0">
-
         <div class="card mb-3 w-100">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center gap-4 flex-wrap">
-                    <!-- Left: Barcode scanner input -->
                     <div class="d-flex align-items-center flex-grow-1 gap-3">
                         <label for="barcode" class="form-label mb-0">
                             <i class="mdi mdi-barcode-scan icon-md"></i>
@@ -107,9 +105,7 @@
                 </div>
             </div>
         </div>
-
         <div class="card">
-
             <div class="card-body">
                 <table class="table table-bordered mb-3">
                     <thead>
@@ -135,13 +131,8 @@
                         </button>
                     </div>
                 </div>
-
             </div>
-
         </div>
-
-
     </form>
-
     @include('pages.intake.js.script')
 @endsection
