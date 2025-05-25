@@ -66,7 +66,7 @@
     setText('modalLoanDirection', button.dataset.loan_direction);
     setText('modalTotalPrice', button.dataset.total_price ? button.dataset.total_price + ' uzs' : '-');
     setText('modalPaymentType', translate(paymentTypeMap, button.dataset.payment_type));
-    setText('modalPaidAmount', button.dataset.paid_amount ? button.dataset.paid_amount + ' uzs' : '-');
+    // setText('modalPaidAmount', button.dataset.paid_amount ? button.dataset.paid_amount + ' uzs' : '-');
     setText('modalLoanDueTo', button.dataset.loan_due_to ? button.dataset.loan_due_to + ' uzs' : '-');
     setText('modalReturnReason', button.dataset.return_reason);
     setText('modalNote', button.dataset.note);

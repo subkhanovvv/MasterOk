@@ -57,11 +57,10 @@
                             data-bs-target="#transactionDetailsModal" class="text-decoration-none"
                             data-id="{{ $t->id }}" data-created_at="{{ $t->created_at }}"
                             data-updated_at="{{ $t->updated_at }}" data-type="{{ $t->type }}"
-                            data-client_name="{{ $t->client_name ?? '-' }}"
-                            data-client_phone="{{ $t->client_phone ?? '-' }}" data-status="{{ $t->status }}"
-                            data-loan_direction="{{ $t->loan_direction ?? '-' }}"
+                            data-client_name="{{ $t->client_name ?? ($t->supplier?->brand?->name ?? 'N/A') }}"
+                            data-client_phone="{{ $t->client_phone ?? ($t->supplier?->brand?->phone ?? 'N/A') }}"
+                            data-status="{{ $t->status }}" data-loan_direction="{{ $t->loan_direction ?? '-' }}"
                             data-total_price="{{ $t->total_price }}" data-payment_type="{{ $t->payment_type }}"
-                            data-paid_amount="{{ $t->paid_amount ?? '-' }}"
                             data-loan_due_to="{{ $t->loan_due_to ?? '-' }}"
                             data-return_reason="{{ $t->return_reason ?? '-' }}" data-note="{{ $t->note ?? '-' }}"
                             data-supplier="{{ $t->supplier ? $t->supplier->name : '-' }}"
@@ -70,14 +69,14 @@
                                     return [
                                         'product_name' => $item->product->name ?? '-',
                                         'qty' => $item->qty,
-                                        'unit' => $item->unit,
-                                        'price' => $item->price,
+                                        'unit' => $item->product->unit,
+                                        'price' => $item->product->sale_price,
                                     ];
                                 })->toJson() }}">
                             <i class="mdi mdi-eye icon-sm text-success"></i>
                         </a>
                         @if ($t->status === 'incomplete')
-                            <a href="javascript:void(0);" title="Редактировать" class="text-decoration-none" 
+                            <a href="javascript:void(0);" title="Редактировать" class="text-decoration-none"
                                 data-bs-toggle="modal" data-bs-target="#editTransactionModal">
                                 <i class="mdi mdi-pencil icon-sm text-primary"></i>
                             </a>
