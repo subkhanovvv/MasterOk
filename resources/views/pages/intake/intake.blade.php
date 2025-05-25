@@ -82,7 +82,7 @@
             <div class="mb-3 d-flex gap-2">
                 <input type="text" id="barcode" class="form-control form-control-sm" placeholder="Сканируйте или введите штрихкод..." autocomplete="off" autofocus>
                 <button type="button" class="btn btn-outline-success btn-sm" id="scan-button">
-                    <i class="fas fa-barcode"></i> Сканировать
+                    <i class="mdi mdi-barcode"></i>
                 </button>
             </div>
 
