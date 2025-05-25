@@ -66,16 +66,17 @@
         }
 
         function addProductRow(product = null) {
-            const newRow = document.createElement('div');
-            newRow.className = 'product-row row g-2 mb-2';
+            const newRow = document.createElement('tr');
+
+            newRow.className = 'product-row';
             newRow.innerHTML = `
-                    <div class="col-md-4">
-                        <select class="form-select product-select" name="products[${rowIndex}][product_id]" required>
-                            <option value="">Select Product</option>
+            
+                    <td>
+                        <select class="form-select form-select-sm product-select" name="products[${rowIndex}][product_id]" required>
+                            <option value="">Выберите продукт</option>
                             @foreach ($products as $product)
                                 <option value="{{ $product->id }}"
                                     data-name="{{ $product->name }}"
-                                    data-unit="{{ $product->unit }}"
                                     data-price-uzs="{{ $product->price_uzs }}"
                                     data-price-usd="{{ $product->price_usd }}"
                                     data-barcode="{{ $product->barcode_value }}">
@@ -83,32 +84,39 @@
                                 </option>
                             @endforeach
                         </select>
-                    </div>
-                    <div class="col-md-2 d-flex">
-                        <button type="button" class="btn btn-outline-secondary qty-btn" data-action="decrease">-</button>
+                    </td>
+                    <td>
                         <input type="number" class="form-control qty" name="products[${rowIndex}][qty]" min="1" value="1" required>
-                        <button type="button" class="btn btn-outline-secondary qty-btn" data-action="increase">+</button>
-                    </div>
-                    <div class="col-md-2">
-                        <input type="text" class="form-control unit" name="products[${rowIndex}][unit]" readonly>
-                    </div>
-                    <div class="col-md-2">
-                        <input type="number" class="form-control price-uzs" readonly>
-                    </div>
-                    <div class="col-md-1">
-                        <input type="number" class="form-control price-usd" readonly>
-                    </div>
-                    <div class="col-md-1">
-                     <button type="button" class="border-0 bg-none remove-product" id="clear-all">
-                            <i class="mdi mdi-close-circle-outline icon-md text-danger"></i>
+                      </td>
+                    <td>
+                   
+                        <input type="text" class="form-control unit bg-white border-0" name="products[${rowIndex}][unit]" disabled>
+                   </td>
+                    <td>
+                        <input type="number" class="form-control price-uzs bg-white border-0" disabled>
+                   
+                    </td>
+                    <td>
+                        <input type="number" class="form-control price-usd bg-white border-0" disabled>
+                
+                    </td>
+                    <td class="text-center">
+                         <button type="button" class="border-0 bg-white qty-btn" data-action="increase">
+                            <i class="mdi mdi-plus-circle-outline icon-sm text-success"></i>
+                            </button>
+                    
+                        <button type="button" class="border-0 bg-white qty-btn" data-action="decrease">
+                            <i class="mdi mdi-minus-circle-outline icon-sm text-warning"></i>    
                         </button>
-                    </div>
+                          <button type="button" class="border-0 bg-white remove-product" id="clear-all">
+                            <i class="mdi mdi-delete icon-sm text-danger"></i>
+                    </button>
+                    </td>
                 `;
 
             if (product) {
                 const select = newRow.querySelector('.product-select');
                 select.value = product.id;
-                newRow.querySelector('.unit').value = product.unit;
                 newRow.querySelector('.price-uzs').value = product.price_uzs;
                 newRow.querySelector('.price-usd').value = product.price_usd;
             }
@@ -119,6 +127,12 @@
 
         }
 
+        // Update totals when quantity is manually changed
+        productsContainer.addEventListener('input', e => {
+            if (e.target.classList.contains('qty')) {
+                recalculateTotals();
+            }
+        });
 
         document.getElementById('add-product').addEventListener('click', () => {
             addProductRow();

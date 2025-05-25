@@ -5,7 +5,7 @@
         @csrf
         <div class="card mb-3 border-0">
             <div class="card-body">
-                <h5 class="card-title">Добавить поступление</h5>
+                <h5 class="card-title">Приход</h5>
                 <div class="row g-3 p-0">
 
                     <div class="col-md-4">
@@ -30,7 +30,7 @@
                     <div class="col-md-4">
                         <label for="type" class="form-label">Тип транзакции</label>
                         <select class="form-select form-select-sm" id="type" name="type" required>
-                            <option value="intake">Поступление</option>
+                            <option value="intake">Приход</option>
                             <option value="intake_loan">В долг</option>
                             <option value="intake_return">Возврат</option>
                         </select>
@@ -67,7 +67,12 @@
                             </div>
                         </div>
                     </div>
-
+                    <div class="col-md-12 justify-content-end d-flex gap-2">
+                        <input class="form-check-input" type="checkbox" id="print-checkbox" name="print" checked>
+                        <label class="form-check-label" for="print-checkbox">
+                            <small>Печать</small>
+                        </label>
+                    </div>
                 </div>
             </div>
         </div>
@@ -103,21 +108,39 @@
             </div>
         </div>
 
-        <div id="products-container" class="mb-3">
-            {{-- Js table --}}
-        </div>
+        <div class="card">
 
-        <!-- Действия -->
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <div class="text-muted small">
-                <strong>Итого (сум):</strong> <span id="total-uzs">0</span> |
-                <strong>Итого (доллар):</strong> <span id="total-usd">0</span>
+            <div class="card-body">
+                <table class="table table-bordered mb-3">
+                    <thead>
+                        <tr>
+                            <th>Название</th>
+                            <th>Количество</th>
+                            <th>unit</th>
+                            <th>Цена (сум)</th>
+                            <th>Цена (доллар)</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="products-container">
+                    </tbody>
+                </table>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="text-muted small">
+                        <strong>Итого (сум):</strong> <span id="total-uzs">0</span> |
+                        <strong>Итого (доллар):</strong> <span id="total-usd">0</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <button type="submit" class="btn btn-primary rounded"> Сохранить
+                        </button>
+                    </div>
+                </div>
+
             </div>
+
         </div>
 
-        <button type="submit" class="btn btn-primary w-100">
-            <i class="fas fa-check"></i> Сохранить поступление
-        </button>
+
     </form>
 
     @include('pages.intake.js.script')
