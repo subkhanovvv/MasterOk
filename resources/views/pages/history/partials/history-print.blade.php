@@ -82,7 +82,7 @@
     @foreach ($transaction->items as $item)
         <div class="item-line">
             <span>{{ $item->product->name }} x {{ $item->qty }}</span>
-            <span>{{ number_format($item->price * $item->qty, 2) }}</span>
+            <span>{{ number_format($item->product->sale_price * $item->qty, 2) ?? '-' }}</span>
         </div>
     @endforeach
     <hr>
