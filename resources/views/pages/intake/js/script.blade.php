@@ -99,8 +99,8 @@
                         <input type="number" class="form-control price-usd" readonly>
                     </div>
                     <div class="col-md-1">
-                        <button type="button" class="btn btn-danger remove-product">
-                            <i class="mdi mdi-delete"></i>
+                     <button type="button" class="border-0 bg-none remove-product" id="clear-all">
+                            <i class="mdi mdi-close-circle-outline icon-md text-danger"></i>
                         </button>
                     </div>
                 `;
@@ -119,9 +119,16 @@
 
         }
 
-        // Add product row on button click
+
         document.getElementById('add-product').addEventListener('click', () => {
             addProductRow();
+        });
+
+        document.getElementById('clear-all').addEventListener('click', () => {
+            productsContainer.innerHTML = '';
+            rowIndex = 0;
+            addProductRow();
+            recalculateTotals();
         });
 
         // Update fields when product selected from dropdown
