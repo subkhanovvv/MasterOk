@@ -2,7 +2,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         const productsFromDb = @json($products->values());
         let rowIndex = 0;
-        const audio = new Audio('{{ asset('admin/beep.mp3') }}');
+        // const audio = new Audio('{{ asset('admin/beep.mp3') }}');
         const barcodeInput = document.getElementById('barcode');
         const scanButton = document.getElementById('scan-button');
         const productsContainer = document.getElementById('products-container');
@@ -116,7 +116,7 @@
             productsContainer.appendChild(newRow);
             rowIndex++;
             recalculateTotals();
-            audio.play().catch(e => console.log('Audio play failed:', e));
+           
         }
 
         // Add product row on button click
@@ -134,7 +134,6 @@
                     row.querySelector('.unit').value = selected.dataset.unit;
                     row.querySelector('.price-uzs').value = selected.dataset.priceUzs;
                     row.querySelector('.price-usd').value = selected.dataset.priceUsd;
-                    audio.play().catch(e => console.log('Audio play failed:', e));
                     recalculateTotals();
                 }
             }
@@ -158,7 +157,7 @@
 
                 qtyInput.value = qty;
                 recalculateTotals();
-                audio.play().catch(e => console.log('Audio play failed:', e));
+               
             }
 
             // Remove product row
@@ -167,7 +166,6 @@
                 if (rows.length > 1) {
                     row.remove();
                     recalculateTotals();
-                    audio.play().catch(e => console.log('Audio play failed:', e));
                 } else {
                     // Reset the single remaining row instead of removing it
                     const select = row.querySelector('.product-select');
@@ -208,7 +206,7 @@
             if (existingRow) {
                 const qtyInput = existingRow.querySelector('.qty');
                 qtyInput.value = parseInt(qtyInput.value) + 1;
-                audio.play().catch(e => console.log('Audio play failed:', e));
+               
                 recalculateTotals();
             } else {
                 addProductRow(product);
