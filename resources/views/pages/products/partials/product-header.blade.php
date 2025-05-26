@@ -1,6 +1,6 @@
 <div class="d-sm-flex justify-content-between align-items-center mb-3">
     <div>
-        <h4 class="card-title card-title-dash">Products</h4>
+        <h4 class="card-title card-title-dash">Товары</h4>
     </div>
     <div class="d-sm-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center gap-2 flex-wrap">
@@ -71,7 +71,7 @@
                 </div>
             </div>
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newProductModal" type="button">
-                <i class="mdi mdi-plus"></i> Add new
+                <i class="mdi mdi-plus"></i>Добавить
             </button>
         </div>
 

@@ -66,7 +66,7 @@
                                         <div class="col-md-4">
                                             <div class="form-floating">
                                                 <input type="number" class="form-control decimal-input" name="sale_price" id="editSalePrice" required>
-                                                <label for="editSalePrice">Sale</label>
+                                                <label for="editSalePrice">Цена продажи</label>
                                             </div>
                                         </div>
                                         <div class="col-12">

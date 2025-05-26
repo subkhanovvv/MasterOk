@@ -4,7 +4,7 @@
             <tr>
                 <th>#</th>
                 <th>Название</th>
-                <th>photo</th>
+                <th>Фото</th>
                 <th>Цена (UZS/USD)</th>
                 <th>Статус</th>
                 <th>Цена</th>
@@ -90,7 +90,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="9" class="text-center py-4">Нет product</td>
+                    <td colspan="9" class="text-center py-4">Нет товар </td>
                 </tr>
             @endforelse
         </tbody>

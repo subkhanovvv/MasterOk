@@ -7,13 +7,13 @@
         const proceedBtn = document.getElementById('proceedAction');
 
         if (action === 'print') {
-            proceedBtn.textContent = 'Print';
+            proceedBtn.textContent = 'Печать';
             proceedBtn.className = 'btn btn-primary';
         } else if (action === 'download') {
             proceedBtn.textContent = 'Download PDF';
             proceedBtn.className = 'btn btn-success';
         } else if (action === 'print-all') {
-            proceedBtn.textContent = 'Print All';
+            proceedBtn.textContent = 'Распечатать все';
             proceedBtn.className = 'btn btn-primary';
         }
 

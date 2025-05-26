@@ -1,10 +1,10 @@
 <div class="d-flex justify-content-between align-items-center">
     <div>
-        <h4 class="card-title card-title-dash">Бренды</h4>
+        <h4 class="card-title card-title-dash">Штрих-коды</h4>
     </div>
     <div class="d-flex justify-content-between align-items-center gap-2">
         <form action="{{ route('barcode.index') }}" method="GET" class="d-flex">
-            <input type="text" name="search" class="rounded form-control" placeholder="Поиск бренды..."
+            <input type="text" name="search" class="rounded form-control" placeholder="Поиск..."
                 style="height:45px; width:300px; border:1px solid black;" value="{{ request('search') }}" autofocus>
         </form>
         <div class="dropdown">
@@ -16,15 +16,13 @@
                 <form method="GET" action="{{ route('barcode.index') }}">
                     <div class="mb-2">
                         <select name="sort" class="form-select" onchange="this.form.submit()">
-                            <option value="desc" {{ request('sort') == 'desc' ? 'selected' : '' }}>Сначала новые
-                            </option>
-                            <option value="asc" {{ request('sort') == 'asc' ? 'selected' : '' }}>Сначала старые
-                            </option>
+                            <option value="desc" {{ request('sort') == 'desc' ? 'selected' : '' }}>Сначала новые</option>
+                            <option value="asc" {{ request('sort') == 'asc' ? 'selected' : '' }}>Сначала старые</option>
                         </select>
                     </div>
                     <div class="mb-2">
                         <select name="category_id" class="form-select">
-                            <option value="">All Categories</option>
+                            <option value="">Все категории</option>
                             @foreach ($categories as $category)
                                 <option value="{{ $category->id }}"
                                     {{ request('category_id') == $category->id ? 'selected' : '' }}>
@@ -35,7 +33,7 @@
                     </div>
                     <div class="mb-2">
                         <select name="brand_id" class="form-select">
-                            <option value="">All Brands</option>
+                            <option value="">Все бренды</option>
                             @foreach ($brands as $brand)
                                 <option value="{{ $brand->id }}"
                                     {{ request('brand_id') == $brand->id ? 'selected' : '' }}>
@@ -46,14 +44,12 @@
                     </div>
                     <div class="mb-2">
                         <select name="status" class="form-select">
-                            <option value="">All Statuses</option>
-                            <option value="normal" {{ request('status') == 'normal' ? 'selected' : '' }}>In Stock
-                            </option>
-                            <option value="low" {{ request('status') == 'low' ? 'selected' : '' }}>Low Stock
-                            </option>
+                            <option value="">Все статусы</option>
+                            <option value="normal" {{ request('status') == 'normal' ? 'selected' : '' }}>В наличии</option>
+                            <option value="low" {{ request('status') == 'low' ? 'selected' : '' }}>Мало</option>
                             <option value="out_of_stock" {{ request('status') == 'out_of_stock' ? 'selected' : '' }}>
-                                Out
-                                of Stock</option>
+                                Нет в наличии
+                            </option>
                         </select>
                     </div>
                     <div class="d-grid gap-2">
@@ -66,7 +62,7 @@
             </div>
         </div>
         <button class="btn btn-primary rounded" onclick="openBarcodeModal('print-all')" type="button">
-            <i class="mdi mdi-printer"></i> Print
+            <i class="mdi mdi-printer"></i> Печать
         </button>
     </div>
 </div>
