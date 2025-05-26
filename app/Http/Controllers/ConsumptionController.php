@@ -50,7 +50,7 @@ class ConsumptionController extends Controller
 
         $productLines = '';
         foreach ($request->products as $item) {
-            $productLines .= "- Product ID: {$item['product_id']} | Qty: {$item['qty']} | Unit: {$item['unit']} | Price: " . ($item['price'] ?? '0') . "\n";
+            $productLines .= "- Product ID: {$item['product_id']} | Qty: {$item['qty']} | Price: " . ($item['price'] ?? '0') . "\n";
         }
 
         $qrText = "Total price: {$activity->total_price}\n";

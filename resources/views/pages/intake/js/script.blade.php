@@ -79,6 +79,7 @@
                                     data-name="{{ $product->name }}"
                                     data-price-uzs="{{ $product->price_uzs }}"
                                     data-price-usd="{{ $product->price_usd }}"
+                                    data-unit="{{ $product->unit }}"
                                     data-barcode="{{ $product->barcode_value }}">
                                     {{ $product->name }}
                                 </option>
