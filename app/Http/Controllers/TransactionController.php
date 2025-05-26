@@ -41,6 +41,12 @@ class TransactionController extends Controller
                 $q->where('brand_id', $brandId);
             });
         }
+        if ($request->side === 'consume') {
+            $query->whereIn('type', ['consume', 'loan', 'return']);
+        } elseif ($request->side === 'intake') {
+            $query->whereIn('type', ['intake', 'intake_loan', 'intake_return']);
+        }
+
 
         $activities = $query->get();
 
@@ -55,6 +61,7 @@ class TransactionController extends Controller
 
         $netCash = 0;
         $softProfit = 0;
+        $softProfitUsd = 0;
         $loanTotals = [
             'given' => 0,
             'taken' => 0,
@@ -65,6 +72,7 @@ class TransactionController extends Controller
             $direction = $activity->loan_direction;
             $status = $activity->status;
             $price = $activity->total_price;
+            $priceusd = $activity->total_usd ?? $price; // Use USD price if available
             $loan = $activity->loan_amount ?? 0;
 
             $counts[$type]++;
@@ -76,6 +84,9 @@ class TransactionController extends Controller
                 $softProfit -= $price;
             }
 
+            if (in_array($type, ['return', 'intake', 'intake_loan'])) {
+                $softProfitUsd -= $priceusd;
+            }
             // Net cash calculation (actual cash flow)
             switch ($type) {
                 case 'consume':
@@ -134,6 +145,7 @@ class TransactionController extends Controller
             'counts',
             'netCash',
             'softProfit',
+            'softProfitUsd',
             'loanTotals',
             'start',
             'end',
