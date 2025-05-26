@@ -4,7 +4,7 @@
     </div>
     <div class="d-flex justify-content-between align-items-center gap-2">
         <form action="{{ route('brands.index') }}" method="GET" class="d-flex">
-            <input type="text" name="search" class="rounded form-control" placeholder="Поиск бренды..."
+            <input type="text" name="search" class="rounded form-control" placeholder="Поиск..."
                 style="height:45px; width:300px; border:1px solid black;" value="{{ request('search') }}" autofocus>
         </form>
         <div class="dropdown">
@@ -26,7 +26,7 @@
             </div>
         </div>
         <button class="btn btn-primary rounded" data-bs-toggle="modal" data-bs-target="#newBrandModal" type="button">
-            <i class="mdi mdi-plus"></i> Новый
+            <i class="mdi mdi-plus"></i> Добавить
         </button>
     </div>
 </div>

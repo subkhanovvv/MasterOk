@@ -2,22 +2,22 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Редактировать категория</h4>
+                <h4 class="modal-title">Редактировать поставщика</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form id="editSupplierForm" method="POST" action="#" >
+                <form id="editSupplierForm" method="POST" action="#">
                     @csrf
                     @method('PUT')
 
                     <input type="hidden" name="id" id="edit_supplier_id">
 
                     <div class="form-group">
-                        <label class="form-label">Название s</label>
+                        <label for="edit_supplier_name" class="form-label">Название поставщика</label>
                         <input type="text" class="form-control" id="edit_supplier_name" name="name" required>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">note s</label>
+                        <label for="edit_supplier_note" class="form-label">Примечание</label>
                         <input type="text" class="form-control" id="edit_supplier_note" name="note" required>
                     </div>
             </div>

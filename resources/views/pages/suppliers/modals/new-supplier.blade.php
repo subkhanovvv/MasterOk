@@ -2,23 +2,23 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Новый категория</h4>
+                <h4 class="modal-title">Новый поставщик</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <form method="POST" action="{{ route('suppliers.store') }}">
                     @csrf
-                    <div class="form-group">
-                        <label for="supplierName">Название категория</label>
-                        <input type="text" class="form-control form-control-sm" placeholder="Название категория"
+                    <div class="form-group mb-3">
+                        <label for="supplierName">Название поставщика</label>
+                        <input type="text" class="form-control form-control-sm" placeholder="Введите название поставщика"
                             name="name" required id="supplierName">
                     </div>
-                    <div class="form-group">
-                        <label for="supplierNote">Название категория</label>
-                        <input type="text" class="form-control form-control-sm" placeholder="Название категория"
+                    <div class="form-group mb-3">
+                        <label for="supplierNote">Примечание</label>
+                        <input type="text" class="form-control form-control-sm" placeholder="Дополнительная информация"
                             name="note" id="supplierNote">
                     </div>
-                    <div>
+                    <div class="form-group">
                         <label for="brand_id">Бренд</label>
                         <select name="brand_id" class="form-select" id="brand_id" required>
                             <option disabled selected>Выберите бренд</option>

@@ -1,10 +1,10 @@
 <div class="d-flex justify-content-between align-items-center">
     <div>
-        <h4 class="card-title card-title-dash">Suppliers</h4>
+        <h4 class="card-title card-title-dash">Поставщики</h4>
     </div>
     <div class="d-flex justify-content-between align-items-center gap-2">
         <form action="{{ route('suppliers.index') }}" method="GET" class="d-flex">
-            <input type="text" name="search" class="form-control rounded" placeholder="Поиск категории..."
+            <input type="text" name="search" class="form-control rounded" placeholder="Поиск..."
                 style="height:45px; width:300px; border:1px solid black;" value="{{ request('search') }}" autofocus>
         </form>
         <div class="dropdown">
@@ -16,10 +16,8 @@
                 <form method="GET" action="{{ route('suppliers.index') }}">
                     <div class="mb-2">
                         <select name="sort" class="form-select" onchange="this.form.submit()">
-                            <option value="desc" {{ request('sort') == 'desc' ? 'selected' : '' }}>Сначала новые
-                            </option>
-                            <option value="asc" {{ request('sort') == 'asc' ? 'selected' : '' }}>Сначала старые
-                            </option>
+                            <option value="desc" {{ request('sort') == 'desc' ? 'selected' : '' }}>Сначала новые</option>
+                            <option value="asc" {{ request('sort') == 'asc' ? 'selected' : '' }}>Сначала старые</option>
                         </select>
                     </div>
                     <div class="mb-2">
@@ -44,7 +42,7 @@
         </div>
         <button class="btn btn-primary rounded" data-bs-toggle="modal" data-bs-target="#newSupplierModal"
             type="button">
-            <i class="mdi mdi-plus"></i> Новый
+            <i class="mdi mdi-plus"></i> Добавить
         </button>
     </div>
 </div>
