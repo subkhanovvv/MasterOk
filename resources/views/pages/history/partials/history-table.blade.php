@@ -3,40 +3,57 @@
         <thead>
             <tr>
                 <th>#</th>
-                <th>Data transaction</th>
-                <th>type</th>
-                <th>total amount</th>
-                <th>products</th>
-                <th>payment</th>
-                <th>status</th>
-                <th>actions</th>
+                <th>Дата транзакции</th>
+                <th>Тип</th>
+                <th>Сумма</th>
+                <th>Товары</th>
+                <th>Оплата</th>
+                <th>Статус</th>
+                <th>Действия</th>
             </tr>
         </thead>
         <tbody>
             @forelse ($transactions as $t)
+                @php
+                    $paymentRu = match ($t->payment_type) {
+                        'cash' => 'Наличные',
+                        'card' => 'Карта',
+                        'bank_transfer' => 'Банковский перевод',
+                        default => $t->payment_type,
+                    };
+
+                    $typeRu = match ($t->type) {
+                        'consume' => 'Продажа',
+                        'loan' => 'Долг',
+                        'return' => 'Возврат',
+                        'intake' => 'Поступление',
+                        'intake_loan' => 'Поступление (в долг)',
+                        'intake_return' => 'Возврат поставщику',
+                        default => $t->type,
+                    };
+
+                    $color =
+                        $t->status === 'complete'
+                            ? 'success'
+                            : ($t->status === 'incomplete'
+                                ? 'warning'
+                                : 'danger');
+
+                    $statusRu = match ($t->status) {
+                        'complete' => 'Завершен',
+                        'incomplete' => 'Не завершен',
+                        default => $t->status,
+                    };
+                @endphp
+
                 <tr>
                     <td>{{ $loop->iteration + ($transactions->currentPage() - 1) * $transactions->perPage() }}</td>
                     <td>{{ $t->created_at }}</td>
-                    <td>{{ $t->type }}</td>
-                    <td>{{ $t->total_price }} uzs</td>
+                    <td>{{ $typeRu }}</td>
+                    <td>{{ $t->total_price }} сум</td>
                     <td>{{ $t->items_count }} товаров</td>
-                    <td>{{ $t->payment_type }}</td>
+                    <td>{{ $paymentRu }}</td>
                     <td>
-                        @php
-                            $color =
-                                $t->status === 'complete'
-                                    ? 'success'
-                                    : ($t->status === 'incomplete'
-                                        ? 'warning'
-                                        : 'danger');
-
-                            $statusRu = match ($t->status) {
-                                'complete' => 'Завершен',
-                                'incomplete' => 'Не завершен',
-                                default => $t->status,
-                            };
-                        @endphp
-
                         @if ($t->status === 'incomplete')
                             <form method="POST" action="{{ route('history.updateStatus', $t->id) }}" class="d-inline">
                                 @csrf
@@ -53,7 +70,7 @@
                         @endif
                     </td>
                     <td>
-                        <a href="javascript:void(0);" title="View Details" data-bs-toggle="modal"
+                        <a href="javascript:void(0);" title="Детали" data-bs-toggle="modal"
                             data-bs-target="#transactionDetailsModal" class="text-decoration-none"
                             data-id="{{ $t->id }}" data-created_at="{{ $t->created_at }}"
                             data-updated_at="{{ $t->updated_at }}" data-type="{{ $t->type }}"
@@ -75,7 +92,7 @@
                                 })->toJson() }}">
                             <i class="mdi mdi-eye icon-sm text-success"></i>
                         </a>
-                        <a onclick="printTransactionCheque({{ $t->id }})" title="print"
+                        <a onclick="printTransactionCheque({{ $t->id }})" title="Печать"
                             class="text-decoration-none">
                             <i class="mdi mdi-printer icon-sm"></i>
                         </a>
@@ -83,7 +100,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="5" class="text-center py-4">Нет history</td>
+                    <td colspan="8" class="text-center py-4">История пуста</td>
                 </tr>
             @endforelse
         </tbody>
