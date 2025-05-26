@@ -47,7 +47,8 @@ class IntakeController extends Controller
             'loan_due_to' => $request->loan_due_to,
             'loan_amount' => $request->loan_amount,
             'return_reason' => $request->return_reason,
-            'status' => 'incomplete',
+            'status' => $request->type === 'intake_loan' ? 'incomplete' : 'complete',
+
         ]);
 
         $productLines = '';

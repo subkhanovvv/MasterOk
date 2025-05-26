@@ -45,7 +45,7 @@ class ConsumptionController extends Controller
             'client_phone' => $request->client_phone,
             'loan_amount' => $request->loan_amount,
             'return_reason' => $request->return_reason,
-            'status' => 'incomplete',
+            'status' => $request->type === 'loan' ? 'incomplete' : 'complete',
         ]);
 
         $productLines = '';

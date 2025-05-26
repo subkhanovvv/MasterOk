@@ -20,108 +20,92 @@ class TransactionController extends Controller
 {
     public function index(Request $request)
     {
-        // Default to today's date if not specified
-        $startDate = $request->input('start_date', Carbon::today()->format('Y-m-d'));
-        $endDate = $request->input('end_date', Carbon::today()->format('Y-m-d'));
-        $brandId = $request->input('brand_id');
-        $loanDirection = $request->input('loan_direction');
-        $type = $request->input('type', 'loan');
+        $startDate = $request->query('start_date')
+            ? Carbon::parse($request->query('start_date'))->startOfDay()
+            : Carbon::today()->startOfDay();
 
-        // Base query with proper eager loading
-        $query = ProductActivity::with(['items.product.brand'])
-            ->whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
-            ->where('type', $type);
+        $endDate = $request->query('end_date')
+            ? Carbon::parse($request->query('end_date'))->endOfDay()
+            : Carbon::today()->endOfDay();
 
-        // Apply filters
-        if ($brandId) {
-            $query->whereHas('items.product', function ($q) use ($brandId) {
-                $q->where('brand_id', $brandId);
-            });
-        }
+        $activities = ProductActivity::whereBetween('created_at', [$startDate, $endDate])->get();
 
-        if ($loanDirection) {
-            $query->where('loan_direction', $loanDirection);
-        }
-
-        $activities = $query->get();
-
-        // Prepare data for chart
-        $chartData = $this->prepareChartData($activities);
-
-        // Get total profit
-        $totalProfit = $activities->sum('total_price');
-
-        // Get brands for filter dropdown
-        $brands = Brand::all();
-
-        return view('pages.report.report', compact(
-            'activities',
-            'chartData',
-            'totalProfit',
-            'brands',
-            'startDate',
-            'endDate',
-            'brandId',
-            'loanDirection',
-            'type'
-        ));
-    }
-
-    private function prepareChartData($activities)
-    {
-        $productSales = [];
+        $netCash = 0;
+        $activityTypeCounts = [
+            'consume' => 0,
+            'loan' => 0,
+            'return' => 0,
+            'intake' => 0,
+            'intake_loan' => 0,
+            'intake_return' => 0,
+        ];
 
         foreach ($activities as $activity) {
-            foreach ($activity->items as $item) {
-                if (!isset($item->product)) {
-                    continue; // Skip if product relationship not loaded
-                }
+            $type = $activity->type;
+            if (!isset($activityTypeCounts[$type])) {
+                continue;
+            }
 
-                $productName = $item->product->name;
-                $totalPrice = $item->qty * $item->product->price_uzs;
+            $activityTypeCounts[$type]++;
 
-                if (!isset($productSales[$productName])) {
-                    $productSales[$productName] = 0;
-                }
+            switch ($type) {
+                case 'consume':
+                case 'intake_return':
+                    $netCash += $activity->total_price;
+                    break;
 
-                $productSales[$productName] += $totalPrice;
+                case 'return':
+                case 'intake':
+                    $netCash -= $activity->total_price;
+                    break;
+
+                case 'loan':
+                    if ($activity->status === 'incomplete') {
+                        if ($activity->loan_direction === 'given') {
+                            $netCash += ($activity->total_price - $activity->loan_amount);
+                        } elseif ($activity->loan_direction === 'taken') {
+                            $netCash += ($activity->total_price + $activity->loan_amount);
+                        }
+                    } else {
+                        $netCash += $activity->total_price;
+                    }
+                    break;
+
+                case 'intake_loan':
+                    if ($activity->loan_direction === 'given') {
+                        $netCash += ($activity->total_price + $activity->loan_amount);
+                    } elseif ($activity->loan_direction === 'taken') {
+                        $netCash -= $activity->loan_amount;
+                    }
+                    break;
+            }
+        }
+        $givenLoanTotal = 0;
+        $takenLoanTotal = 0;
+
+        $incompleteLoans = ProductActivity::whereBetween('created_at', [$startDate, $endDate])
+            ->where('status', 'incomplete')
+            ->whereIn('type', ['loan', 'intake_loan'])
+            ->get();
+
+        foreach ($incompleteLoans as $loan) {
+            $difference = $loan->total_price - $loan->loan_amount;
+
+            if ($loan->loan_direction === 'given') {
+                $givenLoanTotal += $difference;
+            } elseif ($loan->loan_direction === 'taken') {
+                $takenLoanTotal += $difference;
             }
         }
 
-        // Sort by highest selling and take top 5
-        arsort($productSales);
-        $topProducts = array_slice($productSales, 0, 5, true);
-
-        // Ensure we have at least one product
-        if (empty($topProducts)) {
-            $topProducts = ['No Data' => 0];
-        }
-
-        return [
-            'labels' => array_keys($topProducts),
-            'data' => array_values($topProducts),
-            'colors' => $this->generateChartColors(count($topProducts))
-        ];
-    }
-
-    private function generateChartColors($count)
-    {
-        $colors = [
-            'rgba(54, 162, 235, 0.7)',
-            'rgba(255, 99, 132, 0.7)',
-            'rgba(75, 192, 192, 0.7)',
-            'rgba(255, 159, 64, 0.7)',
-            'rgba(153, 102, 255, 0.7)'
-        ];
-
-        return array_slice($colors, 0, $count);
-    }
-
-    public function download(Request $request)
-    {
-        // Implement your download logic here
-        // This would generate a CSV or PDF of the report
-
-        return back();
+        return view('pages.report.report', compact(
+            'netCash',
+            'activityTypeCounts',
+            'startDate',
+            'endDate',
+            // 'softProfit',
+            'givenLoanTotal',
+            'takenLoanTotal'
+        ));
     }
 }

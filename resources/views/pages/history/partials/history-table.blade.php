@@ -75,14 +75,6 @@
                                 })->toJson() }}">
                             <i class="mdi mdi-eye icon-sm text-success"></i>
                         </a>
-                        @if ($t->status === 'incomplete')
-                            <a href="javascript:void(0);" title="Редактировать" class="text-decoration-none"
-                                data-bs-toggle="modal" data-bs-target="#editTransactionModal">
-                                <i class="mdi mdi-pencil icon-sm text-primary"></i>
-                            </a>
-                        @else
-                            <i class="mdi mdi-lock text-danger" title="Редактирование заблокировано"></i>
-                        @endif
                         <a onclick="printTransactionCheque({{ $t->id }})" title="print"
                             class="text-decoration-none">
                             <i class="mdi mdi-printer icon-sm"></i>
