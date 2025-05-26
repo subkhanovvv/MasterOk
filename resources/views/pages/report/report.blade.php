@@ -28,6 +28,14 @@
             <button type="submit" class="btn btn-primary">Показать</button>
         </div>
     </form>
+<div class="mb-3 d-flex gap-2">
+    <a href="{{ route('report.export', array_merge(request()->all(), ['format' => 'pdf'])) }}" class="btn btn-danger">
+        Скачать PDF
+    </a>
+    <a href="{{ route('report.export', array_merge(request()->all(), ['format' => 'excel'])) }}" class="btn btn-success">
+        Скачать Excel
+    </a>
+</div>
 
     <div class="row mb-4">
         <div class="col-md-3">

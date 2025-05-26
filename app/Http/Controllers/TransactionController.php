@@ -15,6 +15,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator as FacadesValidator;
 use Illuminate\Validation\Validator;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ReportExport;
+use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
+use PDF;
 
 class TransactionController extends Controller
 {
@@ -136,5 +140,35 @@ class TransactionController extends Controller
             'brands',
             'brandId'
         ));
+    }
+    public function export(Request $request)
+    {
+        $format = $request->input('format', 'pdf'); // default PDF
+
+        $start = $request->input('start_date') ?? Carbon::now()->startOfMonth()->format('Y-m-d');
+        $end = $request->input('end_date') ?? Carbon::now()->endOfDay()->format('Y-m-d');
+        $brandId = $request->input('brand_id');
+
+        $startDate = Carbon::parse($start)->startOfDay();
+        $endDate = Carbon::parse($end)->endOfDay();
+
+        $query = ProductActivity::with(['items.product.brand', 'supplier'])
+            ->whereBetween('created_at', [$startDate, $endDate]);
+
+        if ($brandId) {
+            $query->whereHas('items.product', function ($q) use ($brandId) {
+                $q->where('brand_id', $brandId);
+            });
+        }
+
+        $activities = $query->get();
+
+        if ($format === 'excel') {
+            return Excel::download(new ReportExport($activities), 'report.xlsx');
+        }
+
+        // PDF
+        $pdf = FacadePdf::loadView('pages.report.partials.pdf', compact('activities', 'start', 'end'));
+        return $pdf->download('report.pdf');
     }
 }

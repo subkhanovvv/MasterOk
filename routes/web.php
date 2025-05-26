@@ -29,7 +29,7 @@ use Illuminate\Support\Facades\Route;
 Route::redirect('/', '/index');
 
 Route::middleware(['auth'])->group(function () {
-    
+
     Route::get('/index', [IndexController::class, 'index'])->name('index');
 
     Route::resources([
@@ -72,7 +72,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::controller(TransactionController::class)->group(function () {
         Route::get('/report', 'index')->name('report.index');
-        Route::get('/download', 'download')->name('reports.download');
+        Route::get('/report/export', 'export')->name('report.export');
     });
 });
 
