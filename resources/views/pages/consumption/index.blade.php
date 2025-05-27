@@ -41,7 +41,8 @@
                         <div class="row g-3">
                             <div class="col-md-4">
                                 <label for="loan_amount" class="form-label">Сумма долга (сум)</label>
-                                <input type="number" class="form-control form-control-sm" name="loan_amount" id="loan_amount" step="0.01">
+                                <input type="number" class="form-control form-control-sm" name="loan_amount"
+                                    id="loan_amount" step="0.01">
                             </div>
                             <div class="col-md-4">
                                 <label for="loan_direction" class="form-label">Направление долга</label>
@@ -52,20 +53,23 @@
                             </div>
                             <div class="col-md-4">
                                 <label for="loan_due_to" class="form-label">Срок погашения</label>
-                                <input type="date" class="form-control form-control-sm" name="loan_due_to" id="loan_due_to">
+                                <input type="date" class="form-control form-control-sm" name="loan_due_to"
+                                    id="loan_due_to">
                             </div>
                             <div class="col-md-6">
                                 <label for="client_name" class="form-label">Имя клиента</label>
-                                <input type="text" class="form-control form-control-sm" name="client_name" id="client_name">
+                                <input type="text" class="form-control form-control-sm" name="client_name"
+                                    id="client_name">
                             </div>
                             <div class="col-md-6">
                                 <label for="client_phone" class="form-label">Телефон клиента</label>
-                                <input type="number" class="form-control form-control-sm" name="client_phone" id="client_phone">
+                                <input type="number" class="form-control form-control-sm" name="client_phone"
+                                    id="client_phone">
                             </div>
                         </div>
                     </div>
 
-                       <div class="col-md-12 justify-content-end d-flex gap-2">
+                    <div class="col-md-12 justify-content-end d-flex gap-2">
                         <input class="form-check-input" type="checkbox" id="print-checkbox" name="print" checked>
                         <label class="form-check-label" for="print-checkbox">
                             <small>Печать</small>
@@ -86,7 +90,7 @@
                             <i class="mdi mdi-barcode-scan icon-md"></i>
                         </label>
                         <input type="text" id="barcode" class="form-control form-control rounded"
-                               placeholder="Сканируйте или введите штрихкод..." autocomplete="off" autofocus>
+                            placeholder="Сканируйте или введите штрихкод..." autocomplete="off" autofocus>
                         <button type="button" class="border-0 bg-white" id="scan-button">
                             <i class="mdi mdi-check-circle-outline icon-md text-success"></i>
                         </button>
@@ -101,6 +105,13 @@
                             <i class="mdi mdi-close-circle-outline icon-md text-danger"></i>
                         </button>
                     </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <input type="text" id="product_search" class="form-control form-control rounded"
+                            placeholder="Поиск товара..." autocomplete="off">
+                        <button class="border-0 bg-white" id="search-button" type="button">
+                            <i class="mdi mdi-magnify icon-md text-primary"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -109,13 +120,13 @@
             <div class="card-body">
                 <table class="table table-bordered mb-3">
                     <thead>
-                    <tr>
-                        <th>Название</th>
-                        <th>Количество</th>
-                        <th>unit</th>
-                        <th>Цена (сум)</th>
-                        <th>Действия</th>
-                    </tr>
+                        <tr>
+                            <th>Название</th>
+                            <th>Количество</th>
+                            <th>unit</th>
+                            <th>Цена (сум)</th>
+                            <th>Действия</th>
+                        </tr>
                     </thead>
                     <tbody id="products-container">
                     </tbody>

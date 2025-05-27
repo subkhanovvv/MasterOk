@@ -102,37 +102,43 @@
                             <i class="mdi mdi-close-circle-outline icon-md text-danger"></i>
                         </button>
                     </div>
-                </div>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-body">
-                <table class="table table-bordered mb-3">
-                    <thead>
-                        <tr>
-                            <th>Название</th>
-                            <th>Количество</th>
-                            <th>unit</th>
-                            <th>Цена (сум)</th>
-                            <th>Цена (доллар)</th>
-                            <th>Действия</th>
-                        </tr>
-                    </thead>
-                    <tbody id="products-container">
-                    </tbody>
-                </table>
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div class="text-muted small">
-                        <strong>Итого (сум):</strong> <span id="total-uzs">0</span> |
-                        <strong>Итого (доллар):</strong> <span id="total-usd">0</span>
-                    </div>
                     <div class="d-flex align-items-center gap-3">
-                        <button type="submit" class="btn btn-primary rounded"> Сохранить
+                        <input type="text" id="product_search" class="form-control form-control rounded"
+                            placeholder="Поиск товара..." autocomplete="off">
+                        <button class="border-0 bg-white" id="search-button" type="button">
+                            <i class="mdi mdi-magnify icon-md text-primary"></i>
                         </button>
                     </div>
                 </div>
             </div>
-        </div>
+            <div class="card">
+                <div class="card-body">
+                    <table class="table table-bordered mb-3">
+                        <thead>
+                            <tr>
+                                <th>Название</th>
+                                <th>Количество</th>
+                                <th>unit</th>
+                                <th>Цена (сум)</th>
+                                <th>Цена (доллар)</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="products-container">
+                        </tbody>
+                    </table>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="text-muted small">
+                            <strong>Итого (сум):</strong> <span id="total-uzs">0</span> |
+                            <strong>Итого (доллар):</strong> <span id="total-usd">0</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-3">
+                            <button type="submit" class="btn btn-primary rounded"> Сохранить
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
     </form>
     @include('pages.intake.js.script')
 @endsection
