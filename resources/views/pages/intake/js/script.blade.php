@@ -120,6 +120,7 @@
                 select.value = product.id;
                 newRow.querySelector('.price-uzs').value = product.price_uzs;
                 newRow.querySelector('.price-usd').value = product.price_usd;
+                newRow.querySelector('.unit').value = product.unit;
             }
 
             productsContainer.appendChild(newRow);
