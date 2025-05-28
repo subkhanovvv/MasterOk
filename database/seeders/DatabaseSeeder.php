@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
@@ -15,12 +14,27 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::Create(
+        // Create admin user
+        User::create([
+            'email' => 'admin@gmail.com',
+            'name' => 'Admin',
+            'password' => Hash::make('admin1234'),
+        ]);
+
+        // Insert default settings
+        DB::table('settings')->insert([
             [
-                'email' => 'admin@gmail.com',
-                'name' => 'Admin',
-                'password' => Hash::make('admin1234')
-            ]
-        );
+                'key' => 'usd_rate_source',
+                'value' => 'api',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'key' => 'manual_usd_to_uzs',
+                'value' => '12700',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
     }
 }

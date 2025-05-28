@@ -19,7 +19,6 @@ return new class extends Migration
             $table->string('stock_unit')->nullable();
             $table->integer('units_per_stock')->nullable();
             $table->string('unit')->default('шт');
-            $table->decimal('price_uzs', 15, 2);
             $table->decimal('price_usd', 15, 2);
             $table->string('short_description')->nullable();
             $table->decimal('sale_price', 15, 2)->nullable();

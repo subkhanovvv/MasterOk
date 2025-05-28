@@ -22,7 +22,11 @@
                         <img src="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
                             alt="{{ $p->name }}">
                     </td>
-                    <td>{{ number_format($p->price_uzs) }} sum / ${{ $p->price_usd }}</td>
+                    <td>
+                        <span class="uzs-price" data-usd="{{ $p->price_usd }}">...</span>
+                        / ${{ $p->price_usd }}
+                    </td>
+
                     <td>
                         @php
                             $color =
@@ -96,3 +100,33 @@
         </tbody>
     </table>
 </div>
+<script>
+    let usdToUzsRate = null;
+
+    async function fetchExchangeRates() {
+        try {
+            const response = await fetch('https://open.er-api.com/v6/latest/USD');
+            const data = await response.json();
+            usdToUzsRate = data.rates.UZS;
+
+            document.getElementById('usd-uzs-rate').textContent = usdToUzsRate.toFixed(2);
+
+            updateUzsPrices(); // Update prices after fetching
+        } catch (error) {
+            console.error('Error fetching exchange rates:', error);
+            usdToUzsRate = 12500; // fallback
+            document.getElementById('usd-uzs-rate').textContent = usdToUzsRate.toFixed(2);
+            updateUzsPrices();
+        }
+    }
+
+    function updateUzsPrices() {
+        document.querySelectorAll('.uzs-price').forEach(el => {
+            const usd = parseFloat(el.dataset.usd);
+            const uzs = usd * usdToUzsRate;
+            el.textContent = `${uzs.toLocaleString()} so'm`;
+        });
+    }
+
+    fetchExchangeRates();
+</script>
