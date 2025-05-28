@@ -12,14 +12,35 @@ class HistoryController extends Controller
         $sortOrder = $request->get('sort', 'desc');
 
         $transactions = ProductActivity::withCount('items')
-            ->with(['items.product'])
+            ->with(['items.product.brand', 'items.product.category', 'supplier'])
 
+            // Search by client_name, client_phone, supplier name, brand name, category name
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->search;
                 $query->where(function ($q) use ($search) {
                     $q->where('client_name', 'like', "%$search%")
-                        ->orWhere('client_phone', 'like', "%$search%");
+                        ->orWhere('client_phone', 'like', "%$search%")
+                        // Search supplier name
+                        ->orWhereHas('supplier', function ($q2) use ($search) {
+                            $q2->where('name', 'like', "%$search%");
+                        })
+                        // Search product brand name
+                        ->orWhereHas('items.product.brand', function ($q3) use ($search) {
+                            $q3->where('name', 'like', "%$search%");
+                        })
+                        // Search product category name
+                        ->orWhereHas('items.product.category', function ($q4) use ($search) {
+                            $q4->where('name', 'like', "%$search%");
+                        });
                 });
+            })
+
+            // Filter by start_date and end_date on created_at
+            ->when($request->filled('start_date'), function ($query) use ($request) {
+                $query->whereDate('created_at', '>=', $request->start_date);
+            })
+            ->when($request->filled('end_date'), function ($query) use ($request) {
+                $query->whereDate('created_at', '<=', $request->end_date);
             })
 
             // Handle loan_filter first, if given
@@ -40,7 +61,7 @@ class HistoryController extends Controller
                 }
             })
 
-            // The rest of filters remain unchanged
+            // Filter by side (consume or intake groups)
             ->when($request->filled('side'), function ($query) use ($request) {
                 if ($request->side === 'consume') {
                     $query->whereIn('type', ['consume', 'loan', 'return']);
@@ -49,14 +70,17 @@ class HistoryController extends Controller
                 }
             })
 
+            // Filter by status
             ->when($request->filled('status'), function ($query) use ($request) {
                 $query->where('status', $request->status);
             })
 
+            // Filter by loan_direction
             ->when($request->filled('loan_direction'), function ($query) use ($request) {
                 $query->where('loan_direction', $request->loan_direction);
             })
 
+            // Filter by payment_type
             ->when($request->filled('payment_type'), function ($query) use ($request) {
                 $query->where('payment_type', $request->payment_type);
             })

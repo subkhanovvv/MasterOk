@@ -23,16 +23,19 @@ class Product extends Model
     {
         return $this->hasOne(Category::class, 'id', 'category_id');
     }
-
     public function barcode()
     {
         return $this->hasOne(Barcode::class);
     }
-
     public function brand()
     {
         return $this->belongsTo(Brand::class);
     }
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id', 'id');
+    }
+
     protected static function booted()
     {
         static::saving(function ($product) {

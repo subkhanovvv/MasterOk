@@ -1,11 +1,21 @@
 <div class="d-flex justify-content-between align-items-center">
     <div>
-        <h4 class="card-title card-title-dash">Transactions</h4>
+        <h4 class="card-title card-title-dash">Транзакции</h4>
     </div>
     <div class="d-flex justify-content-between align-items-center gap-2">
         <form action="{{ route('history.index') }}" method="GET" class="d-flex">
-            <input type="text" name="search" class="form-control rounded" placeholder="Поиск категории..."
-                style="height:45px; width:300px; border:1px solid black;" value="{{ request('search') }}" autofocus>
+            <div class="d-flex gap-2">
+            {{-- Поиск --}}
+            <input type="text" name="search" class="form-control rounded" placeholder="Поиск по категории..."
+                style="height:45px; width:180px; border:1px solid black;" value="{{ request('search') }}" autofocus>
+            <input type="date" name="start_date" class="form-control rounded bg-light"
+                style="height: 45px; width: 160px;" value="{{ request('start_date') }}">
+            <input type="date" name="end_date" class="form-control rounded bg-light"
+                style="height: 45px; width: 160px;" value="{{ request('end_date') }}">
+            <button type="submit" class="bg-white border-0" style="height: 45px;">
+                <i class="mdi mdi-check-circle-outline icon-md text-success"></i>
+            </button>
+            </div>
         </form>
         <div class="dropdown">
             <button class="btn btn-secondary dropdown-toggle text-dark rounded" type="button" id="filterDropdown"
@@ -18,49 +28,39 @@
                     <div class="mb-2">
                         <label class="form-label small">Сортировка:</label>
                         <select name="sort" class="form-select">
-                            <option value="desc" {{ request('sort') == 'desc' ? 'selected' : '' }}>Сначала новые
-                            </option>
-                            <option value="asc" {{ request('sort') == 'asc' ? 'selected' : '' }}>Сначала старые
-                            </option>
-                        </select>
-                    </div>
-
-                    {{-- Сторона операции --}}
-                    <div class="mb-2">
-                        <label class="form-label small">Сторона операции:</label>
-                        <select name="side" class="form-select">
-                            <option value="">Все</option>
-                            <option value="consume" {{ request('side') == 'consume' ? 'selected' : '' }}>Расход</option>
-                            <option value="intake" {{ request('side') == 'intake' ? 'selected' : '' }}>Поступление
-                            </option>
+                            <option value="desc" {{ request('sort') == 'desc' ? 'selected' : '' }}>Сначала новые</option>
+                            <option value="asc" {{ request('sort') == 'asc' ? 'selected' : '' }}>Сначала старые</option>
                         </select>
                     </div>
 
                     {{-- Тип операции --}}
                     <div class="mb-2">
-                        <label class="form-label small">Фильтр по займу:</label>
-                        <select name="loan_filter" class="form-select">
-                            <option value="" {{ request('loan_filter') == '' ? 'selected' : '' }}>Все</option>
-                            <option value="all" {{ request('loan_filter') == 'all' ? 'selected' : '' }}>Все займы
-                                (loan + intake_loan)</option>
-                            <option value="loan" {{ request('loan_filter') == 'loan' ? 'selected' : '' }}>Только займ
-                                (loan)</option>
-                            <option value="intake_loan"
-                                {{ request('loan_filter') == 'intake_loan' ? 'selected' : '' }}>Только займ
-                                (intake_loan)</option>
+                        <label class="form-label small">Тип операции:</label>
+                        <select name="side" class="form-select">
+                            <option value="">Все</option>
+                            <option value="consume" {{ request('side') == 'consume' ? 'selected' : '' }}>Расход</option>
+                            <option value="intake" {{ request('side') == 'intake' ? 'selected' : '' }}>Поступление</option>
                         </select>
                     </div>
 
+                    {{-- Фильтр по займам --}}
+                    <div class="mb-2">
+                        <label class="form-label small">Фильтр по займам:</label>
+                        <select name="loan_filter" class="form-select">
+                            <option value="" {{ request('loan_filter') == '' ? 'selected' : '' }}>Все</option>
+                            <option value="all" {{ request('loan_filter') == 'all' ? 'selected' : '' }}>Все займы</option>
+                            <option value="loan" {{ request('loan_filter') == 'loan' ? 'selected' : '' }}>Только выданные займы</option>
+                            <option value="intake_loan" {{ request('loan_filter') == 'intake_loan' ? 'selected' : '' }}>Только полученные займы</option>
+                        </select>
+                    </div>
 
                     {{-- Статус займа --}}
                     <div class="mb-2">
                         <label class="form-label small">Статус займа:</label>
                         <select name="status" class="form-select">
                             <option value="">Все</option>
-                            <option value="complete" {{ request('status') == 'complete' ? 'selected' : '' }}>Завершен
-                            </option>
-                            <option value="incomplete" {{ request('status') == 'incomplete' ? 'selected' : '' }}>Не
-                                завершен</option>
+                            <option value="complete" {{ request('status') == 'complete' ? 'selected' : '' }}>Завершён</option>
+                            <option value="incomplete" {{ request('status') == 'incomplete' ? 'selected' : '' }}>Не завершён</option>
                         </select>
                     </div>
 
@@ -69,10 +69,8 @@
                         <label class="form-label small">Направление займа:</label>
                         <select name="loan_direction" class="form-select">
                             <option value="">Все</option>
-                            <option value="given" {{ request('loan_direction') == 'given' ? 'selected' : '' }}>Выдан
-                                клиенту</option>
-                            <option value="taken" {{ request('loan_direction') == 'taken' ? 'selected' : '' }}>Получен
-                                от лица</option>
+                            <option value="given" {{ request('loan_direction') == 'given' ? 'selected' : '' }}>Выдан клиенту</option>
+                            <option value="taken" {{ request('loan_direction') == 'taken' ? 'selected' : '' }}>Получен от клиента</option>
                         </select>
                     </div>
 
@@ -81,13 +79,9 @@
                         <label class="form-label small">Тип оплаты:</label>
                         <select name="payment_type" class="form-select">
                             <option value="">Все</option>
-                            <option value="cash" {{ request('payment_type') == 'cash' ? 'selected' : '' }}>Наличные
-                            </option>
-                            <option value="card" {{ request('payment_type') == 'card' ? 'selected' : '' }}>Карта
-                            </option>
-                            <option value="bank_transfer"
-                                {{ request('payment_type') == 'bank_transfer' ? 'selected' : '' }}>Банковский перевод
-                            </option>
+                            <option value="cash" {{ request('payment_type') == 'cash' ? 'selected' : '' }}>Наличные</option>
+                            <option value="card" {{ request('payment_type') == 'card' ? 'selected' : '' }}>Карта</option>
+                            <option value="bank_transfer" {{ request('payment_type') == 'bank_transfer' ? 'selected' : '' }}>Банковский перевод</option>
                         </select>
                     </div>
 
@@ -101,6 +95,9 @@
                 </form>
             </div>
         </div>
-
+        <button class="bg-white border-0" data-bs-toggle="tooltip" data-bs-placement="top"
+            title="Очистить фильтры" onclick="window.location.href='{{ route('history.index') }}'">
+            <i class="mdi mdi-close-circle-outline text-danger icon-md"></i> 
+        </button>
     </div>
 </div>
