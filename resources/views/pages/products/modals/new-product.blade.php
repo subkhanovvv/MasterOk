@@ -13,36 +13,49 @@
                         <div class="col-md-4 border-end pe-4">
                             <div class="text-center mb-4">
                                 <div class="position-relative d-inline-block">
-                                    <img id="preview" src="" alt="Image Preview" 
-                                         class="img-thumbnail rounded-circle border" 
-                                         style="width: 150px; height: 150px; object-fit: cover; display: none;">
-                                    <div id="imagePlaceholder" 
-                                         class="rounded-circle border d-flex align-items-center justify-content-center" 
-                                         style="width: 150px; height: 150px; background-color: #f8f9fa;">
+                                    <img id="preview" src="" alt="Image Preview"
+                                        class="img-thumbnail rounded-circle border"
+                                        style="width: 150px; height: 150px; object-fit: cover; display: none;">
+                                    <div id="imagePlaceholder"
+                                        class="rounded-circle border d-flex align-items-center justify-content-center"
+                                        style="width: 150px; height: 150px; background-color: #f8f9fa;">
                                         <i class="bi bi-camera fs-1 text-muted"></i>
                                     </div>
                                 </div>
                                 <div class="mt-3">
-                                    <input type="file" name="photo" class="form-control form-control-sm" 
-                                           id="photo" onchange="previewImage(event)">
+                                    <input type="file" name="photo" class="form-control form-control-sm"
+                                        id="photo" onchange="previewImage(event)">
                                 </div>
                             </div>
-                            
+
                             <div class="mb-4">
                                 <label class="form-label text-muted small mb-1">Штрих-код</label>
-                                <div class="bg-light p-2 rounded text-center">
+
+                                <select id="barcode-option" class="form-select mb-2">
+                                    <option value="auto">Автоматически сгенерируется</option>
+                                    <option value="manual">Ввести вручную</option>
+                                </select>
+
+                                <div id="barcode-auto" class="bg-light p-2 rounded text-center">
                                     <small class="text-muted">Автоматически сгенерируется</small>
                                 </div>
+
+                                <div id="barcode-manual" class="d-none">
+                                    <input type="text" name="barcode_value" class="form-control"
+                                        placeholder="Введите штрих-код">
+                                </div>
                             </div>
+
                         </div>
-                        
+
                         <!-- Right Column - Form Fields -->
                         <div class="col-md-8 ps-4">
                             <div class="row g-3">
                                 <!-- Basic Info -->
                                 <div class="col-md-6">
                                     <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" name="name" id="productName" required>
+                                        <input type="text" class="form-control" name="name" id="productName"
+                                            required>
                                         <label for="productName">Название товара</label>
                                     </div>
                                 </div>
@@ -52,7 +65,7 @@
                                         <label for="short_description">Краткое описание</label>
                                     </div>
                                 </div>
-                                
+
                                 <!-- Brand and Category -->
                                 <div class="col-md-6">
                                     <div class="form-floating">
@@ -76,38 +89,42 @@
                                         <label for="category">Категория</label>
                                     </div>
                                 </div>
-                                
+
                                 <!-- Pricing Section -->
                                 <div class="col-12 mt-4">
                                     <h5 class="fw-bold text-uppercase text-muted mb-3">Цены</h5>
                                     <div class="row g-3">
                                         <div class="col-md-4">
                                             <div class="form-floating">
-                                                <input type="text" class="form-control decimal-input" name="price_usd" id="price_usd" required>
+                                                <input type="text" class="form-control decimal-input"
+                                                    name="price_usd" id="price_usd" required>
                                                 <label for="price_usd">USD</label>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-floating">
-                                                <input type="text" class="form-control decimal-input" name="price_uzs" id="price_uzs" required>
+                                                <input type="text" class="form-control decimal-input"
+                                                    name="price_uzs" id="price_uzs" required>
                                                 <label for="price_uzs">UZS</label>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-floating">
-                                                <input type="number" class="form-control decimal-input" name="sale_price" id="sale_price" required>
+                                                <input type="number" class="form-control decimal-input"
+                                                    name="sale_price" id="sale_price" required>
                                                 <label for="sale_price">Sale</label>
                                             </div>
                                         </div>
                                         <div class="col-12">
                                             <div class="d-flex align-items-center text-muted small">
                                                 <i class="bi bi-arrow-left-right me-2"></i>
-                                                1 USD = <strong id="usd-uzs-rate" class="ms-1">Загрузка...</strong> UZS
+                                                1 USD = <strong id="usd-uzs-rate" class="ms-1">Загрузка...</strong>
+                                                UZS
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <!-- Units Section -->
                                 <div class="col-12 mt-3">
                                     <h5 class="fw-bold text-uppercase text-muted mb-3">Единицы измерения</h5>
@@ -145,7 +162,8 @@
                                         </div>
                                         <div class="col-12">
                                             <div class="form-floating">
-                                                <input type="number" min="1" name="units_per_stock" class="form-control" id="units_per_stock">
+                                                <input type="number" min="1" name="units_per_stock"
+                                                    class="form-control" id="units_per_stock">
                                                 <label for="units_per_stock">Количество в складской единице</label>
                                             </div>
                                         </div>
@@ -187,7 +205,7 @@
     }
 
     let usdToUzsRate = null;
-    
+
     async function fetchExchangeRates() {
         try {
             const response = await fetch('https://open.er-api.com/v6/latest/USD');
@@ -205,10 +223,10 @@
     document.addEventListener('DOMContentLoaded', () => {
         fetchExchangeRates();
         setInterval(fetchExchangeRates, 3600000); // Refresh every hour
-        
+
         const usdInput = document.getElementById('price_usd');
         const uzsInput = document.getElementById('price_uzs');
-        
+
         usdInput.addEventListener('input', function() {
             if (usdToUzsRate) {
                 const usdValue = parseFloat(this.value.replace(/,/g, '.')) || 0;
@@ -216,12 +234,12 @@
                 uzsInput.value = uzsValue.toFixed(2);
             }
         });
-        
+
         // Also allow manual UZS entry without overwriting
         uzsInput.addEventListener('focus', function() {
             this.dataset.previousValue = this.value;
         });
-        
+
         uzsInput.addEventListener('change', function() {
             if (this.value !== this.dataset.previousValue && usdToUzsRate) {
                 // If UZS was manually changed, update USD
@@ -246,8 +264,21 @@
                     v = parts[0] + '.' + parts[1].substring(0, 2);
                 }
             }
-            
+
             this.value = v;
         });
+    });
+</script>
+<script>
+    document.getElementById('barcode-option').addEventListener('change', function() {
+        const manual = document.getElementById('barcode-manual');
+        const auto = document.getElementById('barcode-auto');
+        if (this.value === 'manual') {
+            manual.classList.remove('d-none');
+            auto.classList.add('d-none');
+        } else {
+            manual.classList.add('d-none');
+            auto.classList.remove('d-none');
+        }
     });
 </script>

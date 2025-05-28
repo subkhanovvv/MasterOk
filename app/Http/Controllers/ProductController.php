@@ -57,6 +57,7 @@ class ProductController extends Controller
             'sale_price' => 'nullable|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
             'brand_id' => 'required|exists:brands,id',
+            'barcode_value' => 'nullable|string|max:255|unique:products,barcode_value',
         ]);
 
         $photoPath = null;
@@ -64,6 +65,7 @@ class ProductController extends Controller
             $photoPath = $request->file('photo')->store('products', 'public');
         }
 
+        // First, create the product without barcode info
         $product = Product::create([
             'name' => $validated['name'],
             'photo' => $photoPath,
@@ -78,14 +80,17 @@ class ProductController extends Controller
             'brand_id' => $validated['brand_id'],
         ]);
 
-        $firstLetter = strtoupper(substr($validated['name'], 0, 1)); 
+        // Determine barcode value
+        if (!empty($validated['barcode_value'])) {
+            $barcodeValue = strtoupper($validated['barcode_value']); // Use manually entered value
+        } else {
+            $firstLetter = strtoupper(substr($validated['name'], 0, 1));
+            $categoryPart = str_pad($product->category_id, 2, '0', STR_PAD_LEFT);
+            $productPart = str_pad($product->id, 5, '0', STR_PAD_LEFT);
+            $barcodeValue = $firstLetter . $categoryPart . $productPart;
+        }
 
-        $categoryPart = str_pad($product->category_id, 2, '0', STR_PAD_LEFT);
-        $productPart = str_pad($product->id, 5, '0', STR_PAD_LEFT);
-        $numericPart = $categoryPart . $productPart;
-
-        $barcodeValue = $firstLetter . $numericPart;
-
+        // Generate barcode image
         $barcodeDir = storage_path('app/public/barcodes');
         if (!file_exists($barcodeDir)) {
             mkdir($barcodeDir, 0755, true);
@@ -96,24 +101,15 @@ class ProductController extends Controller
         $barcodeImagePath = 'barcodes/' . $barcodeValue . '.svg';
         file_put_contents(storage_path('app/public/' . $barcodeImagePath), $barcodeSVG);
 
+        // Save barcode info to product
         $product->update([
-            'barcode_value' => $barcodeValue, 
-            'barcode' => $barcodeImagePath,   
+            'barcode_value' => $barcodeValue,
+            'barcode' => $barcodeImagePath,
         ]);
 
         return back()->with('success', 'Товар и штрихкод успешно сохранены!');
     }
-    // public function destroy($id)
-    // {
-    //     try {
-    //         $product = Product::findOrFail($id);
-    //         $product->delete();
 
-    //         return redirect()->back()->with('success', 'Продукт успешно удален');
-    //     } catch (\Exception $e) {
-    //         return redirect()->back()->with('error', 'Ошибка при удалении продукта');
-    //     }
-    // }
 
     public function update(Request $request, Product $product)
     {
@@ -154,33 +150,33 @@ class ProductController extends Controller
 
         return redirect()->back()->with('success', 'Товар успешно обновлен.');
     }
-      public function destroy(Product $product)
-   {
-      try {
-         // Check if barcode exists and delete it
-         if ($product->barcode) {
-            $barcodePath = storage_path('app/public/' . $product->barcode);
-            if (file_exists($barcodePath)) {
-               unlink($barcodePath);  // Deletes the barcode image
+    public function destroy(Product $product)
+    {
+        try {
+            // Check if barcode exists and delete it
+            if ($product->barcode) {
+                $barcodePath = storage_path('app/public/' . $product->barcode);
+                if (file_exists($barcodePath)) {
+                    unlink($barcodePath);  // Deletes the barcode image
+                }
             }
-         }
 
-         // Delete product image if it exists
-         if ($product->photo) {
-            Storage::delete('public/' . $product->photo);
-         }
+            // Delete product image if it exists
+            if ($product->photo) {
+                Storage::delete('public/' . $product->photo);
+            }
 
-         // Delete the product
-         $product->delete();
+            // Delete the product
+            $product->delete();
 
-         return redirect()
-            ->route('products.index')
-            ->with('success', 'Товар успешно удален!');
-      } catch (QueryException $e) {
-         Log::error('Product deletion error: ' . $e->getMessage());
-         return redirect()
-            ->route('products.index')
-            ->with('error', 'Ошибка при удалении товара: ' . $e->getMessage());
-      }
-   }
+            return redirect()
+                ->route('products.index')
+                ->with('success', 'Товар успешно удален!');
+        } catch (QueryException $e) {
+            Log::error('Product deletion error: ' . $e->getMessage());
+            return redirect()
+                ->route('products.index')
+                ->with('error', 'Ошибка при удалении товара: ' . $e->getMessage());
+        }
+    }
 }
