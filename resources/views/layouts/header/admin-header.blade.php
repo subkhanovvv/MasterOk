@@ -58,6 +58,30 @@
         align-items: center;
         justify-content: center;
     }
+
+    @keyframes mdi-bounce {
+
+        0%,
+        20%,
+        50%,
+        80%,
+        100% {
+            transform: translateY(0);
+        }
+
+        40% {
+            transform: translateY(-12px);
+        }
+
+        60% {
+            transform: translateY(-6px);
+        }
+    }
+
+    .bounce {
+        display: inline-block;
+        animation: mdi-bounce 1s infinite;
+    }
 </style>
 <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
     <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
@@ -112,16 +136,28 @@
                     <a class="dropdown-item" href="{{ route('profile') }}"><i
                             class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My
                         Profile</a>
+                    <a class="dropdown-item" href="{{ route('settings') }}"><i
+                            class="dropdown-item-icon mdi mdi-cog text-primary me-2"></i> Settings</a>
                     <a class="dropdown-item" href="{{ route('logout') }}"><i
                             class="dropdown-item-icon mdi mdi-logout text-primary me-2"></i>Sign
                         Out</a>
-                </div>
-            </li>
-        </ul>
-        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
-            data-bs-toggle="offcanvas">
-            <span class="mdi mdi-menu"></span>
-        </button>
+                    <a href="" class="dropdown-item">
+                        <i class="dropdown-item-icon mdi mdi-information-slab-circle-outline text-info me-2"></i>
+                        Инфо
+                    </a>
+                    <a href="" class="dropdown-footer align-items-center d-flex justify-content-center text-decoration-none text-dark">
+                        <i class="mdi mdi-gift-outline icon-sm text-danger me-2 bounce"></i> Рефералка
+                    </a>
+
+
+
+    </div>
+    </li>
+    </ul>
+    <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
+        data-bs-toggle="offcanvas">
+        <span class="mdi mdi-menu"></span>
+    </button>
     </div>
 </nav>
 <script>
@@ -189,4 +225,3 @@
         }
     }
 </script>
-

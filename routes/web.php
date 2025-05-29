@@ -9,6 +9,7 @@ use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\IntakeController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\TransactionController;
 use App\Models\Product;
@@ -68,6 +69,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('logout', 'logout')->name('logout');
         Route::get('profile', 'profile')->name('profile');
         Route::post('profile.update', 'update')->name('profile.update');
+    });
+
+    Route::controller(SettingController::class)->group(function () {
+        Route::get('settings', 'index')->name('settings');
+        Route::post('settings/update', 'update')->name('settings.update');
     });
 
     Route::controller(TransactionController::class)->group(function () {

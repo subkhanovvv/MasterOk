@@ -8,5 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class SettingController extends Controller
 {
-  
+  public function index(){
+     return view('pages.settings.index');
+  }
 }
