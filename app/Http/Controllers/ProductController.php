@@ -53,7 +53,7 @@ class ProductController extends Controller
             'short_description' => 'nullable|string|max:1000',
             'sale_price' => 'nullable|numeric|min:0',
             'category_id' => 'nullable|exists:categories,id',
-            'brand_id' => 'required|exists:brands,id',
+            'brand_id' => 'nullable|exists:brands,id',
             'barcode_value' => 'nullable|string|max:255|unique:products,barcode_value',
         ]);
 
@@ -71,7 +71,7 @@ class ProductController extends Controller
             'short_description' => $validated['short_description'] ?? null,
             'sale_price' => $validated['sale_price'] ?? null,
             'category_id' => $validated['category_id']?? null,
-            'brand_id' => $validated['brand_id'],
+            'brand_id' => $validated['brand_id']?? null,
         ]);
 
         // Determine barcode value

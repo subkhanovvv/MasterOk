@@ -29,11 +29,11 @@
                 <div class="row g-3 p-0">
 
                     <div class="col-md-4">
-                        <label for="supplier_id" class="form-label">Поставщик</label>
-                        <select class="form-select form-select-md" id="supplier_id" name="supplier_id">
-                            <option value="">Выберите поставщика</option>
-                            @foreach ($suppliers as $supplier)
-                                <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+                        <label for="brand" class="form-label">Бренд</label>
+                        <select name="brand_id" id="brand" class="form-select form-select-md" required>
+                            <option value="" disabled selected >Выберите бренд</option>
+                            @foreach ($brands as $brand)
+                                <option value="{{ $brand->id }}">{{ $brand->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -59,9 +59,18 @@
                         </select>
                     </div>
 
-                    <div class="col-12">
+                    <div class="col-6">
                         <label for="note" class="form-label">Заметка</label>
-                        <textarea class="form-control form-control-sm" name="note" id="note" rows="2">{{ old('note') }}</textarea>
+                        <textarea class="form-control form-control-sm" style="height: 35px;" name="note" id="note" rows="2">{{ old('note') }}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="supplier_id" class="form-label">Поставщик</label>
+                        <select class="form-select form-select-md" id="supplier_id" name="supplier_id">
+                            <option value="">Без поставщика</option>
+                            @foreach ($suppliers as $supplier)
+                                <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
 
                     <div id="return-fields" class="col-12" style="display: none;">
@@ -127,7 +136,7 @@
                     <div class="d-flex align-items-center gap-3 position-relative">
                         <input type="text" id="product_search" class="form-control form-control-lg rounded"
                             placeholder="Поиск товара..." autocomplete="off">
-                            <i class="mdi mdi-magnify icon-md text-primary"></i>
+                        <i class="mdi mdi-magnify icon-md text-primary"></i>
                         <div id="search-results"
                             class="position-absolute top-100 start-0 w-100 bg-white z-3 shadow-sm rounded"
                             style="display: none;"></div>

@@ -53,8 +53,8 @@
                                 <!-- Brand and Category -->
                                 <div class="col-md-6">
                                     <div class="form-floating">
-                                        <select name="brand_id" class="form-select" id="brand" required>
-                                            <option disabled selected></option>
+                                        <select name="brand_id" class="form-select" id="brand">
+                                            <option value="">Выберите бренд</option>
                                             @foreach ($brands as $b)
                                                 <option value="{{ $b->id }}">{{ $b->name }}</option>
                                             @endforeach
@@ -65,7 +65,7 @@
                                 <div class="col-md-6">
                                     <div class="form-floating">
                                         <select name="category_id" class="form-select" id="category">
-                                            <option disabled selected></option>
+                                            <option value="">Выберите категория </option>
                                             @foreach ($categories as $c)
                                                 <option value="{{ $c->id }}">{{ $c->name }}</option>
                                             @endforeach

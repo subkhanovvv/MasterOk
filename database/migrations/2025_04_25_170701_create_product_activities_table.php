@@ -32,7 +32,9 @@ return new class extends Migration
             $table->text('note')->nullable();
 
             // RELATION
-            $table->unsignedBigInteger('supplier_id')->nullable(); // only used for intake
+            $table->unsignedBigInteger('supplier_id')->nullable(); 
+            $table->unsignedBigInteger('brand_id')->nullable();
+            // only used for intake
             $table->timestamps();
 
             // Indexes

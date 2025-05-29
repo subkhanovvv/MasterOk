@@ -23,7 +23,7 @@
                             alt="{{ $p->name }}">
                     </td>
                     <td>
-                       {{$p->price_uzs ? number_format($p->price_uzs) . ' so\'m' : 'Нет цены UZS'}} 
+                        {{ $p->price_uzs ? number_format($p->price_uzs) . ' so\'m' : 'Нет цены UZS' }}
                     </td>
 
                     <td>
@@ -58,10 +58,11 @@
                                 data-photo="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
                                 data-name="{{ $p->name }}" data-sale-price="{{ $p->sale_price }}"
                                 data-uzs-price="{{ $p->price_uzs }}" data-usd-price="{{ $p->price_usd }}"
-                                data-brand="{{ $p->get_brand->name }}" data-category="{{ $p->get_category->name ?? 'Нет категории' }}"
+                                data-brand="{{ $p->get_brand->name  ?? 'Нет бренда' }}"
+                                data-category="{{ $p->get_category->name ?? 'Нет категории' }}"
                                 data-barcode="{{ Storage::url($p->barcode) }}" data-qty="{{ $p->qty }}"
                                 data-updated-at="{{ $p->updated_at->format('d-m-y') }}"
-                                data-unit="{{ $p->unit }}" 
+                                data-unit="{{ $p->unit }}"
                                 data-description="{{ $p->short_description ?? 'Нет описания' }}"
                                 data-created-at="{{ $p->created_at->format('d-m-y') }}"
                                 data-status="{{ $statusRu }}" onclick="openModal(this)"
@@ -75,9 +76,9 @@
                                 data-uzs-price="{{ $p->price_uzs }}" data-usd-price="{{ $p->price_usd }}"
                                 data-photo="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
                                 data-sale-price="{{ $p->sale_price }}" data-barcode="{{ Storage::url($p->barcode) }}"
-                                data-brand="{{ $p->get_brand->name }}" data-category="{{ $p->get_category->name ?? 'Нет категории' }}"
-                                data-unit="{{ $p->unit }}" 
-                                onclick="openModal(this)" class="text-decoration-none">
+                                data-brand="{{ $p->get_brand->name ?? 'Нет бренда' }}"
+                                data-category="{{ $p->get_category->name ?? 'Нет категории' }}"
+                                data-unit="{{ $p->unit }}" onclick="openModal(this)" class="text-decoration-none">
                                 <i class="mdi mdi-pencil icon-sm text-primary"></i>
                             </a>
 
