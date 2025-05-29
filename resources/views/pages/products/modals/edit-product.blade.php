@@ -97,25 +97,6 @@
                                                 <label for="editUnit">Малая единица</label>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="form-floating">
-                                                <select name="stock_unit" class="form-select" id="editStockUnit">
-                                                    <option value="коробка">коробка</option>
-                                                    <option value="упаковка">упаковка</option>
-                                                    <option value="рулон">рулон</option>
-                                                    <option value="набор">набор</option>
-                                                    <option value="дюжина">дюжина</option>
-                                                    <option value="шт">шт</option>
-                                                </select>
-                                                <label for="editStockUnit">Складская единица</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="form-floating">
-                                                <input type="number" min="1" name="units_per_stock" class="form-control" id="editUnitsPerStock">
-                                                <label for="editUnitsPerStock">Количество в складской единице</label>
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
                             </div>

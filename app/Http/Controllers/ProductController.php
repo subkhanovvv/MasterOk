@@ -48,13 +48,11 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'photo' => 'nullable|image',
-            'stock_unit' => 'nullable|string|max:50',
-            'units_per_stock' => 'nullable|integer|min:1',
             'unit' => 'required|string|max:50',
             'price_usd' => 'required|numeric|min:0',
             'short_description' => 'nullable|string|max:1000',
             'sale_price' => 'nullable|numeric|min:0',
-            'category_id' => 'required|exists:categories,id',
+            'category_id' => 'nullable|exists:categories,id',
             'brand_id' => 'required|exists:brands,id',
             'barcode_value' => 'nullable|string|max:255|unique:products,barcode_value',
         ]);
@@ -68,13 +66,11 @@ class ProductController extends Controller
         $product = Product::create([
             'name' => $validated['name'],
             'photo' => $photoPath,
-            'units_per_stock' => $validated['units_per_stock'],
-            'stock_unit' => $validated['stock_unit'] ?? null,
             'unit' => $validated['unit'],
             'price_usd' => $validated['price_usd'],
             'short_description' => $validated['short_description'] ?? null,
             'sale_price' => $validated['sale_price'] ?? null,
-            'category_id' => $validated['category_id'],
+            'category_id' => $validated['category_id']?? null,
             'brand_id' => $validated['brand_id'],
         ]);
 
@@ -114,8 +110,6 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'photo' => 'nullable|image',
-            'stock_unit' => 'nullable|string|max:50',
-            'units_per_stock' => 'nullable|integer|min:1',
             'unit' => 'nullable|string|max:50',
             'price_uzs' => 'required|numeric|min:0',
             'price_usd' => 'required|numeric|min:0',
@@ -128,8 +122,6 @@ class ProductController extends Controller
         // $product->category_id = $validated['category_id'] ?? null;
         // $product->brand_id = $validated['brand_id'] ?? null;
         $product->unit = $validated['unit'];
-        $product->stock_unit = $validated['stock_unit'];
-        $product->units_per_stock = $validated['units_per_stock'];
         $product->price_usd = $validated['price_usd'] ?? 0;
         $product->price_uzs = $validated['price_uzs'] ?? 0;
         $product->sale_price = $validated['sale_price'];

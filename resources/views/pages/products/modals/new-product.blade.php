@@ -80,7 +80,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-floating">
-                                        <select name="category_id" class="form-select" id="category" required>
+                                        <select name="category_id" class="form-select" id="category">
                                             <option disabled selected></option>
                                             @foreach ($categories as $c)
                                                 <option value="{{ $c->id }}">{{ $c->name }}</option>
@@ -144,27 +144,6 @@
                                                     <option value="набор">набор</option>
                                                 </select>
                                                 <label for="unit">Малая единица</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-floating">
-                                                <select name="stock_unit" class="form-select" id="stock_unit">
-                                                    <option disabled selected></option>
-                                                    <option value="коробка">коробка</option>
-                                                    <option value="упаковка">упаковка</option>
-                                                    <option value="рулон">рулон</option>
-                                                    <option value="набор">набор</option>
-                                                    <option value="дюжина">дюжина</option>
-                                                    <option value="шт">шт</option>
-                                                </select>
-                                                <label for="stock_unit">Складская единица</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="form-floating">
-                                                <input type="number" min="1" name="units_per_stock"
-                                                    class="form-control" id="units_per_stock">
-                                                <label for="units_per_stock">Количество в складской единице</label>
                                             </div>
                                         </div>
                                     </div>

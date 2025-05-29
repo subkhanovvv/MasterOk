@@ -16,8 +16,6 @@
 
         var qty = element.getAttribute('data-qty');
         var unit = element.getAttribute('data-unit');
-        var stock_unit = element.getAttribute('data-stock-unit');
-        var units_per_stock = element.getAttribute('data-units-per-stock');
 
         var updated_at = element.getAttribute('data-updated-at');
         var created_at = element.getAttribute('data-created-at');
@@ -40,8 +38,6 @@
             document.getElementById('product_brand').textContent = brand;
             document.getElementById('product_category').textContent = category;
             document.getElementById('product_unit').textContent = unit;
-            document.getElementById('product_stock_unit').textContent = stock_unit;
-            document.getElementById('product_units_per_stock').textContent = units_per_stock;
             document.getElementById('product_status').textContent = status;
 
         } else if (modalId === '#editProductModal') {
@@ -56,8 +52,6 @@
             document.getElementById('editPriceUzs').value = element.getAttribute('data-uzs-price');
             document.getElementById('editSalePrice').value = element.getAttribute('data-sale-price');
             document.getElementById('editUnit').value = element.getAttribute('data-unit');
-            document.getElementById('editStockUnit').value = element.getAttribute('data-stock-unit') || '';
-            document.getElementById('editUnitsPerStock').value = element.getAttribute('data-units-per-stock') || '';
             document.getElementById('editBarcode').src = element.getAttribute('data-barcode') || '';
         } else if(modalId === "#deleteProductModal"){
             document.getElementById('delete-product-form').action = `/products/${id}`;

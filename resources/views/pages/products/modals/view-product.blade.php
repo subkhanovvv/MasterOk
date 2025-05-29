@@ -58,11 +58,6 @@
                                     <div class="fw-bold"><span id="product_qty"></span> <span id="product_unit"></span>
                                     </div>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label text-muted small mb-1">Единица запаса</label>
-                                    <div class="fw-bold"><span id="product_stock_unit"></span> <span
-                                            id="product_units_per_stock"></span></div>
-                                </div>
                             </div>
                         </div>
 

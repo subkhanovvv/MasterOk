@@ -59,11 +59,10 @@
                                 data-photo="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
                                 data-name="{{ $p->name }}" data-sale-price="{{ $p->sale_price }}"
                                 data-uzs-price="{{ $p->price_uzs }}" data-usd-price="{{ $p->price_usd }}"
-                                data-units-per-stock="{{ $p->units_per_stock }}"
-                                data-brand="{{ $p->get_brand->name }}" data-category="{{ $p->get_category->name }}"
+                                data-brand="{{ $p->get_brand->name }}" data-category="{{ $p->get_category->name ?? 'Нет категории' }}"
                                 data-barcode="{{ Storage::url($p->barcode) }}" data-qty="{{ $p->qty }}"
                                 data-updated-at="{{ $p->updated_at->format('d-m-y') }}"
-                                data-unit="{{ $p->unit }}" data-stock-unit="{{ $p->stock_unit }}"
+                                data-unit="{{ $p->unit }}" 
                                 data-description="{{ $p->short_description ?? 'Нет описания' }}"
                                 data-created-at="{{ $p->created_at->format('d-m-y') }}"
                                 data-status="{{ $statusRu }}" onclick="openModal(this)"
@@ -77,9 +76,8 @@
                                 data-uzs-price="{{ $p->price_uzs }}" data-usd-price="{{ $p->price_usd }}"
                                 data-photo="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
                                 data-sale-price="{{ $p->sale_price }}" data-barcode="{{ Storage::url($p->barcode) }}"
-                                data-units-per-stock="{{ $p->units_per_stock }}"
-                                data-brand="{{ $p->get_brand->name }}" data-category="{{ $p->get_category->name }}"
-                                data-unit="{{ $p->unit }}" data-stock-unit="{{ $p->stock_unit }}"
+                                data-brand="{{ $p->get_brand->name }}" data-category="{{ $p->get_category->name ?? 'Нет категории' }}"
+                                data-unit="{{ $p->unit }}" 
                                 onclick="openModal(this)" class="text-decoration-none">
                                 <i class="mdi mdi-pencil icon-sm text-primary"></i>
                             </a>
