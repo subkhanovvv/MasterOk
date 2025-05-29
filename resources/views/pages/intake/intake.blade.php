@@ -1,6 +1,15 @@
 @extends('layouts.admin')
 
 @section('content')
+<style>
+    #search-results {
+    z-index: 1000;
+}
+
+.search-result-item:hover {
+    background-color: #f8f9fa;
+}
+</style>
     <form method="POST" action="{{ route('intake.store') }}">
         @csrf
         <div class="card mb-3 border-0">
@@ -102,12 +111,15 @@
                             <i class="mdi mdi-close-circle-outline icon-md text-danger"></i>
                         </button>
                     </div>
-                    <div class="d-flex align-items-center gap-3">
+                    <div class="d-flex align-items-center gap-3 position-relative">
                         <input type="text" id="product_search" class="form-control form-control rounded"
                             placeholder="Поиск товара..." autocomplete="off">
                         <button class="border-0 bg-white" id="search-button" type="button">
                             <i class="mdi mdi-magnify icon-md text-primary"></i>
                         </button>
+                        <div id="search-results"
+                            class="position-absolute top-100 start-0 w-100 bg-white z-3 shadow-sm rounded"
+                            style="display: none;"></div>
                     </div>
                 </div>
             </div>
