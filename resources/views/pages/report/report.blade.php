@@ -1,42 +1,47 @@
 @extends('layouts.admin')
 
 @section('content')
-    <div class="container mt-4">
-        <h4 class="mb-4">Отчет по деятельности</h4>
+    {{-- <div class="container mt-4"> --}}
+        <div class="card mb-3 border-0">
+            <div class="card-body">
+            <h5 class="card-title">Отчет</h5>
+                <form method="GET" class="row g-3 mb-4">
+                    <div class="col-md-3">
+                        <label for="start_date" class="form-label">Дата начала</label>
+                        <input type="date" name="start_date" class="form-control form-control-lg" value="{{ $start }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="end_date" class="form-label">Дата окончания</label>
+                        <input type="date" name="end_date" class="form-control form-control-lg" value="{{ $end }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="brand_id" class="form-label">Бренд</label>
+                        <select name="brand_id" class="form-select">
+                            <option value="">Все бренды</option>
+                            @foreach ($brands as $brand)
+                                <option value="{{ $brand->id }}" {{ $brandId == $brand->id ? 'selected' : '' }}>
+                                    {{ $brand->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label small">Сторона операции:</label>
+                        <select name="side" class="form-select">
+                            <option value="">Все</option>
+                            <option value="consume" {{ request('side') == 'consume' ? 'selected' : '' }}>Расход</option>
+                            <option value="intake" {{ request('side') == 'intake' ? 'selected' : '' }}>Поступление
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary">Показать</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
-        <form method="GET" class="row g-3 mb-4">
-            <div class="col-md-3">
-                <label for="start_date" class="form-label">Дата начала</label>
-                <input type="date" name="start_date" class="form-control" value="{{ $start }}">
-            </div>
-            <div class="col-md-3">
-                <label for="end_date" class="form-label">Дата окончания</label>
-                <input type="date" name="end_date" class="form-control" value="{{ $end }}">
-            </div>
-            <div class="col-md-3">
-                <label for="brand_id" class="form-label">Бренд</label>
-                <select name="brand_id" class="form-select">
-                    <option value="">Все бренды</option>
-                    @foreach ($brands as $brand)
-                        <option value="{{ $brand->id }}" {{ $brandId == $brand->id ? 'selected' : '' }}>
-                            {{ $brand->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-            <div>
-            <label class="form-label small">Сторона операции:</label>
-            <select name="side" class="form-select">
-                <option value="">Все</option>
-                <option value="consume" {{ request('side') == 'consume' ? 'selected' : '' }}>Расход</option>
-                <option value="intake" {{ request('side') == 'intake' ? 'selected' : '' }}>Поступление
-                </option>
-            </select>
-            </div>
-            <div class="col-md-3 d-flex align-items-end">
-                <button type="submit" class="btn btn-primary">Показать</button>
-            </div>
-        </form>
+
         <div class="mb-3 d-flex gap-2">
             <a href="{{ route('report.export', array_merge(request()->all(), ['format' => 'pdf'])) }}"
                 class="btn btn-danger">
@@ -52,9 +57,8 @@
             <div class="col-md-3">
                 <div class="card border-success">
                     <div class="card-body">
-                        <h5 class="card-title">Общий доход</h5>
-                        <p class="card-text h4 text-success">{{ number_format($softProfit, 0, ',', ' ') }} сум
-                            /{{ $softProfitUsd, 0, ',', ' ' }} $</p>
+                        <h5 class="card-title">доход</h5>
+                        <p class="card-text h4 text-success">{{ number_format($softProfit, 0, ',', ' ') }} сум</p>
                         </p>
                     </div>
                 </div>
@@ -70,7 +74,7 @@
             <div class="col-md-3">
                 <div class="card border-warning">
                     <div class="card-body">
-                        <h5 class="card-title">Незавершенные займы (Выдано)</h5>
+                        <h5 class="card-title">займы (Выдано)</h5>
                         <p class="card-text h4 text-warning">{{ number_format($loanTotals['given'], 0, ',', ' ') }} сум</p>
                     </div>
                 </div>
@@ -78,7 +82,7 @@
             <div class="col-md-3">
                 <div class="card border-danger">
                     <div class="card-body">
-                        <h5 class="card-title">Незавершенные займы (Получено)</h5>
+                        <h5 class="card-title">займы (Получено)</h5>
                         <p class="card-text h4 text-danger">{{ number_format($loanTotals['taken'], 0, ',', ' ') }} сум</p>
                     </div>
                 </div>
@@ -177,5 +181,5 @@
                 </tbody>
             </table>
         </div>
-    </div>
+    {{-- </div> --}}
 @endsection
