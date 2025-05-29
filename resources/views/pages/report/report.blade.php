@@ -1,9 +1,14 @@
 @extends('layouts.admin')
 
 @section('content')
+<style>
+    *{
+         cursor: pointer;
+    }
+</style>
     <div class="card mb-3 border-0">
         <div class="card-body mb-3">
-            <h5 class="card-title">Отчет</h5>
+            <h5 class="card-title card-title-dash">Отчет</h5>
             <form method="GET" class="row justify-content-center g-3">
                 <div class="col-lg-3 col-md-4 col-sm-6">
                     <label for="start_date" class="form-label">Дата начала</label>
@@ -57,34 +62,9 @@
             </div>
         </div>
         <div class="row mb-4 card-body">
-            @php
-                $consumeTotal = $counts['consume'] + $counts['loan'];
-                $intakeTotal = $counts['intake'] + $counts['intake_loan'];
-                $returnTotal = $counts['return'] + $counts['intake_return'];
-            @endphp
-            <div class="col-md-4">
-                <div class="card border-primary">
-                    <div class="card-body">
-                        <h5 class="card-title">Расходы</h5>
-                        <p class="card-text h4 text-success">{{ $consumeTotal }}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Поступления</h5>
-                        <p class="card-text h4 text-info">{{ $intakeTotal }}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Возвраты</h5>
-                        <p class="card-text h4 text-danger">{{ $returnTotal }}</p>
-                    </div>
-                </div>
+            <div id="marketingOverview-legend"></div>
+            <div class="chartjs-bar-wrapper mt-3">
+                <canvas id="marketingOverviewchart" style="height: 200px; max-height:200px;"></canvas>
             </div>
         </div>
     </div>
@@ -120,7 +100,7 @@
                         <i class="mdi mdi-magnify"></i>
                     </button>
                     <a href="{{ route('report.index') }}" class="btn btn-success">
-                        <i class="mdi mdi-refresh"></i> 
+                        <i class="mdi mdi-refresh"></i>
                     </a>
                     <a href="{{ route('report.export', array_merge(request()->all(), ['format' => 'pdf'])) }}"
                         class="btn btn-primary">
@@ -195,4 +175,59 @@
             </table>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const chartData = @json($activityTypeCounts);
+        const ctx = document.getElementById('marketingOverviewchart').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: Object.keys(chartData).map(type => ({
+                    'consume': 'Расход',
+                    'loan': 'Займ',
+                    'return': 'Возврат',
+                    'intake': 'Приход',
+                    'intake_loan': 'Приход (займ)',
+                    'intake_return': 'Приход (возврат)'
+                } [type] || type)),
+                datasets: [{
+                    label: 'Количество операций',
+                    data: Object.values(chartData),
+                    backgroundColor: [
+                        '#4FC3F7', // Skyblue
+                        '#2196F3', // Primary blue
+                        '#64B5F6',
+                        '#1976D2',
+                        '#90CAF9',
+                        '#42A5F5'
+                    ],
+                    borderRadius: 6,
+                    barThickness: 30, // Smaller bar width
+                    maxBarThickness: 40
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => `${context.parsed.y} шт`
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: value => value + ' шт'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
 @endsection
