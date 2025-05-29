@@ -144,7 +144,7 @@
                                 <th>единица</th>
                                 <th>Цена</th>
                                 <th>Действия</th>
-                            </tr>1
+                            </tr>
                         </thead>
                         <tbody id="products-container">
                         </tbody>
