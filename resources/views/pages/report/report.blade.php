@@ -1,81 +1,49 @@
 @extends('layouts.admin')
 
 @section('content')
-    {{-- <div class="container mt-4"> --}}
-        <div class="card mb-3 border-0">
-            <div class="card-body">
+    <div class="card mb-3 border-0">
+        <div class="card-body mb-3">
             <h5 class="card-title">Отчет</h5>
-                <form method="GET" class="row g-3 mb-4">
-                    <div class="col-md-3">
-                        <label for="start_date" class="form-label">Дата начала</label>
-                        <input type="date" name="start_date" class="form-control form-control-lg" value="{{ $start }}">
-                    </div>
-                    <div class="col-md-3">
-                        <label for="end_date" class="form-label">Дата окончания</label>
-                        <input type="date" name="end_date" class="form-control form-control-lg" value="{{ $end }}">
-                    </div>
-                    <div class="col-md-3">
-                        <label for="brand_id" class="form-label">Бренд</label>
-                        <select name="brand_id" class="form-select">
-                            <option value="">Все бренды</option>
-                            @foreach ($brands as $brand)
-                                <option value="{{ $brand->id }}" {{ $brandId == $brand->id ? 'selected' : '' }}>
-                                    {{ $brand->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div>
-                        <label class="form-label small">Сторона операции:</label>
-                        <select name="side" class="form-select">
-                            <option value="">Все</option>
-                            <option value="consume" {{ request('side') == 'consume' ? 'selected' : '' }}>Расход</option>
-                            <option value="intake" {{ request('side') == 'intake' ? 'selected' : '' }}>Поступление
-                            </option>
-                        </select>
-                    </div>
-                    <div class="col-md-3 d-flex align-items-end">
-                        <button type="submit" class="btn btn-primary">Показать</button>
-                    </div>
-                </form>
-            </div>
+            <form method="GET" class="row justify-content-center g-3">
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <label for="start_date" class="form-label">Дата начала</label>
+                    <input type="date" name="start_date" class="form-control" style="height: 43px"
+                        value="{{ $start }}">
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <label for="end_date" class="form-label">Дата окончания</label>
+                    <input type="date" name="end_date" class="form-control" style="height: 43px"
+                        value="{{ $end }}">
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-6 d-flex align-items-end gap-2">
+                    <button type="submit" class="btn btn-primary">Показать</button>
+                    <a href="{{ route('report.index') }}" class="btn btn-secondary">Сбросить</a>
+                </div>
+            </form>
         </div>
-
-
-        <div class="mb-3 d-flex gap-2">
-            <a href="{{ route('report.export', array_merge(request()->all(), ['format' => 'pdf'])) }}"
-                class="btn btn-danger">
-                Скачать PDF
-            </a>
-            <a href="{{ route('report.export', array_merge(request()->all(), ['format' => 'excel'])) }}"
-                class="btn btn-success">
-                Скачать Excel
-            </a>
-        </div>
-
-        <div class="row mb-4">
+        <div class="row card-body">
             <div class="col-md-3">
                 <div class="card border-success">
                     <div class="card-body">
                         <h5 class="card-title">доход</h5>
-                        <p class="card-text h4 text-success">{{ number_format($softProfit, 0, ',', ' ') }} сум</p>
+                        <p class="card-text h4 text-primary">{{ number_format($softProfit, 0, ',', ' ') }} сум</p>
                         </p>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card border-info">
+                <div class="card border-primary">
                     <div class="card-body">
                         <h5 class="card-title">Касса</h5>
-                        <p class="card-text h4 text-info">{{ number_format($netCash, 0, ',', ' ') }} сум</p>
+                        <p class="card-text h4 text-primary">{{ number_format($netCash, 0, ',', ' ') }} сум</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card border-warning">
+                <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">займы (Выдано)</h5>
-                        <p class="card-text h4 text-warning">{{ number_format($loanTotals['given'], 0, ',', ' ') }} сум</p>
+                        <p class="card-text h4 text-danger">{{ number_format($loanTotals['given'], 0, ',', ' ') }} сум</p>
                     </div>
                 </div>
             </div>
@@ -88,8 +56,7 @@
                 </div>
             </div>
         </div>
-
-        <div class="row mb-4">
+        <div class="row mb-4 card-body">
             @php
                 $consumeTotal = $counts['consume'] + $counts['loan'];
                 $intakeTotal = $counts['intake'] + $counts['intake_loan'];
@@ -99,31 +66,78 @@
                 <div class="card border-primary">
                     <div class="card-body">
                         <h5 class="card-title">Расходы</h5>
-                        <p class="card-text h4 text-primary">{{ $consumeTotal }}</p>
+                        <p class="card-text h4 text-success">{{ $consumeTotal }}</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card border-secondary">
+                <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Поступления</h5>
-                        <p class="card-text h4 text-secondary">{{ $intakeTotal }}</p>
+                        <p class="card-text h4 text-info">{{ $intakeTotal }}</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card border-dark">
+                <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Возвраты</h5>
-                        <p class="card-text h4 text-dark">{{ $returnTotal }}</p>
+                        <p class="card-text h4 text-danger">{{ $returnTotal }}</p>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="table-responsive bg-white rounded p-3 shadow-sm">
-            <table class="table table-bordered table-striped table-hover align-middle">
-                <thead class="table-dark">
+
+
+    <div class="card mb-3 border-0">
+        <div class="card-body">
+            <h5 class="card-title">Детали по операциям</h5>
+            <div class="row g-3 p-0">
+                <div class="col-md-4">
+                    <label for="brand_id" class="form-label">Бренд</label>
+                    <select name="brand_id" class="form-select">
+                        <option value="">Все бренды</option>
+                        @foreach ($brands as $brand)
+                            <option value="{{ $brand->id }}" {{ $brandId == $brand->id ? 'selected' : '' }}>
+                                {{ $brand->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small">Сторона операции:</label>
+                    <select name="side" class="form-select">
+                        <option value="">Все</option>
+                        <option value="consume" {{ request('side') == 'consume' ? 'selected' : '' }}>Расход</option>
+                        <option value="intake" {{ request('side') == 'intake' ? 'selected' : '' }}>Поступление
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex align-items-end gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="mdi mdi-magnify"></i>
+                    </button>
+                    <a href="{{ route('report.index') }}" class="btn btn-success">
+                        <i class="mdi mdi-refresh"></i> 
+                    </a>
+                    <a href="{{ route('report.export', array_merge(request()->all(), ['format' => 'pdf'])) }}"
+                        class="btn btn-primary">
+                        <i class="mdi mdi-download"></i> Pdf
+                    </a>
+                    <a href="{{ route('report.export', array_merge(request()->all(), ['format' => 'excel'])) }}"
+                        class="btn btn-success">
+                        <i class="mdi mdi-download"></i> Excel
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card border-0">
+        <div class="table-responsive card-body">
+            <table class="table table-hover mt-3">
+                <thead>
                     <tr>
                         <th>#</th>
                         <th>Дата</th>
@@ -142,7 +156,6 @@
                             <td>{{ $activity->created_at->format('d.m.Y H:i') }}</td>
                             <td>
                                 @php
-
                                     $typeRu = match ($activity->type) {
                                         'consume' => 'Продажа',
                                         'loan' => 'Долг',
@@ -181,5 +194,5 @@
                 </tbody>
             </table>
         </div>
-    {{-- </div> --}}
+    </div>
 @endsection
