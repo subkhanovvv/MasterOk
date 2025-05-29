@@ -101,7 +101,6 @@
             </div>
         </div>
         <input type="hidden" name="total_price" id="total-price-hidden" value="0">
-        <input type="hidden" name="total_usd" id="total-usd-hidden" value="0">
         <div class="card mb-3 w-100">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center gap-4 flex-wrap">
@@ -142,19 +141,17 @@
                             <tr>
                                 <th>Название</th>
                                 <th>Количество</th>
-                                <th>unit</th>
-                                <th>Цена (сум)</th>
-                                <th>Цена (доллар)</th>
+                                <th>единица</th>
+                                <th>Цена</th>
                                 <th>Действия</th>
-                            </tr>
+                            </tr>1
                         </thead>
                         <tbody id="products-container">
                         </tbody>
                     </table>
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <div class="text-muted small">
-                            <strong>Итого (сум):</strong> <span id="total-uzs">0</span> |
-                            <strong>Итого (доллар):</strong> <span id="total-usd">0</span>
+                            <strong>Итого:</strong> <span id="total-uzs">0</span>
                         </div>
                         <div class="d-flex align-items-center gap-3">
                             <button type="submit" class="btn btn-primary rounded"> Сохранить

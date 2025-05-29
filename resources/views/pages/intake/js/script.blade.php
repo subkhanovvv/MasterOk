@@ -39,29 +39,23 @@
 
         function recalculateTotals() {
             let totalUzs = 0;
-            let totalUsd = 0;
 
             document.querySelectorAll('.product-row').forEach(row => {
                 if (row.style.display !== 'none') {
                     const qty = parseFloat(row.querySelector('.qty')?.value || 0);
                     const priceUzs = parseFloat(row.querySelector('.price-uzs')?.value || 0);
-                    const priceUsd = parseFloat(row.querySelector('.price-usd')?.value || 0);
                     totalUzs += qty * priceUzs;
-                    totalUsd += qty * priceUsd;
                 }
             });
 
             // Update display
             document.getElementById('total-uzs').textContent = totalUzs.toLocaleString();
-            document.getElementById('total-usd').textContent = totalUsd.toLocaleString();
 
             // Update hidden fields for form submission
             document.getElementById('total-price-hidden').value = totalUzs;
-            document.getElementById('total-usd-hidden').value = totalUsd;
 
             return {
                 totalUzs,
-                totalUsd
             };
         }
 
@@ -78,7 +72,6 @@
                                 <option value="{{ $product->id }}"
                                     data-name="{{ $product->name }}"
                                     data-price-uzs="{{ $product->price_uzs }}"
-                                    data-price-usd="{{ $product->price_usd }}"
                                     data-unit="{{ $product->unit }}"
                                     data-barcode="{{ $product->barcode_value }}">
                                     {{ $product->name }}
@@ -96,10 +89,6 @@
                     <td>
                         <input type="number" class="form-control price-uzs bg-white border-0" disabled>
                    
-                    </td>
-                    <td>
-                        <input type="number" class="form-control price-usd bg-white border-0" disabled>
-                
                     </td>
                     <td class="text-center">
                          <button type="button" class="border-0 bg-white qty-btn" data-action="increase">
@@ -119,7 +108,6 @@
                 const select = newRow.querySelector('.product-select');
                 select.value = product.id;
                 newRow.querySelector('.price-uzs').value = product.price_uzs;
-                newRow.querySelector('.price-usd').value = product.price_usd;
                 newRow.querySelector('.unit').value = product.unit;
             }
 
@@ -182,7 +170,7 @@
                 resultItem.innerHTML = `
             <div class="d-flex justify-content-between">
                 <span>${highlightMatch(product.name, searchTerm)}</span>
-                <small class="text-muted">${product.price_uzs} сум / ${product.price_usd} $</small>
+                <small class="text-muted">${product.price_uzs} сум </small>
             </div>
             <div class="d-flex justify-content-between small">
                 <span class="text-muted">${highlightMatch(brandName, searchTerm)} • ${highlightMatch(categoryName, searchTerm)}</span>
@@ -265,7 +253,6 @@
                 if (selected.value) {
                     row.querySelector('.unit').value = selected.dataset.unit;
                     row.querySelector('.price-uzs').value = selected.dataset.priceUzs;
-                    row.querySelector('.price-usd').value = selected.dataset.priceUsd;
                     recalculateTotals();
                 }
             }
@@ -306,7 +293,6 @@
                     qty.value = 1;
                     row.querySelector('.unit').value = '';
                     row.querySelector('.price-uzs').value = '';
-                    row.querySelector('.price-usd').value = '';
                     recalculateTotals();
                 }
             }
@@ -393,7 +379,7 @@
             return;
         }
 
-        if (totals.totalUzs <= 0 && totals.totalUsd <= 0) {
+        if (totals.totalUzs <= 0) {
             e.preventDefault();
             alert('Total amount must be greater than zero in at least one currency.');
             return;

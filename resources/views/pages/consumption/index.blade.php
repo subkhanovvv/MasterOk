@@ -148,8 +148,8 @@
                         <tr>
                             <th>Название</th>
                             <th>Количество</th>
-                            <th>unit</th>
-                            <th>Цена (сум)</th>
+                            <th>единица</th>
+                            <th>Цена</th>
                             <th>Действия</th>
                         </tr>
                     </thead>
@@ -159,7 +159,7 @@
 
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <div class="text-muted small">
-                        <strong>Итого (сум):</strong> <span id="total-uzs">0</span>
+                        <strong>Итого:</strong> <span id="total-uzs">0</span>
                     </div>
                     <div class="d-flex align-items-center gap-3">
                         <button type="submit" class="btn btn-primary rounded">
