@@ -55,10 +55,14 @@ class IndexController extends Controller
                     break;
 
                 case 'intake_loan':
-                    if ($activity->loan_direction === 'given') {
-                        $netCash += ($activity->total_price + $activity->loan_amount);
-                    } elseif ($activity->loan_direction === 'taken') {
-                        $netCash -= $activity->loan_amount;
+                    if ($activity->status === 'incomplete') {
+                        if ($activity->loan_direction === 'given') {
+                            $netCash -= ($activity->total_price + $activity->loan_amount);
+                        } elseif ($activity->loan_direction === 'taken') {
+                            $netCash -= ($activity->total_price - $activity->loan_amount);
+                        }
+                    } else {
+                        $netCash -= $activity->total_price;
                     }
                     break;
             }
