@@ -126,7 +126,7 @@
                     </div>
                     <div>
                         <button type="button" class="border-0 bg-white" id="clear-all">
-                            <i class="mdi mdi-close-circle-outline icon-md text-danger"></i>
+                            <i class="mdi mdi-refresh icon-md text-danger"></i>
                         </button>
                     </div>
                     <div class="d-flex align-items-center gap-3 position-relative">

@@ -97,7 +97,7 @@
         </div>
         <button class="bg-white border-0" data-bs-toggle="tooltip" data-bs-placement="top"
             title="Очистить фильтры" onclick="window.location.href='{{ route('history.index') }}'">
-            <i class="mdi mdi-close-circle-outline text-danger icon-md"></i> 
+            <i class="mdi mdi-refresh text-primary icon-md"></i> 
         </button>
     </div>
 </div>
