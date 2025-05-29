@@ -1,6 +1,26 @@
 @extends('layouts.admin')
 
 @section('content')
+    <style>
+        #search-results {
+            z-index: 1000;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+            background: white;
+            width: calc(100% - 38px);
+            /* Match input width */
+            position: absolute;
+            cursor: pointer;
+            top: 100%;
+            left: 0;
+        }
+
+        .search-result-item:hover {
+            background-color: #f8f9fa;
+        }
+    </style>
     <form method="POST" action="{{ route('consumption.store') }}">
         @csrf
 
@@ -93,7 +113,7 @@
                         <label for="barcode" class="form-label mb-0">
                             <i class="mdi mdi-barcode-scan icon-md"></i>
                         </label>
-                        <input type="text" id="barcode" class="form-control form-control rounded"
+                        <input type="text" id="barcode" class="form-control form-control-lg rounded"
                             placeholder="Сканируйте или введите штрихкод..." autocomplete="off" autofocus>
                         <button type="button" class="border-0 bg-white" id="scan-button">
                             <i class="mdi mdi-check-circle-outline icon-md text-success"></i>
@@ -109,12 +129,13 @@
                             <i class="mdi mdi-close-circle-outline icon-md text-danger"></i>
                         </button>
                     </div>
-                    <div class="d-flex align-items-center gap-3">
-                        <input type="text" id="product_search" class="form-control form-control rounded"
+                    <div class="d-flex align-items-center gap-3 position-relative">
+                        <input type="text" id="product_search" class="form-control form-control-lg rounded"
                             placeholder="Поиск товара..." autocomplete="off">
-                        <button class="border-0 bg-white" id="search-button" type="button">
-                            <i class="mdi mdi-magnify icon-md text-primary"></i>
-                        </button>
+                        <i class="mdi mdi-magnify icon-md text-primary"></i>
+                        <div id="search-results"
+                            class="position-absolute top-100 start-0 w-100 bg-white z-3 shadow-sm rounded"
+                            style="display: none;"></div>
                     </div>
                 </div>
             </div>

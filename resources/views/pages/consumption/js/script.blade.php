@@ -110,6 +110,116 @@
             addProductRow();
         });
 
+        // Enhanced Search Functionality
+        const productSearch = document.getElementById('product_search');
+        const searchResults = document.getElementById('search-results');
+
+        function highlightMatch(text, searchTerm) {
+            if (!searchTerm) return text;
+            const regex = new RegExp(`(${searchTerm})`, 'gi');
+            return text.replace(regex, '<span class="text-primary fw-bold">$1</span>');
+        }
+
+        function performSearch() {
+            const searchTerm = productSearch.value.trim().toLowerCase();
+            searchResults.innerHTML = '';
+
+            if (searchTerm === '') {
+                searchResults.style.display = 'none';
+                return;
+            }
+
+            // Get all brands and categories for display
+            const brands = @json($brands ?? []);
+            const categories = @json($categories ?? []);
+
+            const filteredProducts = productsFromDb.filter(product => {
+                return (
+                    product.name.toLowerCase().includes(searchTerm) ||
+                    (product.barcode_value && product.barcode_value.toString().includes(
+                        searchTerm)) ||
+                    (product.brand_id && brands[product.brand_id]?.name.toLowerCase().includes(
+                        searchTerm)) ||
+                    (product.category_id && categories[product.category_id]?.name.toLowerCase()
+                        .includes(searchTerm))
+                );
+            });
+
+            if (filteredProducts.length === 0) {
+                searchResults.innerHTML = '<div class="p-2 text-muted">Товары не найдены</div>';
+                searchResults.style.display = 'block';
+                return;
+            }
+
+            filteredProducts.forEach(product => {
+                const resultItem = document.createElement('div');
+                resultItem.className = 'p-2 border-bottom cursor-pointer search-result-item';
+
+                // Get brand and category names
+                const brandName = product.brand_id ? brands[product.brand_id]?.name : 'Без бренда';
+                const categoryName = product.category_id ? categories[product.category_id]?.name :
+                    'Без категории';
+
+                resultItem.innerHTML = `
+            <div class="d-flex justify-content-between">
+                <span>${highlightMatch(product.name, searchTerm)}</span>
+                <small class="text-muted"> ${product.sale_price} $</small>
+            </div>
+            <div class="d-flex justify-content-between small">
+                <span class="text-muted">${highlightMatch(brandName, searchTerm)} • ${highlightMatch(categoryName, searchTerm)}</span>
+                <small class="text-muted">${product.barcode_value || 'Нет штрихкода'}</small>
+            </div>
+        `;
+                resultItem.dataset.productId = product.id;
+                searchResults.appendChild(resultItem);
+            });
+
+            searchResults.style.display = 'block';
+        }
+
+        // Immediate search on input
+        productSearch.addEventListener('input', performSearch);
+
+        // Handle click on search result (same as before)
+        searchResults.addEventListener('click', (e) => {
+            const resultItem = e.target.closest('.search-result-item');
+            if (!resultItem) return;
+
+            const productId = parseInt(resultItem.dataset.productId);
+            const product = productsFromDb.find(p => p.id === productId);
+
+            if (product) {
+                const existingRow = findProductRow(product.id);
+                if (existingRow) {
+                    const qtyInput = existingRow.querySelector('.qty');
+                    qtyInput.value = parseInt(qtyInput.value) + 1;
+                    recalculateTotals();
+                } else {
+                    // Remove default empty row if it exists
+                    const rows = document.querySelectorAll('.product-row');
+                    if (rows.length === 1) {
+                        const select = rows[0].querySelector('.product-select');
+                        if (!select.value) {
+                            rows[0].remove();
+                        }
+                    }
+                    addProductRow(product);
+                }
+            }
+
+            // Clear search and hide results
+            productSearch.value = '';
+            searchResults.style.display = 'none';
+            barcodeInput.focus();
+        });
+
+        // Hide search results when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!productSearch.contains(e.target) && !searchResults.contains(e.target)) {
+                searchResults.style.display = 'none';
+            }
+        });
+
         productsContainer.addEventListener('change', e => {
             if (e.target.classList.contains('product-select')) {
                 const selected = e.target.options[e.target.selectedIndex];

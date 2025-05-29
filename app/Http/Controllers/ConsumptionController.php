@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Brand;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductActivity;
 use App\Models\ProductActivityItems;
@@ -15,7 +17,9 @@ class ConsumptionController extends Controller
     public function index()
     {
         $products = Product::orderBy('name')->get();
-        return view('pages.consumption.index', compact('products'));
+        $brands = Brand::all()->keyBy('id');
+        $categories = Category::all()->keyBy('id');
+        return view('pages.consumption.index', compact('products' , 'brands', 'categories'));
     }
     public function store(Request $request)
     {
