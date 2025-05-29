@@ -163,7 +163,7 @@
                 resultItem.innerHTML = `
             <div class="d-flex justify-content-between">
                 <span>${highlightMatch(product.name, searchTerm)}</span>
-                <small class="text-muted"> ${product.sale_price} $</small>
+                <small class="text-muted"> ${product.sale_price} uzs</small>
             </div>
             <div class="d-flex justify-content-between small">
                 <span class="text-muted">${highlightMatch(brandName, searchTerm)} • ${highlightMatch(categoryName, searchTerm)}</span>
