@@ -31,11 +31,11 @@
                             <div class="row g-3">
                                 <div class="col-md-4">
                                     <div class="p-3 bg-light rounded text-center">
-                                        <div class="text-muted small">Цена в UZS</div>
+                                        <div class="text-muted small">Цена</div>
                                         <div id="product_uzs_price" class="h5 fw-bold text-success"></div>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-4 d-none">
                                     <div class="p-3 bg-light rounded text-center">
                                         <div class="text-muted small">Цена в USD</div>
                                         <div id="product_usd_price" class="h5 fw-bold text-primary"></div>

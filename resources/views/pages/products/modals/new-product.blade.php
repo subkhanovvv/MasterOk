@@ -28,23 +28,7 @@
                                 </div>
                             </div>
 
-                            <div class="mb-4">
-                                <label class="form-label text-muted small mb-1">Штрих-код</label>
 
-                                <select id="barcode-option" class="form-select mb-2">
-                                    <option value="auto">Автоматически сгенерируется</option>
-                                    <option value="manual">Ввести вручную</option>
-                                </select>
-
-                                <div id="barcode-auto" class="bg-light p-2 rounded text-center">
-                                    <small class="text-muted">Автоматически сгенерируется</small>
-                                </div>
-
-                                <div id="barcode-manual" class="d-none">
-                                    <input type="text" name="barcode_value" class="form-control"
-                                        placeholder="Введите штрих-код">
-                                </div>
-                            </div>
 
                         </div>
 
@@ -92,44 +76,23 @@
 
                                 <!-- Pricing Section -->
                                 <div class="col-12 mt-4">
-                                    <h5 class="fw-bold text-uppercase text-muted mb-3">Цены</h5>
+                                    {{-- <h5 class="fw-bold text-uppercase text-muted mb-3">Цены</h5> --}}
                                     <div class="row g-3">
                                         <div class="col-md-4">
                                             <div class="form-floating">
                                                 <input type="text" class="form-control decimal-input"
-                                                    name="price_usd" id="price_usd" required>
-                                                <label for="price_usd">USD</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-floating">
-                                                <input type="text" class="form-control decimal-input"
                                                     name="price_uzs" id="price_uzs" required>
-                                                <label for="price_uzs">UZS</label>
+                                                <label for="price_uzs">Цена</label>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-floating">
                                                 <input type="number" class="form-control decimal-input"
                                                     name="sale_price" id="sale_price" required>
-                                                <label for="sale_price">Sale</label>
+                                                <label for="sale_price">Цена продажи</label>
                                             </div>
                                         </div>
-                                        <div class="col-12">
-                                            <div class="d-flex align-items-center text-muted small">
-                                                <i class="bi bi-arrow-left-right me-2"></i>
-                                                1 USD = <strong id="usd-uzs-rate" class="ms-1">Загрузка...</strong>
-                                                UZS
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Units Section -->
-                                <div class="col-12 mt-3">
-                                    <h5 class="fw-bold text-uppercase text-muted mb-3">Единицы измерения</h5>
-                                    <div class="row g-3">
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <div class="form-floating">
                                                 <select name="unit" class="form-select" id="unit" required>
                                                     <option disabled selected></option>
@@ -146,8 +109,34 @@
                                                 <label for="unit">Малая единица</label>
                                             </div>
                                         </div>
+                                        <div class="mb-12">
+                                            <label class="form-label text-muted small mb-1">Штрих-код</label>
+
+                                            <select id="barcode-option" class="form-select mb-2">
+                                                <option value="auto">Автоматически сгенерируется</option>
+                                                <option value="manual">Ввести вручную</option>
+                                            </select>
+
+                                            <div id="barcode-auto" class="bg-light p-2 rounded text-center">
+                                                <small class="text-muted">Автоматически сгенерируется</small>
+                                            </div>
+
+                                            <div id="barcode-manual" class="d-none">
+                                                <input type="text" name="barcode_value" class="form-control form-control-lg rounded"
+                                                    placeholder="Введите штрих-код">
+                                            </div>
+                                        </div>
+                                        {{-- <div class="col-12">
+                                            <div class="d-flex align-items-center text-muted small">
+                                                <i class="bi bi-arrow-left-right me-2"></i>
+                                                1 USD = <strong id="usd-uzs-rate" class="ms-1">Загрузка...</strong>
+                                                UZS
+                                            </div>
+                                        </div> --}}
                                     </div>
                                 </div>
+
+
                             </div>
                         </div>
                     </div>
@@ -183,70 +172,70 @@
         }
     }
 
-    let usdToUzsRate = null;
+    // let usdToUzsRate = null;
 
-    async function fetchExchangeRates() {
-        try {
-            const response = await fetch('https://open.er-api.com/v6/latest/USD');
-            const data = await response.json();
-            usdToUzsRate = data.rates.UZS;
-            document.getElementById('usd-uzs-rate').textContent = usdToUzsRate.toFixed(2);
-        } catch (error) {
-            console.error('Error fetching exchange rates:', error);
-            // Fallback rate if API fails
-            usdToUzsRate = 12500; // Example fallback rate
-            document.getElementById('usd-uzs-rate').textContent = usdToUzsRate.toFixed(2);
-        }
-    }
+    // async function fetchExchangeRates() {
+    //     try {
+    //         const response = await fetch('https://open.er-api.com/v6/latest/USD');
+    //         const data = await response.json();
+    //         usdToUzsRate = data.rates.UZS;
+    //         document.getElementById('usd-uzs-rate').textContent = usdToUzsRate.toFixed(2);
+    //     } catch (error) {
+    //         console.error('Error fetching exchange rates:', error);
+    //         // Fallback rate if API fails
+    //         usdToUzsRate = 12500; // Example fallback rate
+    //         document.getElementById('usd-uzs-rate').textContent = usdToUzsRate.toFixed(2);
+    //     }
+    // }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        fetchExchangeRates();
-        setInterval(fetchExchangeRates, 3600000); // Refresh every hour
+    // document.addEventListener('DOMContentLoaded', () => {
+    //     fetchExchangeRates();
+    //     setInterval(fetchExchangeRates, 3600000); // Refresh every hour
 
-        const usdInput = document.getElementById('price_usd');
-        const uzsInput = document.getElementById('price_uzs');
+    //     const usdInput = document.getElementById('price_usd');
+    //     const uzsInput = document.getElementById('price_uzs');
 
-        usdInput.addEventListener('input', function() {
-            if (usdToUzsRate) {
-                const usdValue = parseFloat(this.value.replace(/,/g, '.')) || 0;
-                const uzsValue = usdValue * usdToUzsRate;
-                uzsInput.value = uzsValue.toFixed(2);
-            }
-        });
+    //     usdInput.addEventListener('input', function() {
+    //         if (usdToUzsRate) {
+    //             const usdValue = parseFloat(this.value.replace(/,/g, '.')) || 0;
+    //             const uzsValue = usdValue * usdToUzsRate;
+    //             uzsInput.value = uzsValue.toFixed(2);
+    //         }
+    //     });
 
-        // Also allow manual UZS entry without overwriting
-        uzsInput.addEventListener('focus', function() {
-            this.dataset.previousValue = this.value;
-        });
+    //     // Also allow manual UZS entry without overwriting
+    //     uzsInput.addEventListener('focus', function() {
+    //         this.dataset.previousValue = this.value;
+    //     });
 
-        uzsInput.addEventListener('change', function() {
-            if (this.value !== this.dataset.previousValue && usdToUzsRate) {
-                // If UZS was manually changed, update USD
-                const uzsValue = parseFloat(this.value.replace(/,/g, '.')) || 0;
-                const usdValue = uzsValue / usdToUzsRate;
-                usdInput.value = usdValue.toFixed(4);
-            }
-        });
-    });
+    //     uzsInput.addEventListener('change', function() {
+    //         if (this.value !== this.dataset.previousValue && usdToUzsRate) {
+    //             // If UZS was manually changed, update USD
+    //             const uzsValue = parseFloat(this.value.replace(/,/g, '.')) || 0;
+    //             const usdValue = uzsValue / usdToUzsRate;
+    //             usdInput.value = usdValue.toFixed(4);
+    //         }
+    //     });
+    // });
 
-    // Decimal input handling
-    document.querySelectorAll('.decimal-input').forEach(input => {
-        input.addEventListener('input', function() {
-            let v = this.value
-                .replace(/,/g, '.')
-                .replace(/[^0-9.]/g, '');
+    // // Decimal input handling
+    // document.querySelectorAll('.decimal-input').forEach(input => {
+    //     input.addEventListener('input', function() {
+    //         let v = this.value
+    //             .replace(/,/g, '.')
+    //             .replace(/[^0-9.]/g, '');
 
-            const parts = v.split('.');
-            if (parts.length > 1) {
-                v = parts[0] + '.' + parts.slice(1).join('').replace(/\./g, '');
-                if (parts[1].length > 2) {
-                    v = parts[0] + '.' + parts[1].substring(0, 2);
-                }
-            }
+    //         const parts = v.split('.');
+    //         if (parts.length > 1) {
+    //             v = parts[0] + '.' + parts.slice(1).join('').replace(/\./g, '');
+    //             if (parts[1].length > 2) {
+    //                 v = parts[0] + '.' + parts[1].substring(0, 2);
+    //             }
+    //         }
 
-            this.value = v;
-        });
-    });
+    //         this.value = v;
+    //     });
+    // });
 </script>
 <script>
     document.getElementById('barcode-option').addEventListener('change', function() {

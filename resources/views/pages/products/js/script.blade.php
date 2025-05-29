@@ -48,10 +48,11 @@
             document.getElementById('editShortDescription').value = element.getAttribute('data-description') || '';
             // document.getElementById('editBrand').value = element.getAttribute('data-brand');
             // document.getElementById('editCategory').value = element.getAttribute('data-category');
-            document.getElementById('editPriceUsd').value = element.getAttribute('data-usd-price');
+            // document.getElementById('editPriceUsd').value = element.getAttribute('data-usd-price');
             document.getElementById('editPriceUzs').value = element.getAttribute('data-uzs-price');
             document.getElementById('editSalePrice').value = element.getAttribute('data-sale-price');
             document.getElementById('editUnit').value = element.getAttribute('data-unit');
+            // document.getElementById('editBarcode').src = element.getAttribute('data-barcode') || '';
             document.getElementById('editBarcode').src = element.getAttribute('data-barcode') || '';
         } else if(modalId === "#deleteProductModal"){
             document.getElementById('delete-product-form').action = `/products/${id}`;

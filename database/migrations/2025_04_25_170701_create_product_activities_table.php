@@ -26,8 +26,6 @@ return new class extends Migration
             // PAYMENT
             $table->enum('payment_type', ['cash', 'card','bank_transfer'])->default('cash');
             $table->decimal('total_price', 12, 2)->default(0);
-            $table->decimal('total_usd', 12, 2)->default(0);
-
             // OTHER
             $table->string('return_reason')->nullable();
             $table->string('qr_code')->nullable();

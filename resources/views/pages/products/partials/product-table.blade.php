@@ -5,9 +5,9 @@
                 <th>#</th>
                 <th>Название</th>
                 <th>Фото</th>
-                <th>Цена (UZS/USD)</th>
-                <th>Статус</th>
                 <th>Цена</th>
+                <th>Статус</th>
+                <th>Цена продажи</th>
                 <th>Склад</th>
                 <th>Штрих-код</th>
                 <th>Действие</th>
@@ -23,8 +23,7 @@
                             alt="{{ $p->name }}">
                     </td>
                     <td>
-                        <span class="uzs-price" data-usd="{{ $p->price_usd }}">...</span>
-                        / ${{ $p->price_usd }}
+                       {{$p->price_uzs ? number_format($p->price_uzs) . ' so\'m' : 'Нет цены UZS'}} 
                     </td>
 
                     <td>
@@ -98,7 +97,7 @@
         </tbody>
     </table>
 </div>
-<script>
+{{-- <script>
     let usdToUzsRate = null;
 
     async function fetchExchangeRates() {
@@ -127,4 +126,4 @@
     }
 
     fetchExchangeRates();
-</script>
+</script> --}}

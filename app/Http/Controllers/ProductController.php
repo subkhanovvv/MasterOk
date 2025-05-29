@@ -49,7 +49,7 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'photo' => 'nullable|image',
             'unit' => 'required|string|max:50',
-            'price_usd' => 'required|numeric|min:0',
+            'price_uzs' => 'required|numeric|min:0',
             'short_description' => 'nullable|string|max:1000',
             'sale_price' => 'nullable|numeric|min:0',
             'category_id' => 'nullable|exists:categories,id',
@@ -67,7 +67,7 @@ class ProductController extends Controller
             'name' => $validated['name'],
             'photo' => $photoPath,
             'unit' => $validated['unit'],
-            'price_usd' => $validated['price_usd'],
+            'price_uzs' => $validated['price_uzs'],
             'short_description' => $validated['short_description'] ?? null,
             'sale_price' => $validated['sale_price'] ?? null,
             'category_id' => $validated['category_id']?? null,
@@ -112,7 +112,6 @@ class ProductController extends Controller
             'photo' => 'nullable|image',
             'unit' => 'nullable|string|max:50',
             'price_uzs' => 'required|numeric|min:0',
-            'price_usd' => 'required|numeric|min:0',
             'short_description' => 'nullable|string|max:1000',
             'sale_price' => 'nullable|numeric|min:0',
         ]);
@@ -122,7 +121,6 @@ class ProductController extends Controller
         // $product->category_id = $validated['category_id'] ?? null;
         // $product->brand_id = $validated['brand_id'] ?? null;
         $product->unit = $validated['unit'];
-        $product->price_usd = $validated['price_usd'] ?? 0;
         $product->price_uzs = $validated['price_uzs'] ?? 0;
         $product->sale_price = $validated['sale_price'];
 
