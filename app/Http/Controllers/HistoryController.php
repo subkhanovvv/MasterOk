@@ -12,29 +12,19 @@ class HistoryController extends Controller
         $sortOrder = $request->get('sort', 'desc');
 
         $transactions = ProductActivity::withCount('items')
-            ->with(['items.product.brand', 'items.product.category', 'supplier'])
+            ->with(['items.product.brand', 'items.product.category', 'supplier', 'brand'])
+
 
             // Search by client_name, client_phone, supplier name, brand name, category name
-            ->when($request->filled('search'), function ($query) use ($request) {
-                $search = $request->search;
-                $query->where(function ($q) use ($search) {
-                    $q->where('client_name', 'like', "%$search%")
-                        ->orWhere('client_phone', 'like', "%$search%")
-                        // Search supplier name
-                        ->orWhereHas('supplier', function ($q2) use ($search) {
-                            $q2->where('name', 'like', "%$search%");
-                        })
-                        // Search product brand name
-                        ->orWhereHas('items.product.brand', function ($q3) use ($search) {
-                            $q3->where('name', 'like', "%$search%");
-                        })
-                        // Search product category name
-                        ->orWhereHas('items.product.category', function ($q4) use ($search) {
-                            $q4->where('name', 'like', "%$search%");
-                        });
-                });
+            ->when($request->filled('brand_id'), function ($q) use ($request) {
+                $q->where('brand_id', $request->brand_id);
             })
 
+            ->when($request->filled('search'), function ($q) use ($request) {
+                $q->whereHas('brand', function ($query) use ($request) {
+                    $query->where('name', 'like', '%' . $request->search . '%');
+                });
+            })
             // Filter by start_date and end_date on created_at
             ->when($request->filled('start_date'), function ($query) use ($request) {
                 $query->whereDate('created_at', '>=', $request->start_date);
@@ -67,6 +57,8 @@ class HistoryController extends Controller
                     $query->whereIn('type', ['consume', 'loan', 'return']);
                 } elseif ($request->side === 'intake') {
                     $query->whereIn('type', ['intake', 'intake_loan', 'intake_return']);
+                } else if ($request->side === 'return') {
+                    $query->whereIn('type', ['return', 'intake_return']);
                 }
             })
 
@@ -89,9 +81,10 @@ class HistoryController extends Controller
             ->paginate(10)
             ->appends($request->except('page'));
 
-        return view('pages.history.index', compact('transactions'));
-    }
+        $brands = \App\Models\Brand::all();
 
+        return view('pages.history.index', compact('transactions', 'brands', 'sortOrder'));
+    }
 
     public function print($id)
     {
