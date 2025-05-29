@@ -1,15 +1,26 @@
 @extends('layouts.admin')
 
 @section('content')
-<style>
-    #search-results {
-    z-index: 1000;
-}
+    <style>
+        #search-results {
+            z-index: 1000;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+            background: white;
+            width: calc(100% - 38px);
+            /* Match input width */
+            position: absolute;
+            cursor: pointer;
+            top: 100%;
+            left: 0;
+        }
 
-.search-result-item:hover {
-    background-color: #f8f9fa;
-}
-</style>
+        .search-result-item:hover {
+            background-color: #f8f9fa;
+        }
+    </style>
     <form method="POST" action="{{ route('intake.store') }}">
         @csrf
         <div class="card mb-3 border-0">
@@ -19,7 +30,7 @@
 
                     <div class="col-md-4">
                         <label for="supplier_id" class="form-label">Поставщик</label>
-                        <select class="form-select form-select-sm" id="supplier_id" name="supplier_id">
+                        <select class="form-select form-select-md" id="supplier_id" name="supplier_id">
                             <option value="">Выберите поставщика</option>
                             @foreach ($suppliers as $supplier)
                                 <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
@@ -29,16 +40,19 @@
 
                     <div class="col-md-4">
                         <label for="payment_type" class="form-label">Тип оплаты</label>
-                        <select class="form-select form-select-sm" id="payment_type" name="payment_type" required>
-                            <option value="cash">Наличные</option>
-                            <option value="card">Карта</option>
-                            <option value="bank_transfer">Банковский перевод</option>
-                        </select>
+                        <div class="d-flex align-items-center">
+                            <i id="payment_icon" class="mdi mdi-cash me-2 fs-4"></i>
+                            <select class="form-select" id="payment_type" name="payment_type" required>
+                                <option value="cash">Наличные</option>
+                                <option value="card">Карта</option>
+                                <option value="bank_transfer">Банковский перевод</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="col-md-4">
                         <label for="type" class="form-label">Тип транзакции</label>
-                        <select class="form-select form-select-sm" id="type" name="type" required>
+                        <select class="form-select form-select-md" id="type" name="type" required>
                             <option value="intake">Приход</option>
                             <option value="intake_loan">В долг</option>
                             <option value="intake_return">Возврат</option>
@@ -153,4 +167,17 @@
             </div>
     </form>
     @include('pages.intake.js.script')
+    <script>
+        const iconMap = {
+            cash: 'mdi-cash',
+            card: 'mdi-credit-card-outline',
+            bank_transfer: 'mdi-bank-outline'
+        };
+
+        document.getElementById('payment_type').addEventListener('change', function() {
+            const value = this.value;
+            const icon = iconMap[value] || 'mdi-help-circle-outline';
+            document.getElementById('payment_icon').className = `mdi ${icon} me-2 fs-4`;
+        });
+    </script>
 @endsection

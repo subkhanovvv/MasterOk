@@ -11,16 +11,20 @@
 
                     <div class="col-md-4">
                         <label for="payment_type" class="form-label">Тип оплаты</label>
-                        <select class="form-select form-select-sm" id="payment_type" name="payment_type" required>
-                            <option value="cash">Наличные</option>
-                            <option value="card">Карта</option>
-                            <option value="bank_transfer">Банковский перевод</option>
-                        </select>
+                        <div class="d-flex align-items-center">
+                            <i id="payment_icon" class="mdi mdi-cash me-2 fs-4"></i>
+                            <select class="form-select" id="payment_type" name="payment_type" required>
+                                <option value="cash">Наличные</option>
+                                <option value="card">Карта</option>
+                                <option value="bank_transfer">Банковский перевод</option>
+                            </select>
+                        </div>
                     </div>
+
 
                     <div class="col-md-4">
                         <label for="type" class="form-label">Тип транзакции</label>
-                        <select class="form-select form-select-sm" id="type" name="type" required>
+                        <select class="form-select form-select-md" id="type" name="type" required>
                             <option value="consume">Расход</option>
                             <option value="loan">В долг</option>
                             <option value="return">Возврат</option>
@@ -29,7 +33,7 @@
 
                     <div class="col-md-4">
                         <label for="note" class="form-label">Заметка</label>
-                        <textarea class="form-control form-control-sm" name="note" id="note" rows="2">{{ old('note') }}</textarea>
+                        <textarea class="form-control form-control" name="note" id="note" rows="2">{{ old('note') }}</textarea>
                     </div>
 
                     <div id="return-fields" class="col-12" style="display: none;">
@@ -147,4 +151,17 @@
     </form>
 
     @include('pages.consumption.js.script')
+    <script>
+        const iconMap = {
+            cash: 'mdi-cash',
+            card: 'mdi-credit-card-outline',
+            bank_transfer: 'mdi-bank-outline'
+        };
+
+        document.getElementById('payment_type').addEventListener('change', function() {
+            const value = this.value;
+            const icon = iconMap[value] || 'mdi-help-circle-outline';
+            document.getElementById('payment_icon').className = `mdi ${icon} me-2 fs-4`;
+        });
+    </script>
 @endsection
