@@ -1,9 +1,17 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>MasterOk | SINV</title>
+    <title>
+        @foreach ($settings as $s)
+            @if ($s->name)
+                {{ $s->name }} | Smart Admin
+            @endif
+        @endforeach
+    </title>
+
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="{{ asset('admin/assets/vendors/feather/feather.css') }}">
     <link rel="stylesheet" href="{{ asset('admin/assets/vendors/mdi/css/materialdesignicons.min.css') }}">
@@ -17,6 +25,7 @@
     <link rel="shortcut icon" href="{{ asset('admin/assets/images/ico.png') }}" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
+
 <body class="body">
     <div class="container-scroller">
         @include('layouts.header.admin-header')
@@ -46,4 +55,5 @@
     <script src="{{ asset('admin/assets/js/jquery.cookie.js') }}" type="text/javascript"></script>
     <script src="{{ asset('admin/assets/js/dashboard.js') }}"></script>
 </body>
+
 </html>

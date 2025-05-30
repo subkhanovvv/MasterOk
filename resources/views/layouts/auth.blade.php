@@ -4,7 +4,13 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>MasterOk</title>
+    <title>
+        @foreach ($settings as $s)
+            @if ($s->name)
+                {{ $s->name }} | Smart Admin
+            @endif
+        @endforeach
+    </title>
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -17,7 +23,7 @@
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
 
-       /* .form-title {
+        /* .form-title {
             font-size: 1.25rem;
             line-height: 1.75rem;
             font-weight: 600;
