@@ -37,14 +37,18 @@ class TransactionController extends Controller
             ->whereBetween('created_at', [$startDate, $endDate]);
 
         if ($brandId) {
-            $query->whereHas('items.product', function ($q) use ($brandId) {
-                $q->where('brand_id', $brandId);
+            $query->whereIn('brand_id', function ($q) use ($brandId) {
+                $q->select('id')->from('brands')->where('id', $brandId);
             });
         }
         if ($request->side === 'consume') {
             $query->whereIn('type', ['consume', 'loan', 'return']);
         } elseif ($request->side === 'intake') {
             $query->whereIn('type', ['intake', 'intake_loan', 'intake_return']);
+        } elseif ($request->side === 'loan') {
+            $query->whereIn('type', ['loan', 'intake_loan']);
+        } elseif ($request->side === 'return') {
+            $query->whereIn('type', ['return', 'intake_return']);
         }
 
         $activities = $query->get();
@@ -69,11 +73,12 @@ class TransactionController extends Controller
         ];
 
         $netCash = 0;
-        $softProfit = 0;
         $loanTotals = [
             'given' => 0,
             'taken' => 0,
         ];
+
+        $softProfit = 0;
 
         foreach ($activities as $activity) {
             $type = $activity->type;
@@ -82,37 +87,30 @@ class TransactionController extends Controller
             $price = $activity->total_price;
             $loan = $activity->loan_amount ?? 0;
 
-            // Update activity type counts
             if (array_key_exists($type, $activityTypeCounts)) {
                 $activityTypeCounts[$type]++;
             }
 
             $counts[$type]++;
 
-            // Rest of your existing calculations...Profit
-            if ($status === 'complete') {
-                if ($type === 'intake') {
-
-                } elseif ($type === 'return') {
-
-                } elseif ($type === 'loan') {
-                    if ($direction === 'given') {
-
-                    } elseif ($direction === 'taken') {
-
-                    }
-                } elseif ($type === 'intake_loan') {
-                    if ($direction === 'given') {
-
-                    } elseif ($direction === 'taken') {
-
-                    }
-                }elseif($type === 'intake_return') {
-
-                } elseif ($type === 'consume') {
-                    
+            if (in_array($type, ['loan', 'intake_loan']) && $status === 'incomplete') {
+                if ($direction === 'given') {
+                    $loanTotals['given'] += $loan;
+                } elseif ($direction === 'taken') {
+                    $loanTotals['taken'] += $loan;
                 }
-            } 
+            }
+
+
+            if (in_array($type, ['consume', 'loan']) && $status === 'complete') {
+                foreach ($activity->items as $item) {
+                    $salePrice = $item->product->sale_price;
+                    $costPrice = $item->product->price_uzs ?? 0;
+                    $quantity = $item->qty;
+
+                    $softProfit += ($salePrice - $costPrice) * $quantity;
+                }
+            }
 
             switch ($type) {
                 case 'consume':

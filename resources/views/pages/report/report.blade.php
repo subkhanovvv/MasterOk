@@ -1,11 +1,11 @@
 @extends('layouts.admin')
 
 @section('content')
-<style>
-    *{
-         cursor: pointer;
-    }
-</style>
+    <style>
+        * {
+            cursor: pointer;
+        }
+    </style>
     <div class="card mb-3 border-0">
         <div class="card-body mb-3">
             <h5 class="card-title card-title-dash">Отчет</h5>
@@ -69,49 +69,51 @@
         </div>
     </div>
 
-
-
     <div class="card mb-3 border-0">
         <div class="card-body">
             <h5 class="card-title">Детали по операциям</h5>
-            <div class="row g-3 p-0">
-                <div class="col-md-4">
-                    <label for="brand_id" class="form-label">Бренд</label>
-                    <select name="brand_id" class="form-select">
-                        <option value="">Все бренды</option>
-                        @foreach ($brands as $brand)
-                            <option value="{{ $brand->id }}" {{ $brandId == $brand->id ? 'selected' : '' }}>
-                                {{ $brand->name }}
+            <form method="GET">
+                <div class="row g-3 p-0">
+                    <div class="col-md-4">
+                        <label for="brand_id" class="form-label">Бренд</label>
+                        <select name="brand_id" class="form-select">
+                            <option value="">Все бренды</option>
+                            @foreach ($brands as $brand)
+                                <option value="{{ $brand->id }}" {{ $brandId == $brand->id ? 'selected' : '' }}>
+                                    {{ $brand->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small">Сторона операции:</label>
+                        <select name="side" class="form-select">
+                            <option value="">Все</option>
+                            <option value="consume" {{ request('side') == 'consume' ? 'selected' : '' }}>Расход</option>
+                            <option value="intake" {{ request('side') == 'intake' ? 'selected' : '' }}>Поступление
                             </option>
-                        @endforeach
-                    </select>
+                            <option value="loan"{{ request('side') == 'loan' ? 'selected' : '' }}>Займ</option>
+                            <option value="return"{{ request('side') == 'return' ? 'selected' : '' }}>Возврат</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="mdi mdi-magnify" id="result"></i>
+                        </button>
+                        <a href="{{ route('report.index') }}#result" class="btn btn-success">
+                            <i class="mdi mdi-refresh"></i>
+                        </a>
+                        <a href="{{ route('report.export', array_merge(request()->all(), ['format' => 'pdf'])) }}#result"
+                            class="btn btn-primary">
+                            <i class="mdi mdi-download"></i> Pdf
+                        </a>
+                        <a href="{{ route('report.export', array_merge(request()->all(), ['format' => 'excel'])) }}#result"
+                            class="btn btn-success">
+                            <i class="mdi mdi-download"></i> Excel
+                        </a>
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label small">Сторона операции:</label>
-                    <select name="side" class="form-select">
-                        <option value="">Все</option>
-                        <option value="consume" {{ request('side') == 'consume' ? 'selected' : '' }}>Расход</option>
-                        <option value="intake" {{ request('side') == 'intake' ? 'selected' : '' }}>Поступление
-                        </option>
-                    </select>
-                </div>
-                <div class="col-md-4 d-flex align-items-end gap-2">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="mdi mdi-magnify"></i>
-                    </button>
-                    <a href="{{ route('report.index') }}" class="btn btn-success">
-                        <i class="mdi mdi-refresh"></i>
-                    </a>
-                    <a href="{{ route('report.export', array_merge(request()->all(), ['format' => 'pdf'])) }}"
-                        class="btn btn-primary">
-                        <i class="mdi mdi-download"></i> Pdf
-                    </a>
-                    <a href="{{ route('report.export', array_merge(request()->all(), ['format' => 'excel'])) }}"
-                        class="btn btn-success">
-                        <i class="mdi mdi-download"></i> Excel
-                    </a>
-                </div>
-            </div>
+            </form>
         </div>
     </div>
     <div class="card border-0">
@@ -145,26 +147,46 @@
                                         'intake_return' => 'Возврат поставщику',
                                         default => $activity->type,
                                     };
+                                    $loandru = $activity->loan_direction === 'given' ? 'Выдано' : 'Получено';
+                                    $paymentRu = match ($activity->payment_type) {
+                                        'cash' => 'Наличные',
+                                        'card' => 'Карта',
+                                        'bank_transfer' => 'Банковский перевод',
+                                        default => $activity->payment_type,
+                                    };
                                 @endphp
                                 {{ strtoupper($typeRu) }}
                             </td>
-                            <td>{{ $activity->supplier->name ?? '-' }}</td>
-                            <td>{{ number_format($activity->total_price, 0, ',', ' ') }}/{{ $activity->total_usd }}</td>
+                            <td>{{ $activity->brand->name ?? 'нет' }}
+                                <br>
+                                <small>{{ $activity->supplier->name ?? '' }}</small>
+                            </td>
+                            <td>{{ number_format($activity->total_price, 0, ',', ' ') }} сум
+                                <br>
+                                <small>{{ $paymentRu }}</small>
+                            </td>
                             <td>
                                 @if (in_array($activity->type, ['loan', 'intake_loan']))
-                                    {{ $activity->loan_amount ?? 0 }}
+                                    {{ number_format($activity->loan_amount, 0, ',', ' ') }} сум
+                                    <br>
+                                    <small><strong>{{ $loandru }}</strong></small>
                                 @else
-                                    -
+                                    нет
                                 @endif
                             </td>
                             <td>
                                 <ul class="mb-0">
                                     @foreach ($activity->items as $item)
-                                        <li>{{ $item->product->name }} x{{ $item->qty }} {{ $item->unit }}</li>
+                                        <li>{{ $item->product->name }} <strong>x</strong>
+                                            {{ number_format($item->qty, 0, ',', ' ') }}
+                                            {{ $item->unit }}</li>
                                     @endforeach
                                 </ul>
                             </td>
-                            <td>{{ $activity->note }}</td>
+                            <td>{{ $activity->note ?? 'нет' }}
+                                <br>
+                                {{ $activity->return_reason }}
+                            </td>
                         </tr>
                     @empty
                         <tr>
