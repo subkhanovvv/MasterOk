@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductActivity;
 use App\Models\ProductActivityItems;
+use App\Models\Setting;
 use App\Models\Supplier;
 use Illuminate\Support\Str;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
@@ -23,8 +24,9 @@ class IntakeController extends Controller
         $suppliers = Supplier::orderBy('name')->get();
         $brands = Brand::all()->keyBy('id');
         $categories = Category::all()->keyBy('id');
+        $settings = Setting::all();
 
-        return view('pages.intake.intake', compact('products', 'suppliers', 'brands', 'categories'));
+        return view('pages.intake.intake', compact('products', 'suppliers', 'brands', 'categories', 'settings'));
     }
     public function store(Request $request)
     {

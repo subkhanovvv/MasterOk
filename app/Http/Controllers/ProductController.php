@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Setting;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -39,8 +40,10 @@ class ProductController extends Controller
 
         $categories = Category::all();
         $brands = Brand::all();
+        $settings = Setting::all();
 
-        return view('pages.products.index', compact('products', 'categories', 'brands'));
+
+        return view('pages.products.index', compact('products', 'categories', 'brands' , 'settings'));
     }
 
     public function store(Request $request)

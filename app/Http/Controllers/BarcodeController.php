@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Http;
@@ -14,6 +15,7 @@ class BarcodeController extends Controller
     public function index(Request $request)
     {
         $sortOrder = $request->get('sort', 'desc');
+        $settings = Setting::all();
 
         $barcodes = Product::query()
             ->when($request->filled('search'), function ($query) use ($request) {
@@ -36,7 +38,7 @@ class BarcodeController extends Controller
 
         $categories = Category::all();
         $brands = Brand::all();
-        return view('pages.barcodes.barcode', compact('barcodes', 'categories', 'brands'));
+        return view('pages.barcodes.barcode', compact('barcodes', 'categories', 'brands', 'settings'));
     }
     public function print(Request $request, $id)
     {

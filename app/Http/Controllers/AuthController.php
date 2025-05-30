@@ -46,8 +46,9 @@ class AuthController extends Controller
     public function profile()
     {
         $user = Auth::user();
+        $settings = Setting::all();
 
-        return view('pages.profile.profile', compact('user'));
+        return view('pages.profile.profile', compact('user', 'settings'));
     }
     public function update(Request $request )
     {

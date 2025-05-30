@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ProductActivity;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 
 class HistoryController extends Controller
@@ -10,6 +11,7 @@ class HistoryController extends Controller
     public function index(Request $request)
     {
         $sortOrder = $request->get('sort', 'desc');
+        $settings = Setting::all();
 
         $transactions = ProductActivity::withCount('items')
             ->with(['items.product.brand', 'items.product.category', 'supplier', 'brand'])
@@ -83,7 +85,7 @@ class HistoryController extends Controller
 
         $brands = \App\Models\Brand::all();
 
-        return view('pages.history.index', compact('transactions', 'brands', 'sortOrder'));
+        return view('pages.history.index', compact('transactions', 'brands', 'sortOrder' , 'settings'));
     }
 
     public function print($id)

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Brand;
 use App\Models\Product;
+use App\Models\Setting;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -15,6 +16,7 @@ class BrandController extends Controller
    public function index(Request $request)
    {
       $sortOrder = $request->get('sort', 'desc');
+        $settings = Setting::all();
 
       $brands = Brand::withCount('products' , 'suppliers')
          ->when($request->filled('search'), function ($query) use ($request) {
@@ -35,7 +37,7 @@ class BrandController extends Controller
          $brand->last_intake = $lastIntake ? $lastIntake->created_at : null;
       }
 
-      return view('pages.brands.brand', compact('brands'));
+      return view('pages.brands.brand', compact('brands', 'settings'));
    }
 
    public function create()

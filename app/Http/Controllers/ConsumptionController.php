@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductActivity;
 use App\Models\ProductActivityItems;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -16,10 +17,11 @@ class ConsumptionController extends Controller
 {
     public function index()
     {
+        $settings = Setting::all();
         $products = Product::orderBy('name')->get();
         $brands = Brand::all()->keyBy('id');
         $categories = Category::all()->keyBy('id');
-        return view('pages.consumption.index', compact('products' , 'brands', 'categories'));
+        return view('pages.consumption.index', compact('products' , 'brands', 'categories', 'settings'));
     }
     public function store(Request $request)
     {

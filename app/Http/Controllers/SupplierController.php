@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Brand;
+use App\Models\Setting;
 use App\Models\Supplier;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -13,6 +14,7 @@ class SupplierController extends Controller
     public function index(Request $request)
     {
         $sortOrder = $request->get('sort', 'desc');
+        $settings = Setting::all();
 
         $suppliers = Supplier::with(['brand' => function ($query) {
             $query->withCount('products', 'suppliers');
@@ -29,7 +31,7 @@ class SupplierController extends Controller
 
         $brands = Brand::withCount('products')->get();
 
-        return view('pages.suppliers.index', compact('suppliers', 'brands'));
+        return view('pages.suppliers.index', compact('suppliers', 'brands', 'settings'));
     }
 
     public function store(Request $request)

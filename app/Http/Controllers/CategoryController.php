@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Setting;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -14,6 +15,7 @@ class CategoryController extends Controller
     public function index(Request $request)
     {
         $sortOrder = $request->get('sort', 'desc');
+        $settings = Setting::all();
 
         $categories = Category::withCount('products')
             ->when($request->filled('search'), function ($query) use ($request) {
@@ -23,7 +25,7 @@ class CategoryController extends Controller
             ->paginate(10)
             ->appends(['sort' => $sortOrder]);
 
-        return view('pages.categories.category', compact('categories'));
+        return view('pages.categories.category', compact('categories', 'settings'));
     }
 
     public function store(Request $request)
