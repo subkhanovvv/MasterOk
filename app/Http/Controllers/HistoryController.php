@@ -62,6 +62,8 @@ class HistoryController extends Controller
                     $query->whereIn('type', ['intake', 'intake_loan', 'intake_return']);
                 } else if ($request->side === 'return') {
                     $query->whereIn('type', ['return', 'intake_return']);
+                } elseif ($request->side === 'loan') {
+                    $query->whereIn('type', ['loan', 'intake_loan']);
                 }
             })
 

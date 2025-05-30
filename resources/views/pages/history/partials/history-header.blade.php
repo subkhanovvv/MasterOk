@@ -45,7 +45,7 @@
                             <option value="consume" {{ request('side') == 'consume' ? 'selected' : '' }}>Расход</option>
                             <option value="intake" {{ request('side') == 'intake' ? 'selected' : '' }}>Поступление
                             </option>
-                            <option value="all" {{ request('loan_filter') == 'all' ? 'selected' : '' }}>Все займы
+                            <option value="loan" {{ request('side') == 'loan' ? 'selected' : '' }}>Все займы
                             </option>
                             <option value="return" {{request('side') == 'return' ? 'selected' : ''}}>Все возвраты</option>
                         </select>
