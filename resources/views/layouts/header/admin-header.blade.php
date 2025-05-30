@@ -101,7 +101,7 @@
     </div>
     <div class="navbar-menu-wrapper d-flex align-items-top">
         <ul class="navbar-nav ms-auto">
-           
+
             <li class="nav-item">
                 <i class="mdi mdi-fullscreen icon-sm" id="fullscreenIcon" onclick="toggleFullscreen()"></i>
             </li>
@@ -125,11 +125,6 @@
                     </div>
                 </div>
             </li>
-             <li class="nav-item">
-                <a href="javascript:void(0)" class="nav-link" data-bs-toggle="modal" data-bs-target="#infoModal">
-                    <i class="mdi mdi-information-slab-circle-outline text-warning icon-lg"></i>
-                </a>
-            </li>
             <li class="nav-item dropdown d-none d-lg-block user-dropdown">
                 <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                     <img class="img-xs rounded-circle" src="{{ asset('../admin../assets/images/profile.jpg') }}"
@@ -147,10 +142,10 @@
                     <a class="dropdown-item" href="{{ route('logout') }}"><i
                             class="dropdown-item-icon mdi mdi-logout text-primary me-2"></i>Sign
                         Out</a>
-                    <a href=""
+                    {{-- <a href=""
                         class="dropdown-footer align-items-center d-flex justify-content-center text-decoration-none text-dark">
                         <i class="mdi mdi-gift-outline icon-sm text-danger me-2 bounce"></i> Рефералка
-                    </a>
+                    </a> --}}
                 </div>
             </li>
         </ul>
@@ -160,7 +155,6 @@
         </button>
     </div>
 </nav>
-@include('pages.information.info-modal')
 <script>
     let previousPrices = {
         UZS: null,
