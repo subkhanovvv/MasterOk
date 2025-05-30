@@ -16,9 +16,10 @@ class BrandController extends Controller
    public function index(Request $request)
    {
       $sortOrder = $request->get('sort', 'desc');
-        $settings = Setting::all();
+      $settings = Setting::find(1);
 
-      $brands = Brand::withCount('products' , 'suppliers')
+
+      $brands = Brand::withCount('products', 'suppliers')
          ->when($request->filled('search'), function ($query) use ($request) {
             $query->where('name', 'like', '%' . $request->search . '%');
          })
@@ -28,12 +29,12 @@ class BrandController extends Controller
 
       foreach ($brands as $brand) {
          $lastIntake = \App\Models\ProductActivity::whereIn('type', ['intake', 'intake_return', 'intake_loan'])
-         ->whereHas('items.product', function ($query) use ($brand) {
-             $query->where('brand_id', $brand->id);
-         })
-         ->latest('created_at')
-         ->first();
-     
+            ->whereHas('items.product', function ($query) use ($brand) {
+               $query->where('brand_id', $brand->id);
+            })
+            ->latest('created_at')
+            ->first();
+
          $brand->last_intake = $lastIntake ? $lastIntake->created_at : null;
       }
 
@@ -112,27 +113,27 @@ class BrandController extends Controller
       }
    }
 
-      public function destroy(Brand $brand)
-      {
-         try {
-            if ($brand->products_count > 0) {
-               return redirect()
-                  ->route('brands.index')
-                  ->with('error', 'Невозможно удалить категорию, так как она используется в продуктах.');
-            }
-            if ($brand->photo) {
-               Storage::delete('public/' . $brand->photo);
-            }
-            $brand->delete();
-
+   public function destroy(Brand $brand)
+   {
+      try {
+         if ($brand->products_count > 0) {
             return redirect()
                ->route('brands.index')
-               ->with('success', 'Категория успешно удалена!');
-         } catch (QueryException $e) {
-            Log::error('Category deletion error: ' . $e->getMessage());
-            return redirect()
-               ->route('brands.index')
-               ->with('error', 'Ошибка при удалении категории: ' . $e->getMessage());
+               ->with('error', 'Невозможно удалить категорию, так как она используется в продуктах.');
          }
+         if ($brand->photo) {
+            Storage::delete('public/' . $brand->photo);
+         }
+         $brand->delete();
+
+         return redirect()
+            ->route('brands.index')
+            ->with('success', 'Категория успешно удалена!');
+      } catch (QueryException $e) {
+         Log::error('Category deletion error: ' . $e->getMessage());
+         return redirect()
+            ->route('brands.index')
+            ->with('error', 'Ошибка при удалении категории: ' . $e->getMessage());
       }
+   }
 }

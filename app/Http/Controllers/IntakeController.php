@@ -24,7 +24,8 @@ class IntakeController extends Controller
         $suppliers = Supplier::orderBy('name')->get();
         $brands = Brand::all()->keyBy('id');
         $categories = Category::all()->keyBy('id');
-        $settings = Setting::all();
+        $settings = Setting::find(1);
+
 
         return view('pages.intake.intake', compact('products', 'suppliers', 'brands', 'categories', 'settings'));
     }

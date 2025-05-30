@@ -17,11 +17,12 @@ class ConsumptionController extends Controller
 {
     public function index()
     {
-        $settings = Setting::all();
+        $settings = Setting::find(1);
+
         $products = Product::orderBy('name')->get();
         $brands = Brand::all()->keyBy('id');
         $categories = Category::all()->keyBy('id');
-        return view('pages.consumption.index', compact('products' , 'brands', 'categories', 'settings'));
+        return view('pages.consumption.index', compact('products', 'brands', 'categories', 'settings'));
     }
     public function store(Request $request)
     {

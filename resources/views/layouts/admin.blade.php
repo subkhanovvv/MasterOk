@@ -5,11 +5,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>
-        @foreach ($settings as $s)
-            @if ($s->name)
-                {{ $s->name }} | Smart Admin
-            @endif
-        @endforeach
+
+        @if ($settings->name)
+            {{ $settings->name }} | Smart Admin
+        @endif
+
     </title>
 
     <meta name="csrf-token" content="{{ csrf_token() }}">

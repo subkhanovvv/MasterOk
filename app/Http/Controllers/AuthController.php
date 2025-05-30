@@ -15,8 +15,9 @@ class AuthController extends Controller
 {
     public function login()
     {
-        $settings = Setting::all();
-        return view('auth.login' , compact('settings'));
+        $settings = Setting::find(1);
+
+        return view('auth.login', compact('settings'));
     }
     public function register()
     {
@@ -46,13 +47,14 @@ class AuthController extends Controller
     public function profile()
     {
         $user = Auth::user();
-        $settings = Setting::all();
+        $settings = Setting::find(1);
+
 
         return view('pages.profile.profile', compact('user', 'settings'));
     }
-    public function update(Request $request )
+    public function update(Request $request)
     {
-       $request->validate([
+        $request->validate([
             'name'  => 'nullable|string|max:255',
             'password' => 'nullable|min:8',
         ]);
@@ -66,7 +68,7 @@ class AuthController extends Controller
             $data['password'] = Hash::make($request->password);
         }
         if (empty($data)) {
-          return back()->with('error', 'no changes were made');
+            return back()->with('error', 'no changes were made');
         }
         User::find(auth()->id())->update($data);
 

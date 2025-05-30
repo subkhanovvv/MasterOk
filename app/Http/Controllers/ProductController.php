@@ -40,10 +40,11 @@ class ProductController extends Controller
 
         $categories = Category::all();
         $brands = Brand::all();
-        $settings = Setting::all();
+        $settings = Setting::find(1);
 
 
-        return view('pages.products.index', compact('products', 'categories', 'brands' , 'settings'));
+
+        return view('pages.products.index', compact('products', 'categories', 'brands', 'settings'));
     }
 
     public function store(Request $request)
@@ -73,8 +74,8 @@ class ProductController extends Controller
             'price_uzs' => $validated['price_uzs'],
             'short_description' => $validated['short_description'] ?? null,
             'sale_price' => $validated['sale_price'] ?? null,
-            'category_id' => $validated['category_id']?? null,
-            'brand_id' => $validated['brand_id']?? null,
+            'category_id' => $validated['category_id'] ?? null,
+            'brand_id' => $validated['brand_id'] ?? null,
         ]);
 
         // Determine barcode value

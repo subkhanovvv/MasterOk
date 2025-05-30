@@ -20,7 +20,8 @@ class TransactionController extends Controller
         $start = $request->input('start_date') ?? Carbon::now()->startOfMonth()->format('Y-m-d');
         $end = $request->input('end_date') ?? Carbon::now()->endOfDay()->format('Y-m-d');
         $brandId = $request->input('brand_id');
-        $settings = Setting::all();
+        $settings = Setting::find(1);
+
 
         // Convert dates to Carbon for proper comparison
         $startDate = Carbon::parse($start)->startOfDay();

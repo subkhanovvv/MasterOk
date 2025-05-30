@@ -15,7 +15,8 @@ class BarcodeController extends Controller
     public function index(Request $request)
     {
         $sortOrder = $request->get('sort', 'desc');
-        $settings = Setting::all();
+        $settings = Setting::find(1);
+
 
         $barcodes = Product::query()
             ->when($request->filled('search'), function ($query) use ($request) {

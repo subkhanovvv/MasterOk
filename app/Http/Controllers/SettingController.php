@@ -3,15 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Setting;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 
 class SettingController extends Controller
 {
-  public function index(){
-        $settings = Setting::all();
+  public function index()
+  {
+    $settings = Setting::find(1);
 
-     return view('pages.settings.index', compact('settings'));
+    return view('pages.settings.index', compact('settings'));
   }
 }

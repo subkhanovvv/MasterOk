@@ -14,7 +14,8 @@ class SupplierController extends Controller
     public function index(Request $request)
     {
         $sortOrder = $request->get('sort', 'desc');
-        $settings = Setting::all();
+        $settings = Setting::find(1);
+
 
         $suppliers = Supplier::with(['brand' => function ($query) {
             $query->withCount('products', 'suppliers');
@@ -65,10 +66,10 @@ class SupplierController extends Controller
         ]);
 
         $supplier->update($validated);
-        
-            return redirect()
-                ->route('suppliers.index')
-                ->with('success', 'Поставщик успешно обновлен!');
+
+        return redirect()
+            ->route('suppliers.index')
+            ->with('success', 'Поставщик успешно обновлен!');
     }
 
     public function destroy(Supplier $supplier)
