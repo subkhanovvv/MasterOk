@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ProductActivity;
 use App\Models\ProductActivityItems;
+use App\Models\Setting;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -99,14 +100,17 @@ class IndexController extends Controller
 
         $labels = $topProducts->pluck('product.name');
         $data = $topProducts->pluck('total');
-
+        $settings = Setting::all();
+            
         return view('pages.index', compact(
             'activities',
             'labels',
             'data',
             'netCash',
             'activityTypeCounts',
-            'day'
+            'day',
+            'settings',
+            
         ));
     }
 }

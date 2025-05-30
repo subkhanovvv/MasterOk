@@ -92,7 +92,13 @@
         </div>
         <div>
             <a class="navbar-brand brand-logo" href="/">
+                {{-- @if ()
                 <img src="{{ asset('../admin/assets/images/logo.png') }}" alt="logo" />
+                    
+                @else
+                    
+                <h2>{{}}</h2>
+                @endif --}}
             </a>
             <a class="navbar-brand brand-logo-mini" href="/">
                 <img src="{{ asset('../admin../assets/images/ico.png') }}" alt="logo" />

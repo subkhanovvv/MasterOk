@@ -24,14 +24,10 @@ class DatabaseSeeder extends Seeder
         // Insert default settings
         DB::table('settings')->insert([
             [
-                'key' => 'usd_rate_source',
-                'value' => 'api',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'key' => 'manual_usd_to_uzs',
-                'value' => '12700',
+                'name' => 'SmartAdmin',
+                'logo' => '',
+                'mini_logo' => '',
+                'mini_name' => 'SA',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
