@@ -171,6 +171,7 @@ class TransactionController extends Controller
         $start = $request->input('start_date') ?? Carbon::now()->startOfMonth()->format('Y-m-d');
         $end = $request->input('end_date') ?? Carbon::now()->endOfDay()->format('Y-m-d');
         $brandId = $request->input('brand_id');
+        $side = $request->input('side');
 
         $startDate = Carbon::parse($start)->startOfDay();
         $endDate = Carbon::parse($end)->endOfDay();
@@ -184,6 +185,16 @@ class TransactionController extends Controller
             });
         }
 
+        if ($side === 'consume') {
+            $query->whereIn('type', ['consume', 'loan', 'return']);
+        } elseif ($side === 'intake') {
+            $query->whereIn('type', ['intake', 'intake_loan', 'intake_return']);
+        } elseif ($side === 'loan') {
+            $query->whereIn('type', ['loan', 'intake_loan']);
+        } elseif ($side === 'return') {
+            $query->whereIn('type', ['return', 'intake_return']);
+        }
+
         $activities = $query->get();
 
         if ($format === 'excel') {
@@ -191,7 +202,7 @@ class TransactionController extends Controller
         }
 
         // PDF
-        $pdf = FacadePdf::loadView('pages.report.partials.pdf', compact('activities', 'start', 'end'));
+        $pdf = FacadePdf::loadView('pages.report.partials.pdf', compact('activities', 'start', 'end', 'side', 'brandId'));
         return $pdf->download('report.pdf');
     }
 }
