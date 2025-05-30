@@ -92,16 +92,18 @@
         </div>
         <div>
             <a class="navbar-brand brand-logo" href="/">
-                {{-- @if ()
-                <img src="{{ asset('../admin/assets/images/logo.png') }}" alt="logo" />
-                    
-                @else
-                    
-                <h2>{{}}</h2>
-                @endif --}}
+                @foreach ($settings as $s)
+                    @if ($s->name)
+                        <h3 class="text-white bg-primary p-2 rounded">{{ $s->name }}</h3>
+                    @endif
+                @endforeach
             </a>
             <a class="navbar-brand brand-logo-mini" href="/">
-                <img src="{{ asset('../admin../assets/images/ico.png') }}" alt="logo" />
+                @foreach ($settings as $s)
+                    @if ($s->mini_name)
+                        <h4 class="text-white bg-primary p-2 rounded">{{ $s->mini_name }}</h4>
+                    @endif
+                @endforeach
             </a>
         </div>
     </div>

@@ -110,7 +110,6 @@ class IndexController extends Controller
             'activityTypeCounts',
             'day',
             'settings',
-            
         ));
     }
 }

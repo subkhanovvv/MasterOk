@@ -17,13 +17,13 @@
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
 
-        .form-title {
+       /* .form-title {
             font-size: 1.25rem;
             line-height: 1.75rem;
             font-weight: 600;
             text-align: center;
             color: #000;
-        }
+        }*/
 
         .input-container {
             position: relative;
