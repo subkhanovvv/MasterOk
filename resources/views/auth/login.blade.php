@@ -3,11 +3,9 @@
     <form class="form" method="POST" action="{{ route('ProcessLogin') }}">
         @csrf
         <p class="form-title ">
-            @foreach ($settings as $s)
-                @if ($s->name)
-                    <h1 style="color: #4F46E5" class="text-center">{{ $s->name }}</h1>
+                @if ($settings->name)
+                    <h1 style="color: #4F46E5" class="text-center">{{ $settings->name }}</h1>
                 @endif
-            @endforeach
         <div class="text-center login-title">Войдите в свой аккаунт</div>
         </p>
         <div class="input-container">
