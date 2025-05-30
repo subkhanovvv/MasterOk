@@ -94,14 +94,14 @@
             <a class="navbar-brand brand-logo" href="/">
                 @foreach ($settings as $s)
                     @if ($s->name)
-                        <h3 class="text-white bg-primary p-2 rounded">{{ $s->name }}</h3>
+                        <h3 class="text-primary p-2 rounded" style="font-size:larger;font-weight:bolder">{{ $s->name }}</h3>
                     @endif
                 @endforeach
             </a>
             <a class="navbar-brand brand-logo-mini" href="/">
                 @foreach ($settings as $s)
                     @if ($s->mini_name)
-                        <h4 class="text-white bg-primary p-2 rounded">{{ $s->mini_name }}</h4>
+                        <h4 class="text-primary p-2 rounded" style="font-weight:bolder">{{ $s->mini_name }}</h4>
                     @endif
                 @endforeach
             </a>
