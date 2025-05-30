@@ -25,8 +25,6 @@ class DatabaseSeeder extends Seeder
         DB::table('settings')->insert([
             [
                 'name' => 'SmartAdmin',
-                'logo' => '',
-                'mini_logo' => '',
                 'mini_name' => 'SA',
                 'created_at' => now(),
                 'updated_at' => now(),
