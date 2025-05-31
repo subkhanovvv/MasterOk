@@ -82,26 +82,19 @@
     @foreach ($transaction->items as $item)
         <div class="item-line">
             <span>{{ $item->product->name }} x {{ $item->qty }}</span>
-            <span>{{ number_format($item->product->sale_price * $item->qty, 2) ?? '-' }}</span>
+            @if (in_array($transaction->type, ['consume', 'return', 'loan']))
+                <span>{{ number_format($item->product->sale_price * $item->qty, 2) ?? '-' }}</span>
+            @else
+                <span>{{ number_format($item->product->price_uzs * $item->qty, 2) ?? '-' }}</span>
+            @endif
         </div>
     @endforeach
+
     <hr>
     <div class="line">
         <strong>Итого:</strong>
         <span>{{ number_format($transaction->total_price, 2) }} сум</span>
     </div>
-    @if ($transaction->paid_amount)
-        <div class="line">
-            <strong>Оплачено:</strong>
-            <span>{{ number_format($transaction->paid_amount, 2) }} сум</span>
-        </div>
-        @if ($transaction->change_amount && $transaction->change_amount > 0)
-            <div class="line">
-                <strong>Сдача:</strong>
-                <span>{{ number_format($transaction->change_amount, 2) }} сум</span>
-            </div>
-        @endif
-    @endif
     <hr>
 
     @if ($transaction->note)
