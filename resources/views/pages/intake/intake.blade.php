@@ -31,7 +31,7 @@
                     <div class="col-md-4">
                         <label for="brand" class="form-label">Бренд</label>
                         <select name="brand_id" id="brand" class="form-select form-select-md" required>
-                            <option value="" disabled selected >Выберите бренд</option>
+                            <option value="" disabled selected>Выберите бренд</option>
                             @foreach ($brands as $brand)
                                 <option value="{{ $brand->id }}">{{ $brand->name }}</option>
                             @endforeach
@@ -160,7 +160,8 @@
                     </table>
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <div class="text-muted small">
-                            <strong>Итого:</strong> <span id="total-uzs">0</span>
+                            <strong>Итого:</strong> <span id="total-uzs">0</span> сум
+
                         </div>
                         <div class="d-flex align-items-center gap-3">
                             <button type="submit" class="btn btn-primary rounded"> Сохранить

@@ -159,7 +159,8 @@
 
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <div class="text-muted small">
-                        <strong>Итого:</strong> <span id="total-uzs">0</span>
+                        <strong>Итого:</strong> <span id="total-uzs">0</span> сум 
+
                     </div>
                     <div class="d-flex align-items-center gap-3">
                         <button type="submit" class="btn btn-primary rounded">
