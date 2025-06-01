@@ -139,13 +139,11 @@
                         <strong class="mb-1 mt-3 font-weight-semibold text-capitalize">{{ Auth::user()->name }}</strong>
                     </div>
                     <a class="dropdown-item" href="{{ route('profile') }}"><i
-                            class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My
-                        Profile</a>
+                            class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> Профиль</a>
                     <a class="dropdown-item" href="{{ route('settings') }}"><i
-                            class="dropdown-item-icon mdi mdi-cog text-primary me-2"></i> Settings</a>
+                            class="dropdown-item-icon mdi mdi-cog text-primary me-2"></i> Настройки</a>
                     <a class="dropdown-item" href="{{ route('logout') }}"><i
-                            class="dropdown-item-icon mdi mdi-logout text-primary me-2"></i>Sign
-                        Out</a>
+                            class="dropdown-item-icon mdi mdi-logout text-primary me-2"></i> Выйти</a>
                     {{-- <a href=""
                         class="dropdown-footer align-items-center d-flex justify-content-center text-decoration-none text-dark">
                         <i class="mdi mdi-gift-outline icon-sm text-danger me-2 bounce"></i> Рефералка

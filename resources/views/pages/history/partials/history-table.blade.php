@@ -49,7 +49,13 @@
                 <tr>
                     <td>{{ $loop->iteration + ($transactions->currentPage() - 1) * $transactions->perPage() }}</td>
                     <td>{{ $t->created_at }}</td>
-                    <td>{{ $typeRu }}</td>
+                    <td>{{ $typeRu }}
+                        <br>
+                        @if ($t->brand_id)
+                            <br>
+                            <small><strong>{{$t->brand->name}}</strong></small>
+                        @endif
+                    </td>
                     <td>{{ $t->total_price }} сум</td>
                     <td>{{ $t->items_count }} товаров</td>
                     <td>{{ $paymentRu }}</td>
