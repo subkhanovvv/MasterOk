@@ -21,7 +21,11 @@
                         'bank_transfer' => 'Банковский перевод',
                         default => $t->payment_type,
                     };
-
+                    $loand = match ($t->loan_direction) {
+                        'given' => 'выдано',
+                        'taken' => 'получено ',
+                        default => $t->loan_direction,
+                    };
                     $typeRu = match ($t->type) {
                         'consume' => 'Продажа',
                         'loan' => 'Долг',
@@ -62,7 +66,7 @@
                         <br><br>
                         @if ($t->status === 'incomplete')
                             <strong class="text-danger"><small>долг : {{ number_format($t->loan_amount, 0, ',', ' ') }}
-                                    сум <i class="mdi mdi-alert-circle"></i></small></strong>
+                                    сум <i class="mdi mdi-alert-circle"></i><br> {{ $loand }}</small></strong>
                         @endif
                     </td>
                     <td>{{ $t->items_count }} товаров</td>
