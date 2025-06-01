@@ -23,7 +23,7 @@
                             alt="{{ $p->name }}">
                     </td>
                     <td>
-                        {{ $p->price_uzs ? number_format($p->price_uzs) . ' so\'m' : 'Нет цены UZS' }}
+                        {{ number_format($p->price_uzs, 0, ',', ' ') }} сум
                     </td>
 
                     <td>
@@ -42,7 +42,8 @@
                             {{ $statusRu }}
                         </span>
                     </td>
-                    <td>{{ number_format($p->sale_price) }}</td>
+                    <td>{{ number_format($p->sale_price, 0, ',', ' ') }} сум
+                    </td>
                     <td>{{ $p->qty }} {{ $p->unit }}</td>
                     <td>
                         @if ($p->barcode)
@@ -58,7 +59,7 @@
                                 data-photo="{{ $p->photo ? Storage::url($p->photo) : asset('admin/assets/images/default_product.png') }}"
                                 data-name="{{ $p->name }}" data-sale-price="{{ $p->sale_price }}"
                                 data-uzs-price="{{ $p->price_uzs }}" data-usd-price="{{ $p->price_usd }}"
-                                data-brand="{{ $p->get_brand->name  ?? 'Нет бренда' }}"
+                                data-brand="{{ $p->get_brand->name ?? 'Нет бренда' }}"
                                 data-category="{{ $p->get_category->name ?? 'Нет категории' }}"
                                 data-barcode="{{ Storage::url($p->barcode) }}" data-qty="{{ $p->qty }}"
                                 data-updated-at="{{ $p->updated_at->format('d-m-y') }}"
