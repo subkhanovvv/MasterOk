@@ -62,11 +62,31 @@
     <h2 style="text-align:center;">MasterOK</h2>
     <h4 style="text-align:center;">Чек №{{ $transaction->id }}</h4>
     <hr>
-    <p><strong>Тип:</strong> {{ strtoupper($transaction->type) }}</p>
+    @php
+        $paymentRu = match ($transaction->payment_type) {
+            'cash' => 'Наличные',
+            'card' => 'Карта',
+            'bank_transfer' => 'Банковский перевод',
+            default => $transaction->payment_type,
+        };
+
+        $transactionypeRu = match ($transaction->type) {
+            'consume' => 'Продажа',
+            'loan' => 'Долг',
+            'return' => 'Возврат',
+            'intake' => 'Поступление',
+            'intake_loan' => 'Поступление (в долг)',
+            'intake_return' => 'Возврат поставщику',
+            default => $transaction->type,
+        };
+
+    @endphp
+    <p><strong>Тип:</strong> {{ strtoupper($transactionypeRu) }}</p>
     <p><strong>Дата:</strong> {{ $transaction->created_at->format('d.m.Y H:i') }}</p>
 
+
     @if ($transaction->payment_type)
-        <p><strong>Тип оплаты:</strong> {{ $transaction->payment_type }}</p>
+        <p><strong>Тип оплаты:</strong> {{ $paymentRu }}</p>
     @endif
 
     @if ($transaction->client_name)
