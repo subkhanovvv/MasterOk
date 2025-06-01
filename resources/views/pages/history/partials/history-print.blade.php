@@ -59,7 +59,7 @@
 </head>
 
 <body>
-    <h2 style="text-align:center;">MasterOK</h2>
+    <h2 style="text-align:center;">{{ strtoupper($settings->name) }}</h2>
     <h4 style="text-align:center;">Чек №{{ $transaction->id }}</h4>
     <hr>
     @php
@@ -83,8 +83,13 @@
     @endphp
     <p><strong>Тип:</strong> {{ strtoupper($transactionypeRu) }}</p>
     <p><strong>Дата:</strong> {{ $transaction->created_at->format('d.m.Y H:i') }}</p>
+    @if ($transaction->brand_id)
+        <p><strong>Поставщик:</strong>{{ $transaction->brand->name }}</p>
 
-
+        @if ($transaction->supplier)
+            <p>Водитель:{{ $transaction->supplier->name }}</p>
+        @endif
+    @endif
     @if ($transaction->payment_type)
         <p><strong>Тип оплаты:</strong> {{ $paymentRu }}</p>
     @endif
@@ -92,11 +97,6 @@
     @if ($transaction->client_name)
         <p><strong>Клиент:</strong> {{ $transaction->client_name }}</p>
     @endif
-
-    @if ($transaction->supplier)
-        <p><strong>Поставщик:</strong> {{ $transaction->supplier->name }}</p>
-    @endif
-
     <hr>
     <strong>Товары:</strong>
     @foreach ($transaction->items as $item)

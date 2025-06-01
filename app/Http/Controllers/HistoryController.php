@@ -94,7 +94,9 @@ class HistoryController extends Controller
     public function print($id)
     {
         $transaction = ProductActivity::with(['items.product', 'supplier'])->findOrFail($id);
-        return view('pages.history.partials.history-print', compact('transaction'));
+        $settings = Setting::find(1);
+
+        return view('pages.history.partials.history-print', compact('transaction', 'settings'));
     }
     public function updateStatus(Request $request, $id)
     {
