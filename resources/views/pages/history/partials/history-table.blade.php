@@ -92,24 +92,28 @@
                             data-bs-target="#transactionDetailsModal" class="text-decoration-none"
                             data-id="{{ $t->id }}" data-created_at="{{ $t->created_at }}"
                             data-updated_at="{{ $t->updated_at }}" data-type="{{ $t->type }}"
-                            data-client_name="{{ $t->client_name ?? ($t->supplier?->brand?->name ?? 'N/A') }}"
-                            data-client_phone="{{ $t->client_phone ?? ($t->supplier?->brand?->phone ?? 'N/A') }}"
-                            data-status="{{ $t->status }}" data-loan_direction="{{ $t->loan_direction ?? '-' }}"
+                            data-client_name="{{ $t->client_name ?? '' }}"
+                            data-client_phone="{{ $t->client_phone ?? '' }}" data-status="{{ $t->status }}"
+                            data-loan_direction="{{  $loand ?? '' }}"
                             data-total_price="{{ $t->total_price }}" data-payment_type="{{ $t->payment_type }}"
-                            data-loan_due_to="{{ $t->loan_due_to ?? '-' }}"
-                            data-return_reason="{{ $t->return_reason ?? '-' }}" data-note="{{ $t->note ?? '-' }}"
-                            data-supplier="{{ $t->supplier ? $t->supplier->name : '-' }}"
-                            data-qr_code="{{ asset('storage/' . $t->qr_code) }}"
-                            data-items="{{ $t->items->map(function ($item) {
+                            data-loan_due_to="{{ $t->loan_due_to ?? '' }}"
+                            data-return_reason="{{ $t->return_reason ?? '' }}" data-note="{{ $t->note ?? '' }}"
+                            data-supplier="{{ $t->supplier?->name ?? '' }}"
+                            data-qr_code="{{ $t->qr_code ? asset('storage/' . $t->qr_code) : '' }}"
+                            data-brand="{{ $t->brand->name ?? '' }}"
+                            data-items="{{ $t->items->map(function ($item) use ($t) {
                                     return [
                                         'product_name' => $item->product->name ?? '-',
                                         'qty' => $item->qty,
                                         'unit' => $item->product->unit,
-                                        'price' => $item->product->sale_price,
+                                        'price' => in_array($t->type, ['loan', 'return', 'consume'])
+                                            ? $item->product->sale_price
+                                            : $item->product->price_uzs,
                                     ];
                                 })->toJson() }}">
                             <i class="mdi mdi-eye icon-sm text-success"></i>
                         </a>
+
                         <a onclick="printTransactionCheque({{ $t->id }})" title="Печать"
                             class="text-decoration-none">
                             <i class="mdi mdi-printer icon-sm"></i>
