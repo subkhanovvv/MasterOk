@@ -33,11 +33,7 @@
                     };
 
                     $color =
-                        $t->status === 'complete'
-                            ? 'success'
-                            : ($t->status === 'incomplete'
-                                ? 'warning'
-                                : 'danger');
+                        $t->status === 'complete' ? 'success' : ($t->status === 'incomplete' ? 'warning' : 'danger');
 
                     $statusRu = match ($t->status) {
                         'complete' => 'Завершен',
@@ -48,15 +44,27 @@
 
                 <tr>
                     <td>{{ $loop->iteration + ($transactions->currentPage() - 1) * $transactions->perPage() }}</td>
-                    <td>{{ $t->created_at }}</td>
+                    <td>{{ $t->created_at }}
+                        @if ($t->status === 'incomplete')
+                            <br><br>
+                            <strong class="text-danger"><small>до : {{ $t->loan_due_to }} <i
+                                        class="mdi mdi-alert-circle"></i></small></strong>
+                        @endif
+                    </td>
                     <td>{{ $typeRu }}
                         <br>
                         @if ($t->brand_id)
                             <br>
-                            <small><strong>{{$t->brand->name}}</strong></small>
+                            <small><strong>{{ $t->brand->name }}</strong></small>
                         @endif
                     </td>
-                    <td>{{ $t->total_price }} сум</td>
+                    <td>{{ number_format($t->total_price, 0, ',', ' ') }} сум
+                        <br><br>
+                        @if ($t->status === 'incomplete')
+                            <strong class="text-danger"><small>долг : {{ number_format($t->loan_amount, 0, ',', ' ') }}
+                                    сум <i class="mdi mdi-alert-circle"></i></small></strong>
+                        @endif
+                    </td>
                     <td>{{ $t->items_count }} товаров</td>
                     <td>{{ $paymentRu }}</td>
                     <td>

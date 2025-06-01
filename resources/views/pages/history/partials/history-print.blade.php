@@ -85,10 +85,9 @@
     <p><strong>Дата:</strong> {{ $transaction->created_at->format('d.m.Y H:i') }}</p>
     @if ($transaction->brand_id)
         <p><strong>Поставщик:</strong>{{ $transaction->brand->name }}</p>
-
-        @if ($transaction->supplier)
-            <p>Водитель:{{ $transaction->supplier->name }}</p>
-        @endif
+    @endif
+    @if ($transaction->supplier)
+        <p><strong>Водитель:</strong>{{ $transaction->supplier->name }}</p>
     @endif
     @if ($transaction->payment_type)
         <p><strong>Тип оплаты:</strong> {{ $paymentRu }}</p>
@@ -103,9 +102,9 @@
         <div class="item-line">
             <span>{{ $item->product->name }} x {{ $item->qty }}</span>
             @if (in_array($transaction->type, ['consume', 'return', 'loan']))
-                <span>{{ number_format($item->product->sale_price * $item->qty, 2) ?? '-' }}</span>
+                <span>{{ number_format($item->product->sale_price * $item->qty, 0, ',', ' ') ?? '-' }} сум</span>
             @else
-                <span>{{ number_format($item->product->price_uzs * $item->qty, 2) ?? '-' }}</span>
+                <span>{{ number_format($item->product->price_uzs * $item->qty, 0, ',', ' ') ?? '-' }} сум</span>
             @endif
         </div>
     @endforeach
@@ -113,7 +112,7 @@
     <hr>
     <div class="line">
         <strong>Итого:</strong>
-        <span>{{ number_format($transaction->total_price, 2) }} сум</span>
+        <span>{{ number_format($transaction->total_price, 0, ',', ' ') }} сум</span>
     </div>
     <hr>
 
