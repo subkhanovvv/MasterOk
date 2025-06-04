@@ -88,14 +88,14 @@
             </button>
         </td>
     `;
-   if (product) {
-        const select = newRow.querySelector('.product-select');
-        select.value = product.id;
-        newRow.querySelector('.unit').value = product.unit;
-        newRow.querySelector('.price').value = product.sale_price;
-        newRow.querySelector('.priceuzs').value = product.price_uzs;
-        checkForLoss(newRow); // Add this line
-    }
+            if (product) {
+                const select = newRow.querySelector('.product-select');
+                select.value = product.id;
+                newRow.querySelector('.unit').value = product.unit;
+                newRow.querySelector('.price').value = product.sale_price;
+                newRow.querySelector('.priceuzs').value = product.price_uzs;
+                checkForLoss(newRow); // Add this line
+            }
             if (product) {
                 const select = newRow.querySelector('.product-select');
                 select.value = product.id;
@@ -442,5 +442,16 @@
                 recalculateTotals();
             }
         }
+    });
+    const iconMap = {
+        cash: 'mdi-cash',
+        card: 'mdi-credit-card-outline',
+        bank_transfer: 'mdi-bank-outline'
+    };
+
+    document.getElementById('payment_type').addEventListener('change', function() {
+        const value = this.value;
+        const icon = iconMap[value] || 'mdi-help-circle-outline';
+        document.getElementById('payment_icon').className = `mdi ${icon} me-2 fs-4`;
     });
 </script>

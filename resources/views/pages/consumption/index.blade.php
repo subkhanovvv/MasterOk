@@ -21,7 +21,7 @@
             background-color: #f8f9fa;
         }
     </style>
-    <form method="POST" action="{{ route('consumption.store') }}">
+    <form method="POST" action="{{ route('consumption.store') }}" target="print-frame">
         @csrf
 
         <div class="card mb-3 border-0">
@@ -94,7 +94,7 @@
                     </div>
 
                     <div class="col-md-12 justify-content-end d-flex gap-2">
-                        <input class="form-check-input" type="checkbox" id="print-checkbox" name="print">
+                        <input class="form-check-input" type="checkbox" id="print-redirect" name="print">
                         <label class="form-check-label" for="print-checkbox">
                             <small>Печать</small>
                         </label>
@@ -171,21 +171,9 @@
             </div>
         </div>
     </form>
+    <iframe name="print-frame" id="print-frame" style="display:none;"></iframe>
 
     @include('pages.consumption.js.script')
-    <script>
-        const iconMap = {
-            cash: 'mdi-cash',
-            card: 'mdi-credit-card-outline',
-            bank_transfer: 'mdi-bank-outline'
-        };
-
-        document.getElementById('payment_type').addEventListener('change', function() {
-            const value = this.value;
-            const icon = iconMap[value] || 'mdi-help-circle-outline';
-            document.getElementById('payment_icon').className = `mdi ${icon} me-2 fs-4`;
-        });
-    </script>
     <script>
         document.querySelector('form').addEventListener('submit', function(e) {
             const total = recalculateTotals();
@@ -207,8 +195,19 @@
                 alert('Total amount must be greater than zero.');
                 return;
             }
+        });
+        document.getElementById('print-checkbox').addEventListener('change', function() {
+            document.getElementById('print-redirect').value = this.checked ? '1' : '0';
+        });
 
-            // The form will submit normally and the controller will handle the print redirect
+        document.getElementById('print-frame').addEventListener('load', function() {
+            if (this.contentWindow.location.href !== 'about:blank') {
+                try {
+                    this.contentWindow.print();
+                } catch (e) {
+                    console.log('Print error:', e);
+                }
+            }
         });
     </script>
 @endsection
