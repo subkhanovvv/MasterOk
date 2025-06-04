@@ -74,6 +74,7 @@
         <td>
             <input type="number" step="0.01" class="form-control price" name="products[${rowIndex}][price]" required>
             <input type="number" step="0.01" class="form-control priceuzs bg-white border-0" name="products[${rowIndex}][price_uzs]" disabled>
+                <strong class="text-danger loss-alert" style="display: none;">Вы продаете себе в убыток!</strong>
         </td>
         <td class="text-center">
             <button type="button" class="border-0 bg-white qty-btn" data-action="increase">
@@ -87,7 +88,14 @@
             </button>
         </td>
     `;
-
+   if (product) {
+        const select = newRow.querySelector('.product-select');
+        select.value = product.id;
+        newRow.querySelector('.unit').value = product.unit;
+        newRow.querySelector('.price').value = product.sale_price;
+        newRow.querySelector('.priceuzs').value = product.price_uzs;
+        checkForLoss(newRow); // Add this line
+    }
             if (product) {
                 const select = newRow.querySelector('.product-select');
                 select.value = product.id;
@@ -108,6 +116,42 @@
         });
         document.getElementById('add-product').addEventListener('click', () => {
             addProductRow();
+        });
+
+        function checkForLoss(row) {
+            const priceUzs = parseFloat(row.querySelector('.priceuzs').value) || 0;
+            const salePrice = parseFloat(row.querySelector('.price').value) || 0;
+            const lossAlert = row.querySelector('.loss-alert');
+
+            if (priceUzs > salePrice) {
+                lossAlert.style.display = 'block';
+            } else {
+                lossAlert.style.display = 'none';
+            }
+        }
+        // In the product select change event
+        productsContainer.addEventListener('change', e => {
+            if (e.target.classList.contains('product-select')) {
+                const selected = e.target.options[e.target.selectedIndex];
+                const row = e.target.closest('.product-row');
+
+                if (selected.value) {
+                    row.querySelector('.unit').value = selected.dataset.unit;
+                    row.querySelector('.price').value = selected.dataset.price;
+                    row.querySelector('.priceuzs').value = selected.dataset.priceuzs;
+                    recalculateTotals();
+                    checkForLoss(row); // Add this line
+                }
+            }
+        });
+
+        // In the price input event
+        productsContainer.addEventListener('input', e => {
+            if (e.target.classList.contains('price')) {
+                const row = e.target.closest('.product-row');
+                checkForLoss(row); // Add this line
+                recalculateTotals();
+            }
         });
 
         // Enhanced Search Functionality
