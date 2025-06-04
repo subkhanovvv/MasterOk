@@ -57,7 +57,7 @@
                     <option value="{{ $product->id }}"
                         data-name="{{ $product->name }}"
                         data-price="{{ $product->sale_price }}"
-                        data-priceuzs="{{ $product->uzs_price }}"
+                        data-priceuzs="{{ $product->price_uzs }}"
                         data-unit="{{ $product->unit }}"
                         data-barcode="{{ $product->barcode_value }}">
                         {{ $product->name }}
@@ -73,7 +73,7 @@
         </td>
         <td>
             <input type="number" step="0.01" class="form-control price" name="products[${rowIndex}][price]" required>
-            <input type="number" step="0.01" class="form-control priceuzs d-none" name="products[${rowIndex}][price_uzs]">
+            <input type="number" step="0.01" class="form-control priceuzs bg-white border-0" name="products[${rowIndex}][price_uzs]" disabled>
         </td>
         <td class="text-center">
             <button type="button" class="border-0 bg-white qty-btn" data-action="increase">
@@ -93,7 +93,7 @@
                 select.value = product.id;
                 newRow.querySelector('.unit').value = product.unit;
                 newRow.querySelector('.price').value = product.sale_price;
-                newRow.querySelector('.priceuzs').value = product.uzs_price;
+                newRow.querySelector('.priceuzs').value = product.price_uzs;
             }
 
             productsContainer.appendChild(newRow);
