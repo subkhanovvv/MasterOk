@@ -22,7 +22,17 @@
             </div>
         </div>
     @endif
-
+    @if (session('error'))
+        <div class="alert alert-danger alert-dismissible fade show alert-position">
+            <div class="d-flex align-items-center">
+                <i class="mdi mdi-alert-box me-2"></i>
+                <div>
+                    <div>{{ session('error') }}</div>
+                </div>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    @endif
     @if (Session::has('success'))
         <div class="alert alert-success alert-dismissible fade show alert-position">
             <div class="d-flex align-items-center">
