@@ -14,7 +14,10 @@ return new class extends Migration
         Schema::create('suppliers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('brand_id')->nullable();
+            $table->foreignId('brand_id')
+                ->nullable()
+                ->constrained('brands')
+                ->onDelete('cascade');
             $table->string('note')->nullable();
             $table->timestamps();
         });
