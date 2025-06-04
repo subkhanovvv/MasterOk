@@ -99,13 +99,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="col-md-12 justify-content-end d-flex gap-2">
-                        <input class="form-check-input" type="checkbox" id="print-checkbox" name="print">
-                        <label class="form-check-label" for="print-checkbox">
-                            <small>Печать</small>
-                        </label>
-                    </div>
                 </div>
             </div>
         </div>
