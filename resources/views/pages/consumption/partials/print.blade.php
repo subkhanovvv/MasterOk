@@ -89,8 +89,8 @@
     <strong>Товары:</strong>
     @foreach ($transaction->items as $item)
         <div class="item-line">
-            <span>{{ $item->product->name }} x {{ $item->qty }}</span>
-            <span>{{ number_format($item->price * $item->qty, 0, ',', ' ') }} сум</span>
+            <span>{{ $item->product->name }} x {{ number_format($item->qty) }}</span>
+            <span>{{ number_format($item->product->sale_price * $item->qty, 0, ',', ' ') ?? '-' }} сум</span>
         </div>
     @endforeach
     <hr>

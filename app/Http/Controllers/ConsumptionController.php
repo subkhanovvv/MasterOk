@@ -127,6 +127,7 @@ class ConsumptionController extends Controller
     }
     public function print(ProductActivity $activity)
     {
+        // $transaction = ProductActivity::with(['items.product'])->findOrFail($activity);
         $settings = Setting::find(1);
 
         return view('pages.consumption.partials.print', [

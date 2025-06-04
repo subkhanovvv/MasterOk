@@ -100,7 +100,7 @@
     <strong>Товары:</strong>
     @foreach ($transaction->items as $item)
         <div class="item-line">
-            <span>{{ $item->product->name }} x {{ $item->qty }}</span>
+            <span>{{ $item->product->name }} x {{number_format($item->qty)}}</span>
             @if (in_array($transaction->type, ['consume', 'return', 'loan']))
                 <span>{{ number_format($item->product->sale_price * $item->qty, 0, ',', ' ') ?? '-' }} сум</span>
             @else
