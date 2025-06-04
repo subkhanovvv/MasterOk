@@ -159,7 +159,7 @@
 
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <div class="text-muted small">
-                        <strong>Итого:</strong> <span id="total-uzs">0</span> сум 
+                        <strong>Итого:</strong> <span id="total-uzs">0</span> сум
 
                     </div>
                     <div class="d-flex align-items-center gap-3">
@@ -184,6 +184,31 @@
             const value = this.value;
             const icon = iconMap[value] || 'mdi-help-circle-outline';
             document.getElementById('payment_icon').className = `mdi ${icon} me-2 fs-4`;
+        });
+    </script>
+    <script>
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const total = recalculateTotals();
+            let validProducts = 0;
+
+            document.querySelectorAll('.product-row').forEach(row => {
+                const productId = row.querySelector('.product-select')?.value;
+                if (productId) validProducts++;
+            });
+
+            if (validProducts === 0) {
+                e.preventDefault();
+                alert('Please select at least one product before submitting.');
+                return;
+            }
+
+            if (total <= 0) {
+                e.preventDefault();
+                alert('Total amount must be greater than zero.');
+                return;
+            }
+
+            // The form will submit normally and the controller will handle the print redirect
         });
     </script>
 @endsection

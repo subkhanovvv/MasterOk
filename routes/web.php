@@ -63,6 +63,7 @@ Route::middleware(['auth'])->group(function () {
     Route::controller(ConsumptionController::class)->group(function () {
         Route::get('/consumption', 'index')->name('consumption.index');
         Route::post('/consumption/store', 'store')->name('consumption.store');
+        Route::get('/consumption/{activity}/print', 'print')->name('consumption.print');
     });
 
     Route::controller(AuthController::class)->group(function () {

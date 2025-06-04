@@ -99,7 +99,19 @@ class ConsumptionController extends Controller
 
             $product->save();
         }
+        if ($request->print) {
+            return redirect()->route('consumption.print', $activity->id);
+        }
 
         return back()->with('success', 'Saved successfully with QR code');
+    }
+    public function print(ProductActivity $activity)
+    {
+        $settings = Setting::find(1);
+
+        return view('pages.consumption.partials.print', [
+            'transaction' => $activity,
+            'settings' => $settings
+        ]);
     }
 }
