@@ -50,54 +50,50 @@
             const newRow = document.createElement('tr');
             newRow.className = 'product-row';
             newRow.innerHTML = `
-                     <td>
-                        <select class="form-select form-select-sm product-select" name="products[${rowIndex}][product_id]" required>
-                            <option value="">Выберите продукт</option>
-                            @foreach ($products as $product)
-                                <option value="{{ $product->id }}"
-                                    data-name="{{ $product->name }}"
-                                   data-price="{{ $product->sale_price }}"
-                                   data-priceuzs="{{ $product->uzs_price }}"
-                                    data-unit="{{ $product->unit }}"
-                                    data-barcode="{{ $product->barcode_value }}">
-                                    {{ $product->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </td>
-                     <td>
-                        <input type="number" class="form-control qty" name="products[${rowIndex}][qty]" min="1" value="1" required>
-                      </td>
-                     <td>
-                   
-                        <input type="text" class="form-control unit bg-white border-0" name="products[${rowIndex}][unit]" disabled>
-                   </td>
-            <td>
-                        <input type="number" class="form-control price bg-white border-0" disabled>
-                        <input type="number" class="form-control priceuzs bg-white border-0" disabled>
-                        
-                   
-                    </td>
-             <td class="text-center">
-                         <button type="button" class="border-0 bg-white qty-btn" data-action="increase">
-                            <i class="mdi mdi-plus-circle-outline icon-sm text-success"></i>
-                            </button>
-                    
-                        <button type="button" class="border-0 bg-white qty-btn" data-action="decrease">
-                            <i class="mdi mdi-minus-circle-outline icon-sm text-warning"></i>    
-                        </button>
-                          <button type="button" class="border-0 bg-white remove-product" id="clear-all">
-                            <i class="mdi mdi-delete icon-sm text-danger"></i>
-                    </button>
-                    </td>
-        `;
+         <td>
+            <select class="form-select form-select-sm product-select" name="products[${rowIndex}][product_id]" required>
+                <option value="">Выберите продукт</option>
+                @foreach ($products as $product)
+                    <option value="{{ $product->id }}"
+                        data-name="{{ $product->name }}"
+                        data-price="{{ $product->sale_price }}"
+                        data-priceuzs="{{ $product->uzs_price }}"
+                        data-unit="{{ $product->unit }}"
+                        data-barcode="{{ $product->barcode_value }}">
+                        {{ $product->name }}
+                    </option>
+                @endforeach
+            </select>
+        </td>
+        <td>
+            <input type="number" class="form-control qty" name="products[${rowIndex}][qty]" min="1" value="1" required>
+        </td>
+        <td>
+            <input type="text" class="form-control unit bg-white border-0" name="products[${rowIndex}][unit]" disabled>
+        </td>
+        <td>
+            <input type="number" step="0.01" class="form-control price" name="products[${rowIndex}][price]" required>
+            <input type="number" step="0.01" class="form-control priceuzs d-none" name="products[${rowIndex}][price_uzs]">
+        </td>
+        <td class="text-center">
+            <button type="button" class="border-0 bg-white qty-btn" data-action="increase">
+                <i class="mdi mdi-plus-circle-outline icon-sm text-success"></i>
+            </button>
+            <button type="button" class="border-0 bg-white qty-btn" data-action="decrease">
+                <i class="mdi mdi-minus-circle-outline icon-sm text-warning"></i>    
+            </button>
+            <button type="button" class="border-0 bg-white remove-product">
+                <i class="mdi mdi-delete icon-sm text-danger"></i>
+            </button>
+        </td>
+    `;
 
             if (product) {
                 const select = newRow.querySelector('.product-select');
                 select.value = product.id;
                 newRow.querySelector('.unit').value = product.unit;
                 newRow.querySelector('.price').value = product.sale_price;
-                newRow.querySelector('.priceuzs').value = product.price_uzs;
+                newRow.querySelector('.priceuzs').value = product.uzs_price;
             }
 
             productsContainer.appendChild(newRow);
@@ -343,5 +339,64 @@
                 return;
             }
         });
+    });
+</script>
+<script>
+    const productsContainer = document.getElementById('products-container');
+    const totalUzsEl = document.getElementById('total-uzs');
+    const totalHiddenInput = document.getElementById('total-price-hidden');
+
+    function recalculateTotals() {
+        let total = 0;
+        document.querySelectorAll('.product-row').forEach(row => {
+            if (row.style.display !== 'none') {
+                const qty = parseFloat(row.querySelector('.qty')?.value || 0);
+                const price = parseFloat(row.querySelector('.price')?.value || 0);
+                total += qty * price;
+            }
+        });
+        totalUzsEl.textContent = total.toLocaleString();
+        totalHiddenInput.value = total;
+    }
+
+    // 🔁 Recalculate live when qty or price is edited
+    productsContainer.addEventListener('input', e => {
+        if (e.target.classList.contains('qty') || e.target.classList.contains('price')) {
+            recalculateTotals();
+        }
+    });
+
+    // Also recalculate when + or - buttons are clicked
+    productsContainer.addEventListener('click', e => {
+        if (e.target.closest('.qty-btn')) {
+            const action = e.target.closest('.qty-btn').dataset.action;
+            const row = e.target.closest('.product-row');
+            const qtyInput = row.querySelector('.qty');
+            let qty = parseInt(qtyInput.value) || 1;
+            qty += action === 'increase' ? 1 : -1;
+            if (qty < 1) qty = 1;
+            qtyInput.value = qty;
+            recalculateTotals();
+        }
+
+        // Remove row
+        if (e.target.closest('.remove-product')) {
+            e.target.closest('tr').remove();
+            recalculateTotals();
+        }
+    });
+
+    // Optional: recalculate on product select change too
+    productsContainer.addEventListener('change', e => {
+        if (e.target.classList.contains('product-select')) {
+            const selected = e.target.selectedOptions[0];
+            const row = e.target.closest('.product-row');
+            if (selected) {
+                row.querySelector('.unit').value = selected.dataset.unit;
+                row.querySelector('.price').value = selected.dataset.price;
+                row.querySelector('.priceuzs').value = selected.dataset.priceuzs;
+                recalculateTotals();
+            }
+        }
     });
 </script>
