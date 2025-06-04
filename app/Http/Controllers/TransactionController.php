@@ -80,6 +80,9 @@ class TransactionController extends Controller
             $status = $activity->status;
             $price = $activity->total_price;
             $loan = $activity->loan_amount ?? 0;
+            $totalCost = collect($activity->items)->sum(function ($item) {
+                return ($item->qty * ($item->product->price_uzs ?? 0));
+            });
 
             if (array_key_exists($type, $activityTypeCounts)) {
                 $activityTypeCounts[$type]++;
@@ -97,13 +100,7 @@ class TransactionController extends Controller
 
 
             if (in_array($type, ['consume', 'loan']) && $status === 'complete') {
-                foreach ($activity->items as $item) {
-                    $salePrice = $item->product->sale_price;
-                    $costPrice = $item->product->price_uzs ?? 0;
-                    $quantity = $item->qty;
-
-                    $softProfit += ($salePrice - $costPrice) * $quantity;
-                }
+                $softProfit += $price - $totalCost ;
             }
 
             switch ($type) {
