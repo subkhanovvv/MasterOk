@@ -174,40 +174,57 @@
     <iframe name="print-frame" id="print-frame" style="display:none;"></iframe>
 
     @include('pages.consumption.js.script')
-    <script>
-        document.querySelector('form').addEventListener('submit', function(e) {
-            const total = recalculateTotals();
-            let validProducts = 0;
+   <script>
+    const form = document.querySelector('form');
+    const printCheckbox = document.getElementById('print-redirect');
 
-            document.querySelectorAll('.product-row').forEach(row => {
-                const productId = row.querySelector('.product-select')?.value;
-                if (productId) validProducts++;
-            });
+    form.addEventListener('submit', function (e) {
+        const total = recalculateTotals();
+        let validProducts = 0;
 
-            if (validProducts === 0) {
-                e.preventDefault();
-                alert('Please select at least one product before submitting.');
-                return;
-            }
-
-            if (total <= 0) {
-                e.preventDefault();
-                alert('Total amount must be greater than zero.');
-                return;
-            }
-        });
-        document.getElementById('print-checkbox').addEventListener('change', function() {
-            document.getElementById('print-redirect').value = this.checked ? '1' : '0';
+        document.querySelectorAll('.product-row').forEach(row => {
+            const productId = row.querySelector('.product-select')?.value;
+            if (productId) validProducts++;
         });
 
-        document.getElementById('print-frame').addEventListener('load', function() {
-            if (this.contentWindow.location.href !== 'about:blank') {
-                try {
-                    this.contentWindow.print();
-                } catch (e) {
-                    console.log('Print error:', e);
-                }
+        if (validProducts === 0) {
+            e.preventDefault();
+            alert('Please select at least one product before submitting.');
+            return;
+        }
+
+        if (total <= 0) {
+            e.preventDefault();
+            alert('Total amount must be greater than zero.');
+            return;
+        }
+
+        // Set form target based on print checkbox
+        if (printCheckbox.checked) {
+            form.setAttribute('target', 'print-frame');
+        } else {
+            form.removeAttribute('target');
+        }
+    });
+
+    document.getElementById('print-checkbox').addEventListener('change', function () {
+        printCheckbox.value = this.checked ? '1' : '0';
+    });
+
+    // Handle print and reload
+    document.getElementById('print-frame').addEventListener('load', function () {
+        if (this.contentWindow.location.href !== 'about:blank') {
+            try {
+                this.contentWindow.print();
+                // Delay reload of parent page after print
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } catch (e) {
+                console.log('Print error:', e);
             }
-        });
-    </script>
+        }
+    });
+</script>
+
 @endsection
